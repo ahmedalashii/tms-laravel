@@ -4,7 +4,6 @@ use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
-use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 use App\Models\User;
 
 class FirebaseUserProvider implements UserProvider {

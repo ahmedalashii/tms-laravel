@@ -55,6 +55,11 @@
 # FIREBASE_DATABASE_URL=https://laraveltms-b022f-default-rtdb.firebaseio.com/
 
 env_variables:
+  APP_NAME: "tms-laravel"
+  APP_ENV: "production"
+  APP_KEY: "base64:bQzliA7rSRFGPVVzdUqxIEE3evr9md5BHxePuXLNdMo="
+  APP_DEBUG: false
+
   # MAIL_MAILER=smtp
   # MAIL_HOST=mailhog
   # MAIL_PORT=1025

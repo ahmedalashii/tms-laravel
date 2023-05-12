@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (config('app.env') === 'production') {
+            \URL::forceScheme('https');
+        }
+        if (config('app.debug') === false) {
+            \Debugbar::disable();
+        }
     }
 }
