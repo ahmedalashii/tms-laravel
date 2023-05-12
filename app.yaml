@@ -59,7 +59,7 @@ env_variables:
   APP_ENV: "production"
   APP_KEY: "base64:L52FVmv2f8N4VIatk05NIsVA06F0PsFq84k2tR19WVw="
   APP_DEBUG: false
-
+  SESSION_LIFETIME: 1440
   # MAIL_MAILER=smtp
   # MAIL_HOST=mailhog
   # MAIL_PORT=1025
