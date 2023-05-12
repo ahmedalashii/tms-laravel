@@ -48,6 +48,7 @@ class Handler extends ExceptionHandler
             return redirect()->route('home');
         }
 
+        
         return parent::render($request, $exception);
     }
 }
