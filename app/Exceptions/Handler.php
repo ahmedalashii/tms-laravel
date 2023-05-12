@@ -27,4 +27,27 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param Throwable $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws Throwable
+     */
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return view('welcome');
+        }
+
+        if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
+            return redirect()->route('home');
+        }
+
+        return parent::render($request, $exception);
+    }
 }
