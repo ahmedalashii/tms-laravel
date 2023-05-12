@@ -19,7 +19,6 @@ RUN chown -R www-data: /app
 
 RUN apk add --no-cache nodejs npm
 RUN cd /app && \
-    npm install && \
-    npm run build
+    npm install
 
 CMD sh /app/docker/startup.sh
