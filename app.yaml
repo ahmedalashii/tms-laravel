@@ -1,6 +1,6 @@
 # APP_NAME=Laravel
 # APP_ENV=local
-# APP_KEY=base64:bQzliA7rSRFGPVVzdUqxIEE3evr9md5BHxePuXLNdMo=
+# APP_KEY=base64:L52FVmv2f8N4VIatk05NIsVA06F0PsFq84k2tR19WVw=
 # APP_DEBUG=true
 # APP_URL=http://tms.test
 
@@ -57,7 +57,7 @@
 env_variables:
   APP_NAME: "tms-laravel"
   APP_ENV: "production"
-  APP_KEY: "base64:bQzliA7rSRFGPVVzdUqxIEE3evr9md5BHxePuXLNdMo="
+  APP_KEY: "base64:L52FVmv2f8N4VIatk05NIsVA06F0PsFq84k2tR19WVw="
   APP_DEBUG: false
 
   # MAIL_MAILER=smtp
