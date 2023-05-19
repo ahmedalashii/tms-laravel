@@ -33,9 +33,6 @@ class TraineeAuthorizationMail extends Mailable
         $app_name = config('app.name');
         return new Envelope(
             subject: "Your $app_name Account is Ready to Use",
-            from: new Address(config('mail.from.address'), config('app.name')),
-            to: new Address($this->trainee->email),
-            cc: $this->manager->email,
         );
     }
 

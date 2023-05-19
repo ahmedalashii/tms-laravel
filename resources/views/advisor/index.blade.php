@@ -1,9 +1,9 @@
+@extends('layouts.advisorLayout')
 
-
-<?php $__env->startSection('MainContent'); ?>
+@section('MainContent')
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Welcome, <span class="text-success"><?php echo e(Auth::guard('trainee')->user()->displayName); ?> 😎</span></h1>
+                <h1 class="mt-4">Welcome, <span class="text-success">{{ Auth::guard('advisor')->user()->displayName }} 😎</span></h1>
 
                 <section class="mt-3 mb-3">
                     <div class="card mb-4">
@@ -73,6 +73,4 @@
                 </div>
             </div>
         </main>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/index.blade.php ENDPATH**/ ?>
+@endsection

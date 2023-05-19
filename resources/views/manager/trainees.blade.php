@@ -14,10 +14,12 @@
                         <table class="table table-striped table-bordered">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email address</th>
+                                    <th>Avatar & Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
                                     <th>Address</th>
                                     <th>Gender</th>
+                                    <th>Is Email Verified?</th>
                                     <th>CV</th>
                                     <th>Edit</th>
                                 </tr>
@@ -31,13 +33,23 @@
                                     @foreach ($trainees as $trainee)
                                         <tr>
                                             <td>
-                                                <img src="{{ $trainee->avatar }}" class="rounded-circle me-1" width="37px" height="40px"
-                                                    alt="{{ $trainee->displayName }}'s avatar" />
+                                                <img src="{{ $trainee->avatar }}" class="rounded-circle me-1" width="37px"
+                                                    height="40px" alt="{{ $trainee->displayName }}'s avatar" />
                                                 {{ $trainee->displayName }}
                                             </td>
                                             <td>{{ $trainee->email }}</td>
+                                            <td>{{ $trainee->phone }}</td>
                                             <td>{{ $trainee->address }}</td>
                                             <td>{{ Str::ucfirst($trainee->gender) }}</td>
+                                            <td class="min-width">
+                                                <p>
+                                                    @if ($trainee->email_verified ?? false)
+                                                        Yes <b style="color: #219653;">&#10003;</b>
+                                                    @else
+                                                        No <b style="color: #d50100;">&#x2717;</b>
+                                                    @endif
+                                                </p>
+                                            </td>
                                             <td><a href="{{ $trainee->cv }}">Download
                                                     CV</a></td>
                                             <td><a href="{{ route('manager.trainees-edit', $trainee->id) }}"

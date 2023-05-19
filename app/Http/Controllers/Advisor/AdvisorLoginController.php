@@ -71,16 +71,31 @@ class AdvisorLoginController extends Controller
                     $this->username() => [trans("auth.failed")],
                 ]);
             }
+            // Logout from other guards
+            Auth::guard("manager")->logout();
+            Auth::guard("trainee")->logout();
             // uid Session
             Session::put('uid', $firebaseId);
             Session::forget('guard');
             Session::put('guard', 'advisor');
+            // Login to advisor guard
             $result = Auth::guard("advisor")->login($user, $request->remember);
-            return redirect($this->redirectPath());
+            return redirect($this->redirectPath())->with(['success' => 'Welcome back!', 'type' => 'success']);
         } catch (FirebaseException $e) {
             throw ValidationException::withMessages([
                 $this->username() => [trans("auth.failed")],
             ]);
         }
+    }
+
+    
+    public function advisorLogout(Request $request)
+    {
+        Auth::guard("advisor")->logout();
+        Session::forget('uid');
+        Session::forget('guard');
+        $this->logout($request);
+        return redirect()->route('advisor.login')->with(['success' => 'Logout successfully.', 'type' => 'success']);
+
     }
 }

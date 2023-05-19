@@ -76,21 +76,34 @@ class ManagerLoginController extends Controller
                 Session::flash('error', 'Your account is not active. Wait for the super manager to activate your account.');
                 return back()->withInput();
             }
+            // Logout from other guards
+            Auth::guard("advisor")->logout();
+            Auth::guard("trainee")->logout();
             // uid Session
             Session::put('uid', $firebaseId);
             Session::forget('guard');
             Session::put('guard', 'manager');
+            // Login to this guard
             Auth::guard("manager")->login($user);
             $result = Auth::guard("manager")->check();
             if (!$result) {
                 Session::flash('error', 'Authentication failed.');
                 return back()->withInput();
             }
-            return redirect($this->redirectPath());
+            return redirect($this->redirectPath())->with(['success' => 'Welcome back!', 'type' => 'success']);
         } catch (FirebaseException $e) {
             throw ValidationException::withMessages([
                 $this->username() => [trans("auth.failed")],
             ]);
         }
+    }
+
+    public function managerLogout(Request $request)
+    {
+        Auth::guard("manager")->logout();
+        Session::forget('uid');
+        Session::forget('guard');
+        $this->logout($request);
+        return redirect()->route('manager.login')->with(['success' => 'Logout successfully.', 'type' => 'success']);
     }
 }

@@ -10,12 +10,6 @@ class TraineeController extends Controller
 {
     public function index()
     {
-        try {
-            $uid = Session::get('uid');
-            $user = app('firebase.auth')->getUser($uid);
-            return view('trainee.index');
-        } catch (\Exception $e) {
-            return $e;
-        }
+        return view('trainee.index');
     }
 }

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trainee;
-use Illuminate\Http\Request;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\TraineeAuthorizationMail;
-use Illuminate\Support\Facades\Session;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 
 class ManagerController extends Controller
@@ -43,7 +41,7 @@ class ManagerController extends Controller
         $trainee->auth_id = $auth_id;
         $manager = Auth::guard('manager')->user();
         $mailable = new TraineeAuthorizationMail($trainee, $manager);
-        $status = $this->sendEmail($trainee, $mailable);
+        $this->sendEmail($trainee, $mailable);
         $status = $trainee->save();
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Authorized Successfully and email sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }

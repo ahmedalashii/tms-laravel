@@ -27,34 +27,49 @@ use App\Http\Controllers\Trainee\TraineePasswordResetController;
 
 Route::get('/', function () {
     return view('index');
-});
+})->middleware(['guest:trainee,advisor,manager']);
 
-Route::get('/trainee', [TraineeController::class, 'index'])->name('trainee')->middleware(['user:trainee', 'fireauth:trainee']);
+Route::get('/trainee', [TraineeController::class, 'index'])->name('trainee')->middleware(['fireauth:trainee']);
 // Auth Trainee routes
-Route::group(['prefix' => 'trainee/', 'as' => 'trainee.', 'middleware' => ['guest:trainee']], function () {
-    Route::get('/login', [TraineeLoginController::class, 'index'])->name('login');
-    Route::post('/login', [TraineeLoginController::class, 'login'])->name('login');
-    Route::get('/register', [TraineeRegisterController::class, 'index'])->name('register');
-    Route::post('/register', [TraineeRegisterController::class, 'register'])->name('register');
-    Route::get('/reset', [TraineePasswordResetController::class, 'index'])->name('reset');
-    Route::post('/reset', [TraineePasswordResetController::class, 'reset'])->name('reset');
+Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
+    Route::middleware(['guest:trainee'])->group(function () {
+        Route::get('/login', [TraineeLoginController::class, 'index'])->name('login');
+        Route::post('/login', [TraineeLoginController::class, 'login'])->name('login');
+        Route::get('/register', [TraineeRegisterController::class, 'index'])->name('register');
+        Route::post('/register', [TraineeRegisterController::class, 'register'])->name('register');
+        Route::get('/reset', [TraineePasswordResetController::class, 'index'])->name('reset');
+        Route::post('/reset', [TraineePasswordResetController::class, 'reset'])->name('reset');
+    });
+    Route::post('/logout', [TraineeLoginController::class, 'traineeLogout'])->name('logout')->middleware(['auth:trainee']);
 });
-Route::get('/advisor', [AdvisorController::class, 'index'])->name('advisor')->middleware(['user:advisor', 'fireauth:advisor']);
+
+
+Route::get('/advisor', [AdvisorController::class, 'index'])->name('advisor')->middleware(['fireauth:advisor']);
 // Auth Advisor routes
-Route::group(['prefix' => 'advisor/', 'as' => 'advisor.', 'middleware' => ['guest:advisor']], function () {
-    Route::get('/login', [AdvisorLoginController::class, 'index'])->name('login');
-    Route::post('/login', [AdvisorLoginController::class, 'login'])->name('login');
-    Route::get('/register', [AdvisorRegisterController::class, 'index'])->name('register');
-    Route::post('/register', [AdvisorRegisterController::class, 'register'])->name('register');
-    Route::get('/reset', [AdvisorPasswordResetController::class, 'index'])->name('reset');
-    Route::post('/reset', [AdvisorPasswordResetController::class, 'reset'])->name('reset');
+Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
+    Route::middleware(['guest:advisor'])->group(function () {
+        Route::get('/login', [AdvisorLoginController::class, 'index'])->name('login');
+        Route::post('/login', [AdvisorLoginController::class, 'login'])->name('login');
+        Route::get('/register', [AdvisorRegisterController::class, 'index'])->name('register');
+        Route::post('/register', [AdvisorRegisterController::class, 'register'])->name('register');
+        Route::get('/reset', [AdvisorPasswordResetController::class, 'index'])->name('reset');
+        Route::post('/reset', [AdvisorPasswordResetController::class, 'reset'])->name('reset');
+    });
+
+    Route::post('/logout', [AdvisorLoginController::class, 'advisorLogout'])->name('logout')->middleware(['auth:advisor']);
+
+    Route::middleware(['fireauth:advisor'])->group(function () {
+        Route::get('/trainees-requests', [AdvisorController::class, 'trainees_requests'])->name('trainees-requests');
+        Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
+        Route::get('/notifications', [AdvisorController::class, 'notifications'])->name('notifications');
+        Route::get('/trainees' , [AdvisorController::class, 'trainees'])->name('trainees');
+    });
 });
 
 
-Route::get('/manager', [ManagerController::class, 'index'])->name('manager')->middleware(['user:manager', 'fireauth:manager']);
+Route::get('/manager', [ManagerController::class, 'index'])->name('manager')->middleware(['fireauth:manager']);
 // Auth Manager routes
 Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
-    // Grouped routes
     Route::middleware(['guest:manager'])->group(function () {
         Route::get('/login', [ManagerLoginController::class, 'index'])->name('login');
         Route::post('/login', [ManagerLoginController::class, 'login'])->name('login');
@@ -63,8 +78,8 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::get('/reset', [ManagerPasswordResetController::class, 'index'])->name('reset');
         Route::post('/reset', [ManagerPasswordResetController::class, 'reset'])->name('reset');
     });
-    Route::get('/logout', [ManagerLoginController::class, 'logout'])->name('logout')->middleware(['fireauth:manager', 'auth:manager']);
-    Route::middleware(['user:manager', 'fireauth:manager'])->group(function (){
+    Route::post('/logout', [ManagerLoginController::class, 'managerLogout'])->name('logout')->middleware(['auth:manager']);
+    Route::middleware(['fireauth:manager'])->group(function () {
         Route::get('/training-requests', [ManagerController::class, 'training_requests'])->name('training-requests');
         Route::get('/authorize-trainees', [ManagerController::class, 'authorize_trainees'])->name('authorize-trainees');
         Route::get('/trainees', [ManagerController::class, 'trainees'])->name('trainees');

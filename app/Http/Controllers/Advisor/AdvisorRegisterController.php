@@ -53,6 +53,7 @@ class AdvisorRegisterController extends Controller
             $advisor = new \App\Models\Advisor;
             $advisor->firebase_uid = $createdUser->uid;
             $advisor->displayName = $request->input('name');
+            $advisor->phone = $request->input('phone');
             $advisor->email = $request->input('email');
             $advisor->password = Hash::make($request->input('password'));
             $status = $advisor->save();

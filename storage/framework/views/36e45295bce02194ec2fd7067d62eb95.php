@@ -3,7 +3,7 @@
 <?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Welcome, <span class="text-success"><?php echo e(Auth::guard('manager')->user()->displayName); ?></span>
+            <h1 class="mt-4">Welcome, <span class="text-success"><?php echo e(Auth::guard('manager')->user()->displayName); ?> 😎</span>
             </h1>
 
             <section class="mt-3 mb-3">

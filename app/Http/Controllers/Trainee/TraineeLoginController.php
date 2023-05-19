@@ -63,7 +63,7 @@ class TraineeLoginController extends Controller
             );
             $firebaseId = $signInResult->firebaseUserId();
             $firebaseUser = $auth->getUser($firebaseId);
-            if($firebaseUser->emailVerified == false){
+            if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
                 $auth->sendEmailVerificationLink($email);
                 return back()->withInput();
@@ -74,16 +74,29 @@ class TraineeLoginController extends Controller
                     $this->username() => [trans("auth.failed")],
                 ]);
             }
+            // Logout from other guards
+            Auth::guard('advisor')->logout();
+            Auth::guard('manager')->logout();
             // uid Session
             Session::put('uid', $firebaseId);
             Session::forget('guard');
             Session::put('guard', 'trainee');
+            // Login to this guard
             $result = Auth::guard("trainee")->login($user, $request->remember);
-            return redirect($this->redirectPath());
+            return redirect($this->redirectPath())->with(['success' => 'Welcome back!', 'type' => 'success']);
         } catch (FirebaseException $e) {
             throw ValidationException::withMessages([
                 $this->username() => [trans("auth.failed")],
             ]);
         }
+    }
+
+    public function traineeLogout(Request $request)
+    {
+        Auth::guard("trainee")->logout();
+        Session::forget('uid');
+        Session::forget('guard');
+        $this->logout($request);
+        return redirect()->route('trainee.login')->with(['success' => 'Logout successfully.', 'type' => 'success']);
     }
 }

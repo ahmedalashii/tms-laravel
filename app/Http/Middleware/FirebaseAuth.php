@@ -21,12 +21,15 @@ class FirebaseAuth
     $session_guard = Session::get('guard');
     $guard = $guards[0];
     if ($uid) {
-      if ($session_guard != $guard) {
+      $verify = app('firebase.auth')->getUser($uid)->emailVerified;
+      if ($verify == 0) {
+        return redirect()->route('verify');
+      } else if ($session_guard != $guard) {
         return redirect("$guard/login");
       } else {
         Auth::guard($guard)->loginUsingId($uid);
+        return $next($request);
       }
-      return $next($request);
     } else {
       Session::flush();
       // getting the guard using guard used

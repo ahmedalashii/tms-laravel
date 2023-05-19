@@ -14,10 +14,12 @@
                         <table class="table table-striped table-bordered">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email address</th>
+                                    <th>Avatar & Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
                                     <th>Address</th>
                                     <th>Gender</th>
+                                    <th>Is Email Verified?</th>
                                     <th>CV</th>
                                     <th>Edit</th>
                                 </tr>
@@ -31,14 +33,24 @@
                                     <?php $__currentLoopData = $trainees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainee): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <tr>
                                             <td>
-                                                <img src="<?php echo e($trainee->avatar); ?>" class="rounded-circle me-1" width="37px" height="40px"
-                                                    alt="<?php echo e($trainee->displayName); ?>'s avatar" />
+                                                <img src="<?php echo e($trainee->avatar); ?>" class="rounded-circle me-1" width="37px"
+                                                    height="40px" alt="<?php echo e($trainee->displayName); ?>'s avatar" />
                                                 <?php echo e($trainee->displayName); ?>
 
                                             </td>
                                             <td><?php echo e($trainee->email); ?></td>
+                                            <td><?php echo e($trainee->phone); ?></td>
                                             <td><?php echo e($trainee->address); ?></td>
                                             <td><?php echo e(Str::ucfirst($trainee->gender)); ?></td>
+                                            <td class="min-width">
+                                                <p>
+                                                    <?php if($trainee->email_verified ?? false): ?>
+                                                        Yes <b style="color: #219653;">&#10003;</b>
+                                                    <?php else: ?>
+                                                        No <b style="color: #d50100;">&#x2717;</b>
+                                                    <?php endif; ?>
+                                                </p>
+                                            </td>
                                             <td><a href="<?php echo e($trainee->cv); ?>">Download
                                                     CV</a></td>
                                             <td><a href="<?php echo e(route('manager.trainees-edit', $trainee->id)); ?>"
