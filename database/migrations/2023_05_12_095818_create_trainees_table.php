@@ -15,11 +15,18 @@ class CreateTraineesTable extends Migration
     {
         Schema::create('trainees', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('firebase_uid')->unique();
+            // nullable generated unique auth_id for each trainee by the manager after verifying the trainee's documents
+            $table->string('auth_id')->nullable()->unique();
+            $table->string('displayName');
             $table->string('email')->unique();
+            $table->string('phone');
+            $table->enum('gender', ['male', 'female']);
+            $table->string('address')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

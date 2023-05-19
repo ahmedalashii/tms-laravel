@@ -8,7 +8,6 @@
         <div class="card">
           <div class="card-header">Reset Password</div>
           <div class="card-body">
-
             @if(Session::has('message'))
               <div class="alert alert-info alert-dismissible fade show">
                 {{ Session::get('message') }}

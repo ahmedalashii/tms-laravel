@@ -15,7 +15,7 @@ RUN cd /app && \
 
 RUN chown -R www-data: /app
 
-# Look at this for installign node js and npm : https://stackoverflow.com/questions/55258124/docker-npm-not-found
+# Look at this for installing node js and npm : https://stackoverflow.com/questions/55258124/docker-npm-not-found
 
 RUN apk add --no-cache nodejs npm
 RUN cd /app && \

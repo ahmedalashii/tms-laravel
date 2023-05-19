@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'trainee',
         'passwords' => 'users',
     ],
 
@@ -36,9 +36,20 @@ return [
     */
 
     'guards' => [
-        'web' => [
+
+        'trainee' => [
             'driver' => 'session',
-            'provider' => 'firebaseUser',
+            'provider' => 'firebaseTrainees',
+        ],
+
+        'manager' => [
+            'driver' => 'session',
+            'provider' => 'firebaseManagers',
+        ],
+
+        'advisor' => [
+            'driver' => 'session',
+            'provider' => 'firebaseAdvisors',
         ],
 
         'api' => [
@@ -66,20 +77,20 @@ return [
     */
 
     'providers' => [
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\User::class,
-        // ],
+        'firebaseManagers' => [
+            'driver' => 'firebasemanagerprovider',
+            'model' => App\Models\Manager::class,
+        ],
 
-        'firebaseUser' => [
-            'driver' => 'firebaseuserprovider',
-            'model' => App\Models\User::class,
-         ],
-         
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'firebaseTrainees' => [
+            'driver' => 'firebasetraineeprovider',
+            'model' => App\Models\Trainee::class,
+        ],
+
+        'firebaseAdvisors' => [
+            'driver' => 'firebaseadvisorprovider',
+            'model' => App\Models\Advisor::class,
+        ],
     ],
 
     /*
@@ -102,8 +113,22 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'trainees' => [
+            'provider' => 'firebaseTrainees',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'advisors' => [
+            'provider' => 'firebaseAdvisors',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'managers' => [
+            'provider' => 'firebaseManagers',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

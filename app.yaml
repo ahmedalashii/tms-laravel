@@ -60,6 +60,13 @@ env_variables:
   APP_KEY: "base64:L52FVmv2f8N4VIatk05NIsVA06F0PsFq84k2tR19WVw="
   APP_DEBUG: false
   SESSION_LIFETIME: 1440
+  DB_CONNECTION: mysql
+  DB_HOST: 34.66.138.155
+  DB_PORT: 3306
+  DB_DATABASE: tms_cloud
+  DB_USERNAME: root
+  DB_PASSWORD: A7med1234
+
   # MAIL_MAILER=smtp
   # MAIL_HOST=mailhog
   # MAIL_PORT=1025
@@ -69,12 +76,9 @@ env_variables:
   # MAIL_FROM_ADDRESS=null
   # MAIL_FROM_NAME="${APP_NAME}"
 
-  # DB_CONNECTION=mysql
-  # DB_HOST=127.0.0.1
-  # DB_PORT=3306
-  # DB_DATABASE=tms
-  # DB_USERNAME=homestead
-  # DB_PASSWORD=secret
-  FIREBASE_PROJECT: "laraveltms"
-  FIREBASE_CREDENTIALS: "resources/credentials/firebase_credentials.json"
+  FIREBASE_PROJECT_ID: "laraveltms-b022f"
+  FIREBASE_APP_ID: "1:535725536461:web:e876f3f0aaec6af738e584"
+  FIREBASE_AUTH_DOMAIN: "laraveltms-b022f.firebaseapp.com"
   FIREBASE_DATABASE_URL: "https://laraveltms-b022f-default-rtdb.firebaseio.com/"
+  FIREBASE_STORAGE_BUCKET: "laraveltms-b022f.appspot.com"
+  FIREBASE_CREDENTIALS: "resources/credentials/firebase_credentials.json"

@@ -54,9 +54,9 @@ class ImageController extends Controller
           'image' => 'required',
         ]);
         $input = $request->all();
-        $image = $request->file('image'); //image file from frontend
+        $image = $request->file('image');
 
-        $student   = app('firebase.firestore')->database()->collection('Images')->document('defT5uT7SDu9K5RFtIdl');
+        $student   = app('firebase.firestore')->database()->collection('images')->document('defT5uT7SDu9K5RFtIdl');
         $firebase_storage_path = 'Images/';
         $name     = $student->id();
         $localfolder = public_path('firebase-temp-uploads') .'/';

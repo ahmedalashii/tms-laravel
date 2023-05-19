@@ -18,7 +18,7 @@ use Session;
 
 class RegisterController extends Controller
 {
-    /*
+   /*
     |--------------------------------------------------------------------------
     | Register Controller
     |--------------------------------------------------------------------------
@@ -29,43 +29,45 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
-    protected $auth;
+   use RegistersUsers;
+   protected $auth;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-     protected $redirectTo = RouteServiceProvider::HOME;
-    public function __construct(FirebaseAuth $auth) {
-       $this->middleware('guest');
-       $this->auth = $auth;
-    }
+   /**
+    * Where to redirect users after registration.
+    *
+    * @var string
+    */
+   protected $redirectTo = RouteServiceProvider::HOME;
+   public function __construct(FirebaseAuth $auth)
+   {
+      $this->middleware('guest');
+      $this->auth = $auth;
+   }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
+   /**
+    * Get a validator for an incoming registration request.
+    *
+    * @param  array  $data
+    * @return \Illuminate\Contracts\Validation\Validator
+    */
+   protected function validator(array $data)
+   {
+      return Validator::make($data, [
+         'name' => ['required', 'string', 'max:255'],
+         'email' => ['required', 'string', 'email', 'max:255'],
+         'password' => ['required', 'string', 'min:8', 'confirmed'],
+      ]);
+   }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function register(Request $request) {
-       try {
+   /**
+    * Create a new user instance after a valid registration.
+    *
+    * @param  array  $data
+    * @return \App\Models\User
+    */
+   protected function register(Request $request)
+   {
+      try {
          $this->validator($request->all())->validate();
          $userProperties = [
             'email' => $request->input('email'),
@@ -76,9 +78,9 @@ class RegisterController extends Controller
          ];
          $createdUser = $this->auth->createUser($userProperties);
          return redirect()->route('login');
-       } catch (FirebaseException $e) {
-          Session::flash('error', $e->getMessage());
-          return back()->withInput();
-       }
-    }
+      } catch (FirebaseException $e) {
+         Session::flash('error', $e->getMessage());
+         return back()->withInput();
+      }
+   }
 }

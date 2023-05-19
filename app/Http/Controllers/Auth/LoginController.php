@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Manager;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\Auth;
 use Session;
-use App\Models\User;
+use App\Models\Trainee;
 
 class LoginController extends Controller
 {
@@ -47,8 +48,7 @@ class LoginController extends Controller
     public function __construct(FirebaseAuth $auth)
     {
         $this->middleware("guest")->except("logout");
-        $this->auth =app("firebase.auth");
-      // $auth = app("firebase.auth");
+        $this->auth = app("firebase.auth");
     }
 
     protected function login(Request $request)
@@ -59,15 +59,14 @@ class LoginController extends Controller
                 $request["email"],
                 $request["password"]
             );
-            $user = new User($signInResult->data());
-
+            $user = new Manager($signInResult->data());
+            
             //uid Session
             $loginuid = $signInResult->firebaseUserId();
-            Session::put('uid',$loginuid);
+            Session::put('uid', $loginuid);
 
             $result = Auth::login($user);
             return redirect($this->redirectPath());
-
         } catch (FirebaseException $e) {
             throw ValidationException::withMessages([
                 $this->username() => [trans("auth.failed")],
@@ -83,7 +82,7 @@ class LoginController extends Controller
         $socialTokenId = $request->input("social-login-tokenId", "");
         try {
             $verifiedIdToken = $this->auth->verifyIdToken($socialTokenId);
-            $user = new User();
+            $user = new Trainee();
             $user->displayName = $verifiedIdToken->getClaim("name");
             $user->email = $verifiedIdToken->getClaim("email");
             $user->localId = $verifiedIdToken->getClaim("user_id");

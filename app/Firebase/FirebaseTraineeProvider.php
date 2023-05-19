@@ -3,10 +3,9 @@ namespace App\Firebase;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
+use App\Models\Trainee;
 
-use App\Models\User;
-
-class FirebaseUserProvider implements UserProvider {
+class FirebaseTraineeProvider implements UserProvider {
    protected $hasher;
    protected $model;
    protected $auth;
@@ -17,12 +16,12 @@ class FirebaseUserProvider implements UserProvider {
    }
    public function retrieveById($identifier) {
       $firebaseUser = $this->auth->getUser($identifier);
-      $user = new User([
+      $trainee = new Trainee([
          'localId' => $firebaseUser->uid,
          'email' => $firebaseUser->email,
          'displayName' => $firebaseUser->displayName
       ]);
-      return $user;
+      return $trainee;
    }
    public function retrieveByToken($identifier, $token) {}
    public function updateRememberToken(UserContract $user, $token) {}

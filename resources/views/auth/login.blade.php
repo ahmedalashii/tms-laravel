@@ -92,7 +92,7 @@
             messagingSenderId: "535725536461",
             appId: "1:535725536461:web:e876f3f0aaec6af738e584"
         };
-        firebase.initializeApp(config);
+        firebase.initializeApp(firebaseConfig);
         var facebookProvider = new firebase.auth.FacebookAuthProvider();
         var googleProvider = new firebase.auth.GoogleAuthProvider();
         var facebookCallbackLink = '/login/facebook/callback';
