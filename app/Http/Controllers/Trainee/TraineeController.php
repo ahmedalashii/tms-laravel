@@ -46,7 +46,8 @@ class TraineeController extends Controller
 
     public function edit()
     {
-        return view('trainee.edit');
+        $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
+        return view('trainee.edit', compact('disciplines'));
     }
 
     public function update(Trainee $trainee)
@@ -56,6 +57,7 @@ class TraineeController extends Controller
             'email' => 'required|email|max:255|unique:trainees,email,' . $trainee->id,
             'phone' => 'required|string|max:255|unique:trainees,phone,' . $trainee->id,
             'address' => 'required|string|max:255',
+            'disciplines' => 'required|array|min:1',
             'avatar-image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'cv-file' => 'nullable|mimes:pdf,doc,docx,txt,rtf,odt,ods,odp,odg,odc,odb,xls,xlsx,ppt,pptx',
         ]);
@@ -74,6 +76,13 @@ class TraineeController extends Controller
             $avatar_file_name = $trainee->id . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
             $avatar_file_path = 'Trainee/Images/' . $avatar_file_name;
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
+        }
+
+        // Check the disciplines selected by the user and remove the old disciplines and add the new ones
+        $disciplines = $data['disciplines'];
+        $trainee->disciplines()->detach();
+        foreach ($disciplines as $discipline) {
+            $trainee->disciplines()->attach($discipline);
         }
 
         // Check before update firebase user if the email or phone number is used before and not by the same user

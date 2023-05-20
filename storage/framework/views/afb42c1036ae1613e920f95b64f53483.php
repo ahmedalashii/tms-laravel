@@ -88,10 +88,11 @@
                                 <?php endif; ?>
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-center mt-5">
-                            <?php echo e($trainees->links()); ?>
+                        <?php if($trainees->hasPages()): ?>
+                            <br>
+                        <?php endif; ?>
+                        <?php echo e($trainees->links('pagination::bootstrap-5')); ?>
 
-                        </div>
                     </div>
                 </div>
             </section>

@@ -58,6 +58,13 @@
                         </a>
                         
 
+                        <a class="nav-link" href="./disciplines.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Disciplines
+                        </a>
+
+                        
+
                         <a class="nav-link" href="./training-programs.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Training Programs

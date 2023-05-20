@@ -32,6 +32,6 @@ class Advisor extends Authenticatable
 
     public function disciplines()
     {
-        return $this->belongsToMany(Discipline::class);
+        return $this->belongsToMany(Discipline::class, 'advisor_disciplines', 'advisor_id', 'discipline_id');
     }
 }
