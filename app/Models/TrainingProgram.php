@@ -7,7 +7,7 @@ use App\Models\Trainee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Training extends Model
+class TrainingProgram extends Model
 {
     use HasFactory;
 

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Seeders\DisciplineSeeder;
+use Database\Seeders\TrainingProgramSeeder;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 
@@ -54,5 +55,6 @@ class DatabaseSeeder extends Seeder
         $manager->password = Hash::make($password);
         $manager->save();
         $this->call(DisciplineSeeder::class);
+        $this->call(TrainingProgramSeeder::class);
     }
 }

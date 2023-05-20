@@ -53,9 +53,17 @@
                         </a>
                         <hr class="sidebar-divider">
                         <a class="nav-link" href="{{ route('manager.training-requests') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-school text-success"></i></div>
                             Training Requests
                         </a>
+                        {{-- Training Programs --}}
+
+                        <a class="nav-link" href="./training-programs.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Training Programs
+                        </a>
+
+
                         <a class="nav-link" href="{{ route('manager.authorize-trainees') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-plus text-success"></i></div>
                             Authorize trainees
