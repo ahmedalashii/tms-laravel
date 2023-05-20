@@ -12,6 +12,18 @@
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-bordered">
+                            <form action="<?php echo e(route('manager.trainees')); ?>" method="GET">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <input type="search" class="form-control" placeholder="Search for trainees"
+                                            aria-label="Search" name="search" value="<?php echo e(request()->query('search')); ?>">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-dark" type="submit">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <br>
                             <thead class="table-dark">
                                 <tr>
                                     <th>Avatar & Name</th>

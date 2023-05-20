@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Manager;
 
 use App\Models\Manager;
 use Illuminate\Http\Request;
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Kreait\Firebase\Exception\FirebaseException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
-use Illuminate\Support\Facades\Session;
 
 class ManagerLoginController extends Controller
 {
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, EmailProcessing;
 
     /**
      * Where to redirect users after login.
@@ -64,7 +66,8 @@ class ManagerLoginController extends Controller
             $firebaseUser = $auth->getUser($firebaseId);
             if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
-                $auth->sendEmailVerificationLink($request->input('email'));
+                $mailable = new EmailVerificationMail($firebaseUser, $auth->getEmailVerificationLink($request->input('email')));
+                $this->sendEmail($firebaseUser->email, $mailable);
                 return back()->withInput();
             }
             $user = Manager::where('firebase_uid', $firebaseId)->first();

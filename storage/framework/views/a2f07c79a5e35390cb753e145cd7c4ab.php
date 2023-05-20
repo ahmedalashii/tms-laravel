@@ -11,6 +11,18 @@
                         Manager Information
                     </div>
                     <div class="card-body">
+                        <form action="<?php echo e(route('manager.managers')); ?>" method="GET">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <input type="search" class="form-control" placeholder="Search for trainees"
+                                        aria-label="Search" name="search" value="<?php echo e(request()->query('search')); ?>">
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-dark" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                        <br>
                         <table class="table table-striped table-bordered">
                             <thead class="table-dark">
                                 <tr>

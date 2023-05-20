@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use App\Models\Trainee;
+use Illuminate\Http\Request;
+use App\Mail\ManagerActivationMail;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\TraineeAuthorizationMail;
 use App\Http\Traits\FirebaseStorageFileProcessing;
-use App\Mail\ManagerActivationMail;
 
 class ManagerController extends Controller
 {
@@ -24,14 +25,51 @@ class ManagerController extends Controller
         return view('manager.training_requests');
     }
 
-    public function authorize_trainees()
+    public function authorize_trainees(Request $request)
     {
+        $search_value = $request->search;
         $paginate = 5;
-        $trainees = Trainee::withoutTrashed()->whereNull('auth_id')->paginate($paginate);
+        $trainees = Trainee::withoutTrashed()->whereNull('auth_id')->where(function ($query) use ($search_value) {
+            $query->where('displayName', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('email', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('phone', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('address', 'LIKE', '%' . $search_value . '%');
+        })->paginate($paginate);
         return view('manager.authorize_trainees', compact('trainees'));
     }
 
+    public function trainees(Request $request)
+    {
+        $search_value = $request->search;
+        $paginate = 5;
+        $trainees = Trainee::withTrashed()->where(function ($query) use ($search_value) {
+            $query->where('displayName', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('email', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('phone', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('address', 'LIKE', '%' . $search_value . '%');
+        })->paginate($paginate);
+        return view('manager.trainees', compact('trainees'));
+    }
 
+
+    public function managers(Request $request)
+    {
+        $manager = Auth::guard('manager')->user();
+        $manager_db = Manager::where('firebase_uid', $manager->localId)->first();
+        if ($manager_db->role == 'super_manager') {
+            // Managers that are not super managers except the current logged in manager
+            $search_value = $request->search;
+            $paginate = 5;
+            $managers = Manager::where('role', '!=', 'super_manager')->where('firebase_uid', '!=', $manager->localId)->where(function ($query) use ($search_value) {
+                $query->where('displayName', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('email', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('phone', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('address', 'LIKE', '%' . $search_value . '%');
+            })->paginate($paginate);
+            return view('manager.managers', compact('managers'));
+        }
+        return redirect()->back()->with(['fail' => 'You are not authorized to access this page!', 'type' => 'error']);
+    }
 
     public function authorize_trainee(Trainee $trainee)
     {
@@ -92,12 +130,6 @@ class ManagerController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-    public function trainees()
-    {
-        $paginate = 5;
-        $trainees = Trainee::withTrashed()->paginate($paginate);
-        return view('manager.trainees', compact('trainees'));
-    }
 
     public function issues()
     {
@@ -111,22 +143,32 @@ class ManagerController extends Controller
 
     public function edit_trainee(Trainee $trainee)
     {
-        return view('manager.edit_trainee');
+        return view('manager.edit_trainee ', compact('trainee'));
     }
 
     public function update_trainee(Trainee $trainee)
     {
-    }
-
-    public function managers()
-    {
-        $manager = Auth::guard('manager')->user();
-        $manager_db = Manager::where('firebase_uid', $manager->localId)->first();
-        if ($manager_db->role == 'super_manager') {
-            // Managers that are not super managers except the current logged in manager
-            $managers = Manager::where('role', '!=', 'super_manager')->where('firebase_uid', '!=', $manager->localId)->get();
-            return view('manager.managers', compact('managers'));
+        $data = request()->validate([
+            'displayName' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:trainees,email,' . $trainee->id,
+            'phone' => 'required|string|max:255|unique:trainees,phone,' . $trainee->id,
+            'address' => 'required|string|max:255',
+        ]);
+        // Check before update firebase user if the email or phone number is used before and not by the same user
+        $auth = app('firebase.auth');
+        $firebaseUser = $auth->getUserByEmail($trainee->email) ?? app('firebase.auth')->getUserByPhoneNumber($trainee->phone);
+        if ($firebaseUser) {
+            if ($firebaseUser->uid != $trainee->firebase_uid) {
+                return redirect()->back()->with(['fail' => 'Email or Phone Number is already taken!', 'type' => 'error']);
+            }
         }
-        return redirect()->back()->with(['fail' => 'You are not authorized to access this page!', 'type' => 'error']);
+        // Update firebase user
+        $user = $auth->getUser($trainee->firebase_uid);
+        $auth->updateUser($user->uid, [
+            'email' => $data['email'],
+            'displayName' => $data['displayName'],
+        ]);
+        $status = $trainee->update($data);
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 }
