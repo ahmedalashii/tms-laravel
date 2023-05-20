@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Advisor;
 
 use App\Models\Advisor;
 use Illuminate\Http\Request;
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
@@ -15,7 +17,7 @@ use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 
 class AdvisorLoginController extends Controller
 {
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, EmailProcessing;
 
     /**
      * Where to redirect users after login.
@@ -62,7 +64,10 @@ class AdvisorLoginController extends Controller
             $firebaseUser = $auth->getUser($firebaseId);
             if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
-                $auth->sendEmailVerificationLink($request->input('email'));
+                $verification_url = app('firebase.auth')->getEmailVerificationLink($request->email);
+                $firebaseUser = app('firebase.auth')->getUserByEmail($request->email);
+                $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+                $this->sendEmail($request->email, $mailable);
                 return back()->withInput();
             }
             $user = Advisor::where('firebase_uid', $firebaseId)->first();
@@ -88,7 +93,7 @@ class AdvisorLoginController extends Controller
         }
     }
 
-    
+
     public function advisorLogout(Request $request)
     {
         Auth::guard("advisor")->logout();
@@ -96,6 +101,5 @@ class AdvisorLoginController extends Controller
         Session::forget('guard');
         $this->logout($request);
         return redirect()->route('advisor.login')->with(['success' => 'Logout successfully.', 'type' => 'success']);
-
     }
 }

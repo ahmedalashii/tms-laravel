@@ -118,9 +118,10 @@
                                 @endif
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-center mt-5">
-                            {{ $trainees->links() }}
-                        </div>
+                        @if ($trainees->hasPages())
+                            <br>
+                        @endif
+                        {{ $trainees->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </section>

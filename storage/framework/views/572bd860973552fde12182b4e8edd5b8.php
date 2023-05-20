@@ -103,7 +103,19 @@ unset($__errorArgs, $__bag); ?>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
-
+                    <label for="disciplines">Select one or more disciplines that you are interested in
+                        <strong class="text-danger">*</strong>
+                    </label>
+                    <div class="form-group">
+                        <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="form-check">
+                                <input type="checkbox" name="disciplines[]" value="<?php echo e($discipline->id); ?>"
+                                    class="form-check-input" id="discipline-<?php echo e($discipline->id); ?>">
+                                <label class="form-check-label"
+                                    for="discipline-<?php echo e($discipline->id); ?>"><?php echo e($discipline->name); ?></label>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <div>

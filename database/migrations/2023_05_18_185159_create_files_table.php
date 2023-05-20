@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('size');
             $table->string('firebase_file_path');
             $table->string('extension');
             $table->unsignedBigInteger('trainee_id')->nullable();

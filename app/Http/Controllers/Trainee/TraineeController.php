@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Trainee;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Models\Trainee;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 use PhpParser\Builder\Trait_;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use App\Http\Traits\FirebaseStorageFileProcessing;
 
 class TraineeController extends Controller
 {
@@ -21,7 +22,11 @@ class TraineeController extends Controller
 
     public function upload()
     {
-        return view('trainee.upload');
+        $trainee = Auth::guard('trainee')->user();
+        $trainee_db = Trainee::where('firebase_uid', $trainee->localId)->first();
+        $paginate = 3;
+        $files = $trainee_db->files()->paginate($paginate);
+        return view('trainee.upload', compact('files'));
     }
 
     public function apply_for_training()
@@ -73,19 +78,22 @@ class TraineeController extends Controller
 
         // Check before update firebase user if the email or phone number is used before and not by the same user
         $auth = app('firebase.auth');
-        $firebaseUser = $auth->getUserByEmail($data['email']);
-        if ($firebaseUser) {
+        try {
+            $firebaseUser = $auth->getUserByEmail($data['email']);
             if ($firebaseUser->uid != $trainee->firebase_uid) {
                 return redirect()->back()->with(['fail' => 'The email address is already in use by another account!', 'type' => 'error']);
             }
+        } catch (\Throwable $th) { // If the email is not used before then the getUserByEmail will throw an exception
+            // Do nothing
+        } finally {
+            // Update firebase user
+            $user = $auth->getUser($trainee->firebase_uid);
+            $auth->updateUser($user->uid, [
+                'email' => $data['email'],
+                'displayName' => $data['displayName'],
+            ]);
+            $status = $trainee->update($data);
+            return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your Information has been updated successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
         }
-        // Update firebase user
-        $user = $auth->getUser($trainee->firebase_uid);
-        $auth->updateUser($user->uid, [
-            'email' => $data['email'],
-            'displayName' => $data['displayName'],
-        ]);
-        $status = $trainee->update($data);
-        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your Information has been updated successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 }

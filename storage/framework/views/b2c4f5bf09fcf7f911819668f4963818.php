@@ -113,7 +113,6 @@ unset($__errorArgs, $__bag); ?>
                         <strong class="text-danger">*</strong>
                     </label>
                     <div class="form-group">
-                        <label for="disciplines">Disciplines</label>
                         <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="form-check">
                                 <input type="checkbox" name="disciplines[]" value="<?php echo e($discipline->id); ?>"

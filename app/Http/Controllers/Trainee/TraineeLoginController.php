@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Trainee;
 
+use Hamcrest\Core\Set;
 use App\Models\Trainee;
 use Illuminate\Http\Request;
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
-use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 use App\Providers\RouteServiceProvider;
-use Hamcrest\Core\Set;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Kreait\Firebase\Exception\FirebaseException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Session;
+use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 
 class TraineeLoginController extends Controller
 {
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, EmailProcessing;
 
     /**
      * Where to redirect users after login.
@@ -65,7 +67,10 @@ class TraineeLoginController extends Controller
             $firebaseUser = $auth->getUser($firebaseId);
             if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
-                $auth->sendEmailVerificationLink($email);
+                $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+                $firebaseUser = app('firebase.auth')->getUserByEmail($email);
+                $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+                $this->sendEmail($email, $mailable);
                 return back()->withInput();
             }
             $user = Trainee::withTrashed()->where('firebase_uid', $firebaseId)->first();

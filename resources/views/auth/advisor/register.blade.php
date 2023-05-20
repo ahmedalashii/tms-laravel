@@ -82,7 +82,6 @@
                         <strong class="text-danger">*</strong>
                     </label>
                     <div class="form-group">
-                        <label for="disciplines">Disciplines</label>
                         @foreach ($disciplines as $discipline)
                             <div class="form-check">
                                 <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"

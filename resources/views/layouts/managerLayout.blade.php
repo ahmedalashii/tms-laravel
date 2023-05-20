@@ -56,6 +56,13 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-school text-success"></i></div>
                             Training Requests
                         </a>
+                        {{-- Disciplines --}}
+
+                        <a class="nav-link" href="./disciplines.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Disciplines
+                        </a>
+
                         {{-- Training Programs --}}
 
                         <a class="nav-link" href="./training-programs.html">

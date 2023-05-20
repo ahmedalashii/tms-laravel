@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use App\Models\Advisor;
+use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class AdvisorDiscipline extends Model
+class TraineeDiscipline extends Model
 {
     use HasFactory;
 
-    protected $table = 'advisor_discipline';
+    protected $table = 'trainee_discipline';
 
     protected $fillable = [
-        'advisor_id',
+        'trainee_id',
         'discipline_id',
     ];
 
-    public function advisor()
+    public function trainee()
     {
-        return $this->belongsTo(Advisor::class);
+        return $this->belongsTo(Trainee::class);
     }
 
     public function discipline()

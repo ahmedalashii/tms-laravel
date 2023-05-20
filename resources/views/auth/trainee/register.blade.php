@@ -74,7 +74,19 @@
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
-
+                    <label for="disciplines">Select one or more disciplines that you are interested in
+                        <strong class="text-danger">*</strong>
+                    </label>
+                    <div class="form-group">
+                        @foreach ($disciplines as $discipline)
+                            <div class="form-check">
+                                <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
+                                    class="form-check-input" id="discipline-{{ $discipline->id }}">
+                                <label class="form-check-label"
+                                    for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
+                            </div>
+                        @endforeach
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <div>

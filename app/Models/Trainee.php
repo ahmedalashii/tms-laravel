@@ -63,4 +63,9 @@ class Trainee extends Authenticatable
     {
         return app("firebase.auth")->getUser($this->firebase_uid)->emailVerified;
     }
+
+    public function interested_disciplines()
+    {
+        return $this->belongsToMany(Discipline::class);
+    }
 }

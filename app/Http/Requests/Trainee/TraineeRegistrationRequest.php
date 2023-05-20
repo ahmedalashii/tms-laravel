@@ -27,6 +27,7 @@ class TraineeRegistrationRequest extends FormRequest
             'phone' => 'required|numeric|digits:10|unique:trainees',
             'address' => 'required|string|max:255',
             'gender' => 'required|string|in:male,female',
+            'disciplines' => 'required|array|min:1',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required',
             'avatar-image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
@@ -54,7 +55,8 @@ class TraineeRegistrationRequest extends FormRequest
             'phone.digits' => 'Phone must be 10 digits',
             'phone.unique' => 'Phone already exists',
             'address.required' => 'Address is required',
-            'address.string' => 'Address must be a string'
+            'address.string' => 'Address must be a string',
+            'disciplines.required' => 'At least one discipline is required to be selected',
         ];
     }
 }

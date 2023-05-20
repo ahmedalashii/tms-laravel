@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Advisor;
 
+use App\Models\Advisor;
 use App\Mail\ResetPasswordMail;
+use App\Models\AdvisorDiscipline;
 use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
@@ -54,25 +56,25 @@ class AdvisorRegisterController extends Controller
                 return back()->withInput();
             }
             $email =  $request->input('email');
-            $advisor = new \App\Models\Advisor;
+            $advisor = new Advisor;
             $advisor->firebase_uid = $createdUser->uid;
             $advisor->displayName = $request->input('name');
             $advisor->phone = $request->input('phone');
             $advisor->email = $email;
             $advisor->password = Hash::make($request->input('password'));
             $status = $advisor->save();
-            $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
-            $firebaseUser = app('firebase.auth')->getUserByEmail($email);
-            $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
-            $this->sendEmail($email, $mailable);
             // Advisor Discipline for each discipline selected
             $disciplines = $request->input('disciplines');
             foreach ($disciplines as $discipline) {
-                $advisorDiscipline = new \App\Models\AdvisorDiscipline;
+                $advisorDiscipline = new AdvisorDiscipline;
                 $advisorDiscipline->advisor_id = $advisor->id;
                 $advisorDiscipline->discipline_id = $discipline;
                 $advisorDiscipline->save();
             }
+            $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+            $firebaseUser = app('firebase.auth')->getUserByEmail($email);
+            $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+            $this->sendEmail($email, $mailable);
             if ($status) {
                 Session::flash('message', 'Advisor Created Successfully, Verify your email to login.');
                 return redirect()->route('advisor.login');

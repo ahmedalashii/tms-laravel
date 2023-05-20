@@ -12,6 +12,8 @@ class File extends Model
     use HasFactory, FirebaseStorageFileProcessing;
     protected $fillable = [
         'name',
+        'description',
+        "size",
         'firebase_file_path',
         'extension',
         'trainee_id',

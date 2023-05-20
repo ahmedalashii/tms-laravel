@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Trainee;
 
+use App\Models\Trainee;
+use App\Models\TraineeDiscipline;
 use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
@@ -30,7 +32,8 @@ class TraineeRegisterController extends Controller
 
     public function index()
     {
-        return view('auth.trainee.register');
+        $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
+        return view('auth.trainee.register', compact('disciplines'));
     }
 
     /**
@@ -56,7 +59,7 @@ class TraineeRegisterController extends Controller
                 return back()->withInput();
             }
             $email  = $request->input('email');
-            $trainee = new \App\Models\Trainee;
+            $trainee = new Trainee;
             $trainee->displayName = $request->input('name');
             $trainee->phone = $request->input('phone');
             $trainee->address = $request->input('address');
@@ -65,6 +68,14 @@ class TraineeRegisterController extends Controller
             $trainee->password = Hash::make($request->input('password'));
             $trainee->firebase_uid = $createdUser->uid;
             $status = $trainee->save();
+            // Trainee Discipline for each discipline selected
+            $disciplines = $request->input('disciplines');
+            foreach ($disciplines as $discipline) {
+                $traineeDiscipline = new TraineeDiscipline;
+                $traineeDiscipline->trainee_id = $trainee->id;
+                $traineeDiscipline->discipline_id = $discipline;
+                $traineeDiscipline->save();
+            }
             $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
             $firebaseUser = app('firebase.auth')->getUserByEmail($email);
             $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
@@ -84,6 +95,9 @@ class TraineeRegisterController extends Controller
             $file->firebase_file_path = $avatar_file_path;
             $file->extension = $avatarImage->getClientOriginalExtension();
             $file->trainee_id = $trainee->id;
+            $file->description = 'Trainee Avatar Image';
+            $size = $avatarImage->getSize();
+            $file->size = $size ? $size : 0;
             $file->save();
 
             $cvFile = $request->file('cv-file');
@@ -96,6 +110,9 @@ class TraineeRegisterController extends Controller
             $file->firebase_file_path = $cvFilePath;
             $file->extension = $cvFile->getClientOriginalExtension();
             $file->trainee_id = $trainee->id;
+            $file->description = 'Trainee CV File';
+            $size = $cvFile->getSize();
+            $file->size = $size ? $size : 0;
             $file->save();
             if ($status) {
                 Session::flash('message', 'Trainee Created Successfully, Verify your email and please wait for approval from the manager to generate for you a unique ID that you will receive in your email to login with it.');
