@@ -3,7 +3,7 @@
 @section('MainContent')
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Welcome, <span class="text-success">{{ Auth::guard('advisor')->user()->displayName }} 😎</span></h1>
+                <h1 class="mt-4">We're excited to have you on board, <span class="text-success">{{ Auth::guard('advisor')->user()->displayName }} 😎</span></h1>
 
                 <section class="mt-3 mb-3">
                     <div class="card mb-4">

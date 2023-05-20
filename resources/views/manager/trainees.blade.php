@@ -20,14 +20,16 @@
                                     <th>Address</th>
                                     <th>Gender</th>
                                     <th>Is Email Verified?</th>
+                                    <th>Is Authorized?</th>
                                     <th>CV</th>
                                     <th>Edit</th>
+                                    <th>Activate/Deactivate</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if ($trainees->isEmpty())
                                     <tr>
-                                        <td colspan="6" class="text-center">No trainees found.</td>
+                                        <td colspan="10" class="text-center">No trainees found.</td>
                                     </tr>
                                 @else
                                     @foreach ($trainees as $trainee)
@@ -50,10 +52,54 @@
                                                     @endif
                                                 </p>
                                             </td>
+                                            <td class="min-width">
+                                                <p>
+                                                    @if ($trainee->auth_id ?? false)
+                                                        Yes <b style="color: #219653;">&#10003;</b>
+                                                    @else
+                                                        No <b style="color: #d50100;">&#x2717;</b>
+                                                    @endif
+                                                </p>
                                             <td><a href="{{ $trainee->cv }}">Download
                                                     CV</a></td>
-                                            <td><a href="{{ route('manager.trainees-edit', $trainee->id) }}"
-                                                    class="btn btn-success">Edit</a>
+                                            <td>
+                                                @if ($trainee->trashed())
+                                                    <button class="btn btn-secondary rounded-full btn-hover"
+                                                        style="width: 100px; padding: 11px; cursor: not-allowed !important;"
+                                                        disabled>
+                                                        Edit
+                                                    </button>
+                                                @else
+                                                    <form action="{{ route('manager.trainees-edit', $trainee->id) }}"
+                                                        method="GET">
+                                                        @csrf
+                                                        <button class="btn btn-success btn-sm" type="submit"
+                                                            style="width: 100px; padding: 11px;">
+                                                            Edit
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($trainee->trashed())
+                                                    <form action="{{ route('manager.activate-trainee', $trainee->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <button class="btn btn-success rounded-full btn-hover"
+                                                            type="submit" style="width: 100px; padding: 11px;">
+                                                            Activate
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <form action="{{ route('manager.deactivate-trainee', $trainee->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <button class="btn btn-danger rounded-full btn-hover" type="submit"
+                                                            style="width: 100px; padding: 11px;">
+                                                            Deactivate
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
                 'email' => $email,
                 'emailVerified' => true,
                 'password' => $password,
+                'role' => 'super_manager',
                 'displayName' => $name,
                 'disabled' => false,
             ];
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
         $manager->displayName = $name;
         $manager->email = $email;
         $manager->is_active = true;
+        $manager->role = 'super_manager';
         $manager->password = Hash::make($password);
         $manager->save();
         $this->call(DisciplineSeeder::class);

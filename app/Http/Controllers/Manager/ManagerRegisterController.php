@@ -53,8 +53,11 @@ class ManagerRegisterController extends Controller
             }
             $manager = new \App\Models\Manager;
             $manager->firebase_uid = $createdUser->uid;
-            $manager->name = $request->input('name');
+            $manager->displayName = $request->input('name');
             $manager->email = $request->input('email');
+            $manager->phone = $request->input('phone');
+            $manager->address = $request->input('address');
+            $manager->role = 'manager';
             $manager->password = Hash::make($request->input('password'));
             $status = $manager->save();
             $this->auth->sendEmailVerificationLink($request->input('email'));

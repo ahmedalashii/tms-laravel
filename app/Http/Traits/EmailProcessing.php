@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Mail;
 
 trait EmailProcessing
 {
-    public function sendEmail($trainee, Mailable $mailable)
+    public function sendEmail($email, Mailable $mailable)
     {
-         Mail::to($trainee->email)->send($mailable);
+         Mail::to($email)->send($mailable);
     }
 }

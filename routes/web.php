@@ -41,6 +41,13 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::post('/reset', [TraineePasswordResetController::class, 'reset'])->name('reset');
     });
     Route::post('/logout', [TraineeLoginController::class, 'traineeLogout'])->name('logout')->middleware(['auth:trainee']);
+    
+    Route::middleware(['fireauth:trainee'])->group(function () {
+        Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
+        Route::get('/apply-for-training', [TraineeController::class, 'apply_for_training'])->name('apply-for-training');
+        Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
+        Route::get('/request-meeting', [TraineeController::class, 'request_meeting'])->name('request-meeting');
+    });
 });
 
 
@@ -87,8 +94,13 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::post('/trainees/edit/{trainee}', [ManagerController::class, 'update_trainee'])->name('trainees-update');
         Route::post('/trainees/authorize/{trainee}', [ManagerController::class, 'authorize_trainee'])->name('authorize-trainee');
         Route::post('/trainees/verify/{trainee}', [ManagerController::class, 'verify_trainee'])->name('verify-trainee');
+        Route::post('/trainees/deactivate/{trainee}', [ManagerController::class, 'deactivate_trainee'])->name('deactivate-trainee');
+        Route::post('/trainees/activate/{id}', [ManagerController::class, 'activate_trainee'])->name('activate-trainee');
         Route::get('/issues', [ManagerController::class, 'issues'])->name('issues');
         Route::get('/issue/response/{issue}', [ManagerController::class, 'issue_response'])->name('issue-response');
+        Route::get('/managers', [ManagerController::class, 'managers'])->name('managers');
+        Route::post('/managers/activate/{manager}', [ManagerController::class, 'activate_manager'])->name('activate-manager');
+        Route::post('/managers/deactivate/{manager}', [ManagerController::class, 'deactivate_manager'])->name('deactivate-manager');
     });
 });
 

@@ -21,8 +21,8 @@ class CreateTraineesTable extends Migration
             $table->string('displayName');
             $table->string('email')->unique();
             $table->string('phone');
-            $table->enum('gender', ['male', 'female']);
             $table->string('address')->nullable();
+            $table->enum('gender', ['male', 'female']);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

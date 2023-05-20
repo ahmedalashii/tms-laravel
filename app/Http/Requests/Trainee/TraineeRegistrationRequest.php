@@ -26,7 +26,6 @@ class TraineeRegistrationRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:trainees',
             'phone' => 'required|numeric|digits:10|unique:trainees',
             'address' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
             'gender' => 'required|string|in:male,female',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required',

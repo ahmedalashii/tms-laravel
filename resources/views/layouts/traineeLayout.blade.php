@@ -49,19 +49,19 @@
                             Dashboard
                         </a>
                         <hr class="sidebar-divider">
-                        <a class="nav-link" href="upload.html">
+                        <a class="nav-link" href="{{ route('trainee.upload') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-upload text-success"></i></div>
                             Upload
                         </a>
-                        <a class="nav-link" href="apply-for-training.html">
+                        <a class="nav-link" href="{{ route('trainee.apply-for-training') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             Apply For Training
                         </a>
-                        <a class="nav-link" href="attendance.html">
+                        <a class="nav-link" href="{{ route('trainee.training-attendance') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>
                             Training Attendance
                         </a>
-                        <a class="nav-link" href="request-meeting.html">
+                        <a class="nav-link" href="{{ route('trainee.request-meeting') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Request Meeting
                         </a>

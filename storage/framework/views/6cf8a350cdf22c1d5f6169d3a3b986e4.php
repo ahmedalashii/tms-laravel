@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Trainee Dashboard</title>
+    <title>TrainMaster - Trainee</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="<?php echo e(asset('css/styles.css')); ?>" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -50,19 +50,19 @@
                             Dashboard
                         </a>
                         <hr class="sidebar-divider">
-                        <a class="nav-link" href="upload.html">
+                        <a class="nav-link" href="<?php echo e(route('trainee.upload')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-upload text-success"></i></div>
                             Upload
                         </a>
-                        <a class="nav-link" href="apply-for-training.html">
+                        <a class="nav-link" href="<?php echo e(route('trainee.apply-for-training')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             Apply For Training
                         </a>
-                        <a class="nav-link" href="attendance.html">
+                        <a class="nav-link" href="<?php echo e(route('trainee.training-attendance')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>
                             Training Attendance
                         </a>
-                        <a class="nav-link" href="request-meeting.html">
+                        <a class="nav-link" href="<?php echo e(route('trainee.request-meeting')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Request Meeting
                         </a>
@@ -91,11 +91,6 @@
         </div>
     </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-        crossorigin="anonymous"></script>
-    <script src=" <?php echo e(asset('js/scripts.js')); ?> "></script>
     <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 </body>
 

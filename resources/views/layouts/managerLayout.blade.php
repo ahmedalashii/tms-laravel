@@ -14,6 +14,10 @@
 </head>
 
 <body class="sb-nav-fixed">
+    @php
+        $manager = Auth::guard('manager')->user();
+        $manager_db = \App\Models\Manager::where('firebase_uid', $manager->localId)->first();
+    @endphp
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="{{ route('manager') }}">TrainMaster</a>
@@ -64,10 +68,24 @@
                             <div class="sb-nav-link-icon"><i class="far fa-calendar-check text-success"></i></div>
                             Issues
                         </a>
+
+                        @if ($manager_db?->role == 'super_manager')
+                            <hr class="sidebar-divider">
+                            <a class="nav-link" href="{{ route('manager.managers') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-tie text-success"></i></div>
+                                Managers Authorization
+                            </a>
+                        @endif
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as: <span class="text-warning">Manager</span></div>
+                    <div class="small">Logged in as: <span class="text-warning">
+                            @if ($manager_db?->role == 'super_manager')
+                                Super Manager
+                            @else
+                                Manager
+                            @endif
+                        </span></div>
                     {{ Auth::guard('manager')->user()->displayName }}
                 </div>
             </nav>

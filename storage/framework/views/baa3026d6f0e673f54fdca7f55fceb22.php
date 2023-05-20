@@ -20,14 +20,16 @@
                                     <th>Address</th>
                                     <th>Gender</th>
                                     <th>Is Email Verified?</th>
+                                    <th>Is Authorized?</th>
                                     <th>CV</th>
                                     <th>Edit</th>
+                                    <th>Activate/Deactivate</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if($trainees->isEmpty()): ?>
                                     <tr>
-                                        <td colspan="6" class="text-center">No trainees found.</td>
+                                        <td colspan="10" class="text-center">No trainees found.</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php $__currentLoopData = $trainees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainee): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -51,10 +53,54 @@
                                                     <?php endif; ?>
                                                 </p>
                                             </td>
+                                            <td class="min-width">
+                                                <p>
+                                                    <?php if($trainee->auth_id ?? false): ?>
+                                                        Yes <b style="color: #219653;">&#10003;</b>
+                                                    <?php else: ?>
+                                                        No <b style="color: #d50100;">&#x2717;</b>
+                                                    <?php endif; ?>
+                                                </p>
                                             <td><a href="<?php echo e($trainee->cv); ?>">Download
                                                     CV</a></td>
-                                            <td><a href="<?php echo e(route('manager.trainees-edit', $trainee->id)); ?>"
-                                                    class="btn btn-success">Edit</a>
+                                            <td>
+                                                <?php if($trainee->trashed()): ?>
+                                                    <button class="btn btn-secondary rounded-full btn-hover"
+                                                        style="width: 100px; padding: 11px; cursor: not-allowed !important;"
+                                                        disabled>
+                                                        Edit
+                                                    </button>
+                                                <?php else: ?>
+                                                    <form action="<?php echo e(route('manager.trainees-edit', $trainee->id)); ?>"
+                                                        method="GET">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button class="btn btn-success btn-sm" type="submit"
+                                                            style="width: 100px; padding: 11px;">
+                                                            Edit
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if($trainee->trashed()): ?>
+                                                    <form action="<?php echo e(route('manager.activate-trainee', $trainee->id)); ?>"
+                                                        method="POST">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button class="btn btn-success rounded-full btn-hover"
+                                                            type="submit" style="width: 100px; padding: 11px;">
+                                                            Activate
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <form action="<?php echo e(route('manager.deactivate-trainee', $trainee->id)); ?>"
+                                                        method="POST">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button class="btn btn-danger rounded-full btn-hover" type="submit"
+                                                            style="width: 100px; padding: 11px;">
+                                                            Deactivate
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

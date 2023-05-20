@@ -50,7 +50,7 @@ class TraineeLoginController extends Controller
                 "id" => "required|string|exists:trainees,auth_id",
                 "password" => "required|string|min:8",
             ]);
-            $trainee = Trainee::where('auth_id', $request->id);
+            $trainee = Trainee::withTrashed()->where('auth_id', $request->id);
             if (!$trainee) {
                 Session::flash('error', 'Email not found.');
                 return back()->withInput();
@@ -68,11 +68,15 @@ class TraineeLoginController extends Controller
                 $auth->sendEmailVerificationLink($email);
                 return back()->withInput();
             }
-            $user = Trainee::where('firebase_uid', $firebaseId)->first();
+            $user = Trainee::withTrashed()->where('firebase_uid', $firebaseId)->first();
             if (!$user) {
                 throw ValidationException::withMessages([
                     $this->username() => [trans("auth.failed")],
                 ]);
+            }
+            if ($user->trashed()) {
+                Session::flash('error', 'Your account has been deactivated by the manager.');
+                return back()->withInput();
             }
             // Logout from other guards
             Auth::guard('advisor')->logout();

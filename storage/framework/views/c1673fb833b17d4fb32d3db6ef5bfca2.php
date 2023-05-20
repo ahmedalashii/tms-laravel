@@ -14,6 +14,10 @@
 </head>
 
 <body class="sb-nav-fixed">
+    <?php
+        $manager = Auth::guard('manager')->user();
+        $manager_db = \App\Models\Manager::where('firebase_uid', $manager->localId)->first();
+    ?>
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="<?php echo e(route('manager')); ?>">TrainMaster</a>
@@ -64,10 +68,24 @@
                             <div class="sb-nav-link-icon"><i class="far fa-calendar-check text-success"></i></div>
                             Issues
                         </a>
+
+                        <?php if($manager_db?->role == 'super_manager'): ?>
+                            <hr class="sidebar-divider">
+                            <a class="nav-link" href="<?php echo e(route('manager.managers')); ?>">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-tie text-success"></i></div>
+                                Managers Authorization
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as: <span class="text-warning">Manager</span></div>
+                    <div class="small">Logged in as: <span class="text-warning">
+                            <?php if($manager_db?->role == 'super_manager'): ?>
+                                Super Manager
+                            <?php else: ?>
+                                Manager
+                            <?php endif; ?>
+                        </span></div>
                     <?php echo e(Auth::guard('manager')->user()->displayName); ?>
 
                 </div>
@@ -87,11 +105,6 @@
             </footer>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
-    <script src=" <?php echo e(asset('js/scripts.js')); ?> "></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-        crossorigin="anonymous"></script>
     <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 </body>
 

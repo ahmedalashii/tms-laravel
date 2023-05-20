@@ -15,6 +15,8 @@ class Manager extends Authenticatable
         'firebase_uid',
         'displayName',
         'email',
+        'phone',
+        'address',
         'localId',
     ];
 

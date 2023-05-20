@@ -24,6 +24,8 @@ class ManagerRegistrationRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:managers',
+            'phone' => 'required|numeric|digits:10|unique:managers',
+            'address' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required',
         ];

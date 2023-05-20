@@ -64,7 +64,20 @@
                             </span>
                         @enderror
                     </div>
-
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="phone" type="phone" placeholder="+972 XX XXX XXX XXXX"
+                            name="phone" required />
+                        <label for="phone">Phone number
+                            <strong class="text-danger">*</strong>
+                        </label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="address" type="text" placeholder="Address" name="address"
+                            required />
+                        <label for="address">Address
+                            <strong class="text-danger">*</strong>
+                        </label>
+                    </div>
                     <div class="row mb-3">
                         <div>
                             <div class="form-floating mb-3 mb-md-0">

@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('displayName');
             $table->string('email')->unique();
             $table->string('password');
+            // Super Manager is the one who accepts the manager's request to join the platform
+            $table->enum('role', ['super_manager', 'manager'])->default('manager');
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
             $table->boolean('is_active')->default(false); // This will be set to true when the manager has been verified by the super manager
             $table->rememberToken();
             $table->timestamps();
