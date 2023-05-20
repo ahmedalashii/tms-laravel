@@ -16,25 +16,6 @@
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                     </div>
                 <?php endif; ?>
-
-                <?php if(Session::has('error')): ?>
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        <?php echo e(Session::get('error')); ?>
-
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    </div>
-                <?php endif; ?>
-
-                <?php if($errors->any()): ?>
-                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <?php echo e($error); ?>
-
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                <?php endif; ?>
-
                 <form method="POST" action="<?php echo e(route('trainee.login')); ?>">
                     <?php echo csrf_field(); ?>
                     <div class="form-floating mb-3">

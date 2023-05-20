@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Advisor;
 
+use App\Mail\ResetPasswordMail;
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -12,7 +15,7 @@ use App\Http\Requests\Advisor\AdvisorRegistrationRequest;
 
 class AdvisorRegisterController extends Controller
 {
-    use RegistersUsers;
+    use RegistersUsers, EmailProcessing;
     protected $auth;
 
 
@@ -50,14 +53,18 @@ class AdvisorRegisterController extends Controller
                 Session::flash('error', 'User already exists');
                 return back()->withInput();
             }
+            $email =  $request->input('email');
             $advisor = new \App\Models\Advisor;
             $advisor->firebase_uid = $createdUser->uid;
             $advisor->displayName = $request->input('name');
             $advisor->phone = $request->input('phone');
-            $advisor->email = $request->input('email');
+            $advisor->email = $email;
             $advisor->password = Hash::make($request->input('password'));
             $status = $advisor->save();
-            $this->auth->sendEmailVerificationLink($request->input('email'));
+            $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+            $firebaseUser = app('firebase.auth')->getUserByEmail($email);
+            $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+            $this->sendEmail($email, $mailable);
             // Advisor Discipline for each discipline selected
             $disciplines = $request->input('disciplines');
             foreach ($disciplines as $discipline) {

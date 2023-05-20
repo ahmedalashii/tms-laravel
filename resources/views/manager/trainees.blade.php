@@ -34,7 +34,7 @@
                                     <th>Is Email Verified?</th>
                                     <th>Is Authorized?</th>
                                     <th>CV</th>
-                                    <th>Edit</th>
+                                    {{-- <th>Edit</th> --}}
                                     <th>Activate/Deactivate</th>
                                 </tr>
                             </thead>
@@ -74,7 +74,7 @@
                                                 </p>
                                             <td><a href="{{ $trainee->cv }}">Download
                                                     CV</a></td>
-                                            <td>
+                                            {{-- <td>
                                                 @if ($trainee->trashed())
                                                     <button class="btn btn-secondary rounded-full btn-hover"
                                                         style="width: 100px; padding: 11px; cursor: not-allowed !important;"
@@ -91,7 +91,7 @@
                                                         </button>
                                                     </form>
                                                 @endif
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 @if ($trainee->trashed())
                                                     <form action="{{ route('manager.activate-trainee', $trainee->id) }}"

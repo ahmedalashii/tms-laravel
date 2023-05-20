@@ -25,18 +25,24 @@
                     data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li>
-                        <a class="nav-link text-dark" href="<?php echo e(route('logout')); ?>"
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('trainee.logout')); ?>"
                             onclick="event.preventDefault();
                                  document.getElementById('logout-form').submit();">
                             <?php echo e(__('Logout')); ?>
 
                         </a>
-                        <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" class="d-none">
+                        <form id="logout-form" action="<?php echo e(route('trainee.logout')); ?>" method="POST" class="d-none">
                             <?php echo csrf_field(); ?>
                         </form>
                     </li>
+                    <li>
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('trainee.edit')); ?>">
+                            Edit Profile
+                        </a>
+                    </li>
                 </ul>
             </li>
+
         </ul>
     </nav>
 

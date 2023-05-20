@@ -28,7 +28,7 @@
                     data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li>
-                        <a class="dropdown-item" href="{{ route('advisor.logout') }}"
+                        <a class="dropdown-item nav-link text-dark" href="{{ route('advisor.logout') }}"
                             onclick="event.preventDefault(); document.getElementById('form').submit()">Logout</a>
                         <form method="POST" action="{{ route('advisor.logout') }}" id="form">
                             @csrf

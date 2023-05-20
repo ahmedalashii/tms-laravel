@@ -50,12 +50,12 @@ class Trainee extends Authenticatable
 
     public function getAvatarAttribute()
     {
-        return $this->files()->where('name', 'like',  $this->id . '_trainee_avatar_image%')->first()?->url;
+        return $this->files()->where('name', 'like',  $this->firebase_uid . '_trainee_avatar_image%')->first()?->url;
     }
 
     public function getCvAttribute()
     {
-        return $this->files()->where('name', 'like', $this->id . '_trainee_cv%')->first()?->url;
+        return $this->files()->where('name', 'like', $this->firebase_uid . '_trainee_cv%')->first()?->url;
     }
 
 

@@ -29,7 +29,7 @@ class ManagerActivationMail extends Mailable
     {
         $app_name = config('app.name');
         return new Envelope(
-            subject: "You can now manage $app_name",
+            subject: "Hooray! 😎 You are now a manager of $app_name",
         );
     }
 

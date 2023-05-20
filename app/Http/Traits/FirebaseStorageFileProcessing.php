@@ -19,6 +19,20 @@ trait FirebaseStorageFileProcessing
     }
 
 
+    public function getUploadedFirebaseFileReferenceByName($name){
+        $bucket = app('firebase.storage')->getBucket();
+        $object = $bucket->object($name);
+        return $object;
+    }
+
+
+    public function deleteFirebaseStorageFile($file_path)
+    {
+        $bucket = app('firebase.storage')->getBucket();
+        $object = $bucket->object($file_path);
+        $object->delete();
+    }
+
     public function getUploadedFirebaseFileURL($file_path)
     {
         $bucket = app('firebase.storage')->getBucket();

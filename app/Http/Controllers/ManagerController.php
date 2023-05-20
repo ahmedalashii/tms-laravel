@@ -156,7 +156,7 @@ class ManagerController extends Controller
         ]);
         // Check before update firebase user if the email or phone number is used before and not by the same user
         $auth = app('firebase.auth');
-        $firebaseUser = $auth->getUserByEmail($trainee->email) ?? app('firebase.auth')->getUserByPhoneNumber($trainee->phone);
+        $firebaseUser = $auth->getUserByEmail($trainee->email);
         if ($firebaseUser) {
             if ($firebaseUser->uid != $trainee->firebase_uid) {
                 return redirect()->back()->with(['fail' => 'Email or Phone Number is already taken!', 'type' => 'error']);

@@ -29,8 +29,8 @@ class TraineeRegistrationRequest extends FormRequest
             'gender' => 'required|string|in:male,female',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required',
-            'avatar-image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'cv-file' => 'required|mimes:pdf,doc,docx|max:2048',
+            'avatar-image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'cv-file' => 'required|mimes:pdf,doc,docx,txt,rtf,odt,ods,odp,odg,odc,odb,xls,xlsx,ppt,pptx',
         ];
     }
 

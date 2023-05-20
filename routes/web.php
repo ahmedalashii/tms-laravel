@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\ManagerController;
@@ -41,8 +42,10 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::post('/reset', [TraineePasswordResetController::class, 'reset'])->name('reset');
     });
     Route::post('/logout', [TraineeLoginController::class, 'traineeLogout'])->name('logout')->middleware(['auth:trainee']);
-    
+
     Route::middleware(['fireauth:trainee'])->group(function () {
+        Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
+        Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
         Route::get('/apply-for-training', [TraineeController::class, 'apply_for_training'])->name('apply-for-training');
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
@@ -69,7 +72,7 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
         Route::get('/trainees-requests', [AdvisorController::class, 'trainees_requests'])->name('trainees-requests');
         Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
         Route::get('/notifications', [AdvisorController::class, 'notifications'])->name('notifications');
-        Route::get('/trainees' , [AdvisorController::class, 'trainees'])->name('trainees');
+        Route::get('/trainees', [AdvisorController::class, 'trainees'])->name('trainees');
     });
 });
 
@@ -90,8 +93,9 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::get('/training-requests', [ManagerController::class, 'training_requests'])->name('training-requests');
         Route::get('/authorize-trainees', [ManagerController::class, 'authorize_trainees'])->name('authorize-trainees');
         Route::get('/trainees', [ManagerController::class, 'trainees'])->name('trainees');
-        Route::get('/trainees/edit/{trainee}', [ManagerController::class, 'edit_trainee'])->name('trainees-edit');
-        Route::post('/trainees/edit/{trainee}', [ManagerController::class, 'update_trainee'])->name('trainees-update');
+        //* The manger has no access to edit trainees info (Only the trainee can edit his/her info). However, the manager can authorize, send email verification, deactivate and activate trainees.
+        // Route::get('/trainees/edit/{trainee}', [ManagerController::class, 'edit_trainee'])->name('trainees-edit');
+        // Route::post('/trainees/edit/{trainee}', [ManagerController::class, 'update_trainee'])->name('trainees-update');
         Route::post('/trainees/authorize/{trainee}', [ManagerController::class, 'authorize_trainee'])->name('authorize-trainee');
         Route::post('/trainees/verify/{trainee}', [ManagerController::class, 'verify_trainee'])->name('verify-trainee');
         Route::post('/trainees/deactivate/{trainee}', [ManagerController::class, 'deactivate_trainee'])->name('deactivate-trainee');

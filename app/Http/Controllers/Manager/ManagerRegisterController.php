@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Manager;
 
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
@@ -13,7 +15,7 @@ use App\Http\Requests\Manager\ManagerRegistrationRequest;
 
 class ManagerRegisterController extends Controller
 {
-    use RegistersUsers;
+    use RegistersUsers, EmailProcessing;
     protected $auth;
 
 
@@ -51,16 +53,20 @@ class ManagerRegisterController extends Controller
                 Session::flash('error', 'User already exists');
                 return back()->withInput();
             }
+            $email = $request->input('email');
             $manager = new \App\Models\Manager;
             $manager->firebase_uid = $createdUser->uid;
             $manager->displayName = $request->input('name');
-            $manager->email = $request->input('email');
+            $manager->email = $email;
             $manager->phone = $request->input('phone');
             $manager->address = $request->input('address');
             $manager->role = 'manager';
             $manager->password = Hash::make($request->input('password'));
             $status = $manager->save();
-            $this->auth->sendEmailVerificationLink($request->input('email'));
+            $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+            $firebaseUser = app('firebase.auth')->getUserByEmail($email);
+            $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+            $this->sendEmail($email, $mailable);
             if ($status) {
                 Session::flash('message', 'Manager Created Successfully, Verify your email and wait for the super manager to activate your account.');
                 return redirect()->route('manager.login');

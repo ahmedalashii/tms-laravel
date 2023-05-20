@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Trainee;
 
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
-use App\Http\Traits\FirebaseStorageFileProcessing;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Kreait\Firebase\Exception\FirebaseException;
+use App\Http\Traits\FirebaseStorageFileProcessing;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 use App\Http\Requests\Trainee\TraineeRegistrationRequest;
 
 class TraineeRegisterController extends Controller
 {
 
-    use RegistersUsers, FirebaseStorageFileProcessing;
+    use RegistersUsers, FirebaseStorageFileProcessing, EmailProcessing;
     protected $auth;
 
 
@@ -53,19 +55,27 @@ class TraineeRegisterController extends Controller
                 Session::flash('error', 'User already exists');
                 return back()->withInput();
             }
+            $email  = $request->input('email');
             $trainee = new \App\Models\Trainee;
             $trainee->displayName = $request->input('name');
             $trainee->phone = $request->input('phone');
             $trainee->address = $request->input('address');
             $trainee->gender = $request->input('gender');
-            $trainee->email = $request->input('email');
+            $trainee->email =   $email;
             $trainee->password = Hash::make($request->input('password'));
             $trainee->firebase_uid = $createdUser->uid;
             $status = $trainee->save();
-            $this->auth->sendEmailVerificationLink($request->input('email'));
+            $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+            $firebaseUser = app('firebase.auth')->getUserByEmail($email);
+            $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+            $this->sendEmail($email, $mailable);
             $avatarImage = $request->file('avatar-image');
             // Using firebase storage to upload files and make a record for File in the database linked with the trainee
-            $avatar_file_name = $trainee->id . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
+            $avatar_file_name = $trainee->firebase_uid . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
+            // $oldReference = $this->getUploadedFirebaseFileReferenceByName($avatar_file_name);
+            // if ($oldReference->exists()) {
+            //     $oldReference->delete();
+            // }
             $avatar_file_path = 'Trainee/Images/' . $avatar_file_name;
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
             // Create a file record in the database
@@ -77,7 +87,7 @@ class TraineeRegisterController extends Controller
             $file->save();
 
             $cvFile = $request->file('cv-file');
-            $cvFileName = $trainee->id . '_trainee_cv_file.' . $cvFile->getClientOriginalExtension();
+            $cvFileName = $trainee->firebase_uid . '_trainee_cv_file.' . $cvFile->getClientOriginalExtension();
             $cvFilePath = 'Trainee/CVs/' . $cvFileName;
             $this->uploadFirebaseStorageFile($cvFile, $cvFilePath);
             // Create a file record in the database

@@ -34,7 +34,7 @@
                                     <th>Is Email Verified?</th>
                                     <th>Is Authorized?</th>
                                     <th>CV</th>
-                                    <th>Edit</th>
+                                    
                                     <th>Activate/Deactivate</th>
                                 </tr>
                             </thead>
@@ -75,24 +75,7 @@
                                                 </p>
                                             <td><a href="<?php echo e($trainee->cv); ?>">Download
                                                     CV</a></td>
-                                            <td>
-                                                <?php if($trainee->trashed()): ?>
-                                                    <button class="btn btn-secondary rounded-full btn-hover"
-                                                        style="width: 100px; padding: 11px; cursor: not-allowed !important;"
-                                                        disabled>
-                                                        Edit
-                                                    </button>
-                                                <?php else: ?>
-                                                    <form action="<?php echo e(route('manager.trainees-edit', $trainee->id)); ?>"
-                                                        method="GET">
-                                                        <?php echo csrf_field(); ?>
-                                                        <button class="btn btn-success btn-sm" type="submit"
-                                                            style="width: 100px; padding: 11px;">
-                                                            Edit
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            </td>
+                                            
                                             <td>
                                                 <?php if($trainee->trashed()): ?>
                                                     <form action="<?php echo e(route('manager.activate-trainee', $trainee->id)); ?>"

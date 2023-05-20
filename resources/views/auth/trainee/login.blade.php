@@ -15,23 +15,6 @@
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                     </div>
                 @endif
-
-                @if (Session::has('error'))
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        {{ Session::get('error') }}
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    @foreach ($errors->all() as $error)
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            {{ $error }}
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    @endforeach
-                @endif
-
                 <form method="POST" action="{{ route('trainee.login') }}">
                     @csrf
                     <div class="form-floating mb-3">

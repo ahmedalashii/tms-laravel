@@ -34,7 +34,7 @@
                                     <th>Gender</th>
                                     <th>Is Email Verified?</th>
                                     <th>CV</th>
-                                    <th>Authorize</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
