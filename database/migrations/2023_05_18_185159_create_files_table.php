@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreign('manager_id')->references('id')->on('managers')->onDelete('cascade');
             $table->unsignedBigInteger('advisor_id')->nullable();
             $table->foreign('advisor_id')->references('id')->on('advisors')->onDelete('cascade');
+            $table->unsignedBigInteger('training_program_id')->nullable();
+            $table->foreign('training_program_id')->references('id')->on('training_programs')->onDelete('cascade');
             $table->timestamps();
         });
     }

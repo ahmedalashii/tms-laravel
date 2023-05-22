@@ -25,6 +25,7 @@ class FirebaseAuth
       if ($verify == 0) {
         return redirect()->route('verify');
       } else if ($session_guard != $guard) {
+        info('asd');
         return redirect("$guard/login");
       } else {
         Auth::guard($guard)->loginUsingId($uid);

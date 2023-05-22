@@ -96,6 +96,7 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::get('/disciplines', [ManagerController::class, 'disciplines'])->name('disciplines');
         Route::get('/training-programs', [ManagerController::class, 'training_programs'])->name('training-programs');
         Route::get('/training-programs/create', [ManagerController::class, 'create_training_program'])->name('create-training-program');
+        Route::post('/training-programs/store', [ManagerController::class, 'store_training_program'])->name('store-training-program');
         Route::get('/training-programs/edit/{trainingProgram}', [ManagerController::class, 'edit_training_program'])->name('edit-training-program');
         Route::post('/training-programs/deactivate/{trainingProgram}', [ManagerController::class, 'deactivate_training_program'])->name('deactivate-training-program');
         Route::post('/training-programs/activate/{id}', [ManagerController::class, 'activate_training_program'])->name('activate-training-program');

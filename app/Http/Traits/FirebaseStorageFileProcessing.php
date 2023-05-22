@@ -2,9 +2,6 @@
 
 namespace App\Http\Traits;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-
 trait FirebaseStorageFileProcessing
 {
     public function uploadFirebaseStorageFile($file, $file_path)

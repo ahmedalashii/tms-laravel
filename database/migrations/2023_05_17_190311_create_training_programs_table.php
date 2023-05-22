@@ -19,8 +19,11 @@ return new class extends Migration
             $table->unsignedBigInteger('discipline_id');
             $table->foreign('discipline_id')->references('id')->on('disciplines')->onDelete('cascade');
             $table->integer('duration');
+            $table->enum('duration_unit', ['days', 'weeks', 'months', 'years'])->default('days');
+            $table->string('location')->nullable();
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('fees')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

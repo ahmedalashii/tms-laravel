@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
