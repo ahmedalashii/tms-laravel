@@ -6,9 +6,9 @@ RUN mkdir -p /run/nginx
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-ENV PORT 8080
-ENV HOST 0.0.0.0
-EXPOSE 8080
+# ENV PORT 8080
+# ENV HOST 0.0.0.0
+# EXPOSE 8080
 
 RUN mkdir -p /app
 COPY . /app
