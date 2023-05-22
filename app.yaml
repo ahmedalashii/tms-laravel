@@ -83,3 +83,5 @@ env_variables:
   FIREBASE_DATABASE_URL: "https://laraveltms-b022f-default-rtdb.firebaseio.com/"
   FIREBASE_STORAGE_BUCKET: "laraveltms-b022f.appspot.com"
   FIREBASE_CREDENTIALS: "resources/credentials/firebase_credentials.json"
+options:
+  logging: CLOUD_LOGGING_ONLY
