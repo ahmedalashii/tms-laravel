@@ -3,9 +3,8 @@
 @section('MainContent')
     @php
         $traineeFirbase = Auth::guard('trainee')->user();
-        $trainee = \App\Models\Trainee::with('disciplines')
-            ->where('firebase_uid', $traineeFirbase->localId)
-            ->first();
+        $trainee = \App\Models\Trainee::where('firebase_uid', $traineeFirbase->localId)->first();
+        $trainee->load('disciplines');
     @endphp
 
     <main>
@@ -86,21 +85,24 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label for="disciplines">Select one or more disciplines that you are interested in
-                        <strong class="text-danger">*</strong>
-                    </label>
-                    <br>
-                    <div class="form-group">
-                        @foreach ($disciplines as $discipline)
-                            <div class="form-check">
-                                <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
-                                    class="form-check-input" id="discipline-{{ $discipline->id }}"
-                                    @if ($trainee->hasDiscipline($discipline->id)) checked @endif>
-                                <label class="form-check-label"
-                                    for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
-                            </div>
-                        @endforeach
+                    <div class="col-md-6">
+                        <label for="disciplines">Select one or more disciplines that you are interested in
+                            <strong class="text-danger">*</strong>
+                        </label>
+                        <br>
+                        <div class="form-group">
+                            @foreach ($disciplines as $discipline)
+                                <div class="form-check">
+                                    <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
+                                        class="form-check-input" id="discipline-{{ $discipline->id }}"
+                                        @if ($trainee->hasDiscipline($discipline->id)) checked @endif>
+                                    <label class="form-check-label"
+                                        for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col-md-6">

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use App\Models\Trainee;
+use App\Models\Discipline;
 use Illuminate\Http\Request;
+use App\Models\TrainingProgram;
 use App\Mail\ManagerActivationMail;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +27,38 @@ class ManagerController extends Controller
         return view('manager.training_requests');
     }
 
+
+    public function disciplines()
+    {
+        return view('manager.disciplines');
+    }
+
+
+    public function training_programs(Request $request)
+    {
+        // Get all training programs that their discipline is not soft deleted
+        $paginate = 5;
+        $discipline_id = $request->query('discipline');
+        if ($discipline_id) {
+            $training_programs = TrainingProgram::withTrashed()->where('discipline_id', $discipline_id)->paginate($paginate);
+        } else {
+            $training_programs = TrainingProgram::withTrashed()->paginate($paginate);
+        }
+        $disciplines = Discipline::select('id', 'name')->get();
+        return view('manager.training_programs', compact('training_programs', 'disciplines'));
+    }
+
+    public function create_training_program()
+    {
+        return view('manager.create_training_program');
+    }
+
+
+    public function edit_training_program(TrainingProgram $trainingProgram)
+    {
+        return view('manager.edit_training_program', compact('trainingProgram'));
+    }
+
     public function authorize_trainees(Request $request)
     {
         $search_value = $request->search;
@@ -37,7 +71,7 @@ class ManagerController extends Controller
         })->paginate($paginate);
         return view('manager.authorize_trainees', compact('trainees'));
     }
-
+    
     public function trainees(Request $request)
     {
         $search_value = $request->search;
@@ -103,6 +137,18 @@ class ManagerController extends Controller
         $manager->is_active = false;
         $status = $manager->save();
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Manager Deactivated Successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
+    public function deactivate_training_program(TrainingProgram $trainingProgram){
+        $destroy = $trainingProgram->delete();
+        return redirect()->back()->with([$destroy ? 'success' : 'fail' => $destroy ?  'Training Program Deactivated Successfully' : 'Something is wrong!', 'type' => $destroy ? 'success' : 'error']);
+    }
+
+
+    public function activate_training_program($id){
+        $status = TrainingProgram::onlyTrashed()->find($id)->restore();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Program Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
     public function verify_trainee(Trainee $trainee)

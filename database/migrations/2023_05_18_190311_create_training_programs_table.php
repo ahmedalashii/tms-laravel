@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('training_programs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description');
+            $table->string("thumbnail")->nullable();
             $table->unsignedBigInteger('discipline_id');
             $table->foreign('discipline_id')->references('id')->on('disciplines')->onDelete('cascade');
-            $table->string('description');
             $table->integer('duration');
             $table->date('start_date');
             $table->date('end_date');

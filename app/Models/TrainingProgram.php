@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
-use App\Models\Advisor;
-use App\Models\Trainee;
+use App\Models\Discipline;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TrainingProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    public function advisor()
-    {
-        return $this->belongsTo(Advisor::class);
-    }
+    protected $fillable = [
+        'name',
+        'description',
+        'thumbnail',
+        'discipline_id',
+        'duration',
+        'start_date',
+        'end_date',
+    ];
 
-    public function trainee()
+    public function discipline()
     {
-        return $this->belongsTo(Trainee::class);
+        return $this->belongsTo(Discipline::class);
     }
 }

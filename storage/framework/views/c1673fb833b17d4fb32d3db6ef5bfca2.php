@@ -58,18 +58,22 @@
                         </a>
                         
 
-                        <a class="nav-link" href="./disciplines.html">
+                        <a class="nav-link" href="<?php echo e(route('manager.disciplines')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Disciplines
                         </a>
 
                         
 
-                        <a class="nav-link" href="./training-programs.html">
+                        <a class="nav-link" href="<?php echo e(route('manager.training-programs')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Training Programs
                         </a>
 
+                        <a class="nav-link" href="<?php echo e(route('manager.create-training-program')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Add New Training Program
+                        </a>
 
                         <a class="nav-link" href="<?php echo e(route('manager.authorize-trainees')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-plus text-success"></i></div>

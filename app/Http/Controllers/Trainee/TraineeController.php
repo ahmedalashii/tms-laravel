@@ -73,7 +73,7 @@ class TraineeController extends Controller
             }
             $avatarImage = request()->file('avatar-image');
             // Using firebase storage to upload files and make a record for File in the database linked with the trainee
-            $avatar_file_name = $trainee->id . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
+            $avatar_file_name = $trainee->firebase_uid . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
             $avatar_file_path = 'Trainee/Images/' . $avatar_file_name;
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
         }

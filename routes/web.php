@@ -1,6 +1,7 @@
 <?php
 
 use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdvisorController;
 use App\Http\Controllers\ManagerController;
@@ -92,8 +93,14 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
     Route::middleware(['fireauth:manager'])->group(function () {
         Route::get('/training-requests', [ManagerController::class, 'training_requests'])->name('training-requests');
         Route::get('/authorize-trainees', [ManagerController::class, 'authorize_trainees'])->name('authorize-trainees');
+        Route::get('/disciplines', [ManagerController::class, 'disciplines'])->name('disciplines');
+        Route::get('/training-programs', [ManagerController::class, 'training_programs'])->name('training-programs');
+        Route::get('/training-programs/create', [ManagerController::class, 'create_training_program'])->name('create-training-program');
+        Route::get('/training-programs/edit/{trainingProgram}', [ManagerController::class, 'edit_training_program'])->name('edit-training-program');
+        Route::post('/training-programs/deactivate/{trainingProgram}', [ManagerController::class, 'deactivate_training_program'])->name('deactivate-training-program');
+        Route::post('/training-programs/activate/{id}', [ManagerController::class, 'activate_training_program'])->name('activate-training-program');
         Route::get('/trainees', [ManagerController::class, 'trainees'])->name('trainees');
-        //* The manger has no access to edit trainees info (Only the trainee can edit his/her info). However, the manager can authorize, send email verification, deactivate and activate trainees.
+        //* The manger for now has no access to edit trainees info (Only the trainee can edit his/her info). However, the manager can authorize, send email verification, deactivate and activate trainees.
         // Route::get('/trainees/edit/{trainee}', [ManagerController::class, 'edit_trainee'])->name('trainees-edit');
         // Route::post('/trainees/edit/{trainee}', [ManagerController::class, 'update_trainee'])->name('trainees-update');
         Route::post('/trainees/authorize/{trainee}', [ManagerController::class, 'authorize_trainee'])->name('authorize-trainee');
