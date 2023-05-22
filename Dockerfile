@@ -9,6 +9,7 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /app
 COPY . /app
 
+
 EXPOSE 8080
 ENV PORT 443
 
