@@ -60,12 +60,13 @@ env_variables:
   APP_KEY: "base64:L52FVmv2f8N4VIatk05NIsVA06F0PsFq84k2tR19WVw="
   APP_DEBUG: false
   SESSION_LIFETIME: 1440
-  # DB_CONNECTION: mysql
-  # DB_HOST: 34.66.138.155
-  # DB_PORT: 3306
-  # DB_DATABASE: tms_cloud
-  # DB_USERNAME: root
-  # DB_PASSWORD: A7med1234
+  PORT: 8080
+  DB_CONNECTION: mysql
+  DB_HOST: 34.66.138.155
+  DB_PORT: 3306
+  DB_DATABASE: tms_cloud
+  DB_USERNAME: root
+  DB_PASSWORD: A7med1234
 
   # MAIL_MAILER=smtp
   # MAIL_HOST=mailhog
