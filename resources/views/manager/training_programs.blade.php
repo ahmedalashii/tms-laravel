@@ -46,6 +46,9 @@
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Duration</th>
+                                    <th>Discipline</th>
+                                    <th>Location</th>
+                                    <th>Fees</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Edit</th>
@@ -58,7 +61,17 @@
                                         <tr>
                                             <td>{{ $training_program->name }}</td>
                                             <td>{{ $training_program->description }}</td>
-                                            <td>{{ $training_program->duration }} Hours</td>
+                                            <td>{{ $training_program->duration }} {{ $training_program->duration_unit }}
+                                            </td>
+                                            <td>{{ $training_program->discipline->name }}</td>
+                                            <td>{{ $training_program->location }}</td>
+                                            <td>
+                                                @if ($training_program->fees)
+                                                    {{ $training_program->fees }} ₪
+                                                @else
+                                                    <b style="color: green">Free</b>
+                                                @endif
+                                            </td>
                                             <td>{{ $training_program->start_date }}</td>
                                             <td>{{ $training_program->end_date }}</td>
                                             <td>

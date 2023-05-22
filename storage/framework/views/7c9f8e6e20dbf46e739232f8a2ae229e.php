@@ -51,48 +51,48 @@
     }
 </style>
 
-@extends('layouts.managerLayout')
-@section('MainContent')
+
+<?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4"><span class="text-success">{{ $trainingProgram->name }}</span></h1>
+            <h1 class="mt-4 mb-4"><span class="text-success"><?php echo e($trainingProgram->name); ?></span></h1>
             <form action="" class="mt-2 mb-4">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="form-group mb-2">
                     <label for="banner_input">Banner image</label>
                     <div class="banner_input shadow-sm">
-                        <img id="banner_input-image" src="{{ $trainingProgram->thumbnail }}" alt="">
+                        <img id="banner_input-image" src="<?php echo e($trainingProgram->thumbnail); ?>" alt="">
                         <label for="banner_input" class="banner_input-label fs-1">+</label>
                         <input type="file" accept="image/*" class="d-none" id="banner_input" name="thumbnail">
                     </div>
                 </div>
                 <div class="form-group mb-2">
                     <label for="name">Name <b style="color: #d50100">*</b></label>
-                    <input type="text" class="form-control" id="name" value="{{ $trainingProgram->name }}"
+                    <input type="text" class="form-control" id="name" value="<?php echo e($trainingProgram->name); ?>"
                         name="name" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="description">Description <b style="color: #d50100">*</b></label>
-                    <input type="email" class="form-control" id="description" value="{{ $trainingProgram->description }}"
+                    <input type="email" class="form-control" id="description" value="<?php echo e($trainingProgram->description); ?>"
                         name="description" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="duration">Duration <b style="color: #d50100">*</b></label>
-                    <input type="text" class="form-control" id="duration" value="{{ $trainingProgram->duration }}"
+                    <input type="text" class="form-control" id="duration" value="<?php echo e($trainingProgram->duration); ?>"
                         name="duration" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="start-date">Start Date <b style="color: #d50100">*</b></label>
-                    <input type="date" class="form-control" id="start-date" value="{{ $trainingProgram->start_date }}"
+                    <input type="date" class="form-control" id="start-date" value="<?php echo e($trainingProgram->start_date); ?>"
                         name="start_date" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="end-date">End Date <b style="color: #d50100">*</b></label>
-                    <input type="date" class="form-control" id="end-date" value="{{ $trainingProgram->end_date }}"
+                    <input type="date" class="form-control" id="end-date" value="<?php echo e($trainingProgram->end_date); ?>"
                         name="end_date" required>
                 </div>
 
@@ -139,4 +139,6 @@
             })
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/edit_training_program.blade.php ENDPATH**/ ?>

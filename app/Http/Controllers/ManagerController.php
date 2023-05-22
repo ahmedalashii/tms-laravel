@@ -80,13 +80,15 @@ class ManagerController extends Controller
         $trainingProgram->duration = $data['duration'];
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
-        $status = $trainingProgram->save();
         // Upload Thumbnail
         $thumbnailImage = $request->file('thumbnail');
         // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
         $thumbnail_file_name = $data['name'] . '_' . time() . '.' . $thumbnailImage->getClientOriginalExtension();
         $thumbnail_file_path = 'TrainingProgram/Thumbnails/' . $thumbnail_file_name;
         $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
+        $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
+        $status = $trainingProgram->save();
+
         // Create a file record in the database
         $file = new \App\Models\File;
         $file->name = $thumbnail_file_name;
@@ -103,7 +105,9 @@ class ManagerController extends Controller
 
     public function edit_training_program(TrainingProgram $trainingProgram)
     {
-        return view('manager.edit_training_program', compact('trainingProgram'));
+        $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
+        $duration_units = ['days' => 'Days', 'weeks' => 'Weeks', 'months' => 'Months', 'years' => 'Years'];
+        return view('manager.edit_training_program', compact('trainingProgram', 'disciplines', 'duration_units'));
     }
 
     public function authorize_trainees(Request $request)

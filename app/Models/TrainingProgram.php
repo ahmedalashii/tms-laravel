@@ -14,9 +14,12 @@ class TrainingProgram extends Model
     protected $fillable = [
         'name',
         'description',
-        'thumbnail',
+        'thumbnail_file_name',
+        'location',
+        'fees',
         'discipline_id',
         'duration',
+        'duration_unit',
         'start_date',
         'end_date',
     ];
@@ -24,5 +27,15 @@ class TrainingProgram extends Model
     public function discipline()
     {
         return $this->belongsTo(Discipline::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
+    public function getThumbnailAttribute()
+    {
+        return $this->files()->where('name', 'like', $this->thumbnail_file_name . '%')->first()?->url;
     }
 }

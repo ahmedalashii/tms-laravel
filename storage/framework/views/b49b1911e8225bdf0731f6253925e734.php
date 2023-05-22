@@ -45,6 +45,9 @@
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Duration</th>
+                                    <th>Discipline</th>
+                                    <th>Location</th>
+                                    <th>Fees</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Edit</th>
@@ -57,7 +60,18 @@
                                         <tr>
                                             <td><?php echo e($training_program->name); ?></td>
                                             <td><?php echo e($training_program->description); ?></td>
-                                            <td><?php echo e($training_program->duration); ?> Hours</td>
+                                            <td><?php echo e($training_program->duration); ?> <?php echo e($training_program->duration_unit); ?>
+
+                                            </td>
+                                            <td><?php echo e($training_program->discipline->name); ?></td>
+                                            <td><?php echo e($training_program->location); ?></td>
+                                            <td>
+                                                <?php if($training_program->fees): ?>
+                                                    <?php echo e($training_program->fees); ?> ₪
+                                                <?php else: ?>
+                                                    <b style="color: green">Free</b>
+                                                <?php endif; ?>
+                                            </td>
                                             <td><?php echo e($training_program->start_date); ?></td>
                                             <td><?php echo e($training_program->end_date); ?></td>
                                             <td>

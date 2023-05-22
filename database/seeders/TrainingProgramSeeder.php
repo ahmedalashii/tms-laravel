@@ -14,6 +14,8 @@ class TrainingProgramSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = \Faker\Factory::create();
+
         $disciplines = [
             'Web Development',
             'Mobile Development',
@@ -276,6 +278,9 @@ class TrainingProgramSeeder extends Seeder
                     'description' => $program['description'],
                     'discipline_id' => $disciplineModel->id,
                     'duration' => rand(1, 5),
+                    'duration_unit' => ['days', 'weeks', 'months', 'years'][rand(0, 3)],
+                    'location' => $faker->address(),
+                    'fees' => rand(0, 100),
                     'start_date' => now(),
                     'end_date' => now()->addDays(rand(1, 30)),
                 ]);
