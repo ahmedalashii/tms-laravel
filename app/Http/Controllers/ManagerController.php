@@ -28,9 +28,67 @@ class ManagerController extends Controller
     }
 
 
-    public function disciplines()
+    public function disciplines(Request $request)
     {
-        return view('manager.disciplines');
+        $paginate = 5;
+        $search_value = $request->query('search');
+        $disciplines = Discipline::withTrashed()->where(function ($query) use ($search_value) {
+            $query->where('name', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('description', 'LIKE', '%' . $search_value . '%');
+        })->paginate($paginate);
+        return view('manager.disciplines', compact('disciplines'));
+    }
+
+
+    public function create_discipline()
+    {
+        return view('manager.create_discipline');
+    }
+
+    public function store_discipline(Request $request)
+    {
+        // name, description
+        $data = $request->validate([
+            'name' => 'required|string|max:255|unique:disciplines,name',
+            'description' => 'required|string|max:255',
+        ]);
+        $discipline = new Discipline;
+        $discipline->name = $data['name'];
+        $discipline->description = $data['description'];
+        $status = $discipline->save();
+        return redirect()->route('manager.disciplines')->with([$status ? 'success' : 'fail' => $status ? 'Discipline Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
+    public function edit_discipline(Discipline $discipline)
+    {
+        return view('manager.edit_discipline', compact('discipline'));
+    }
+
+    public function update_discipline(Discipline $discipline)
+    {
+        // name, description
+        $data = request()->validate([
+            'name' => 'required|string|max:255|unique:disciplines,name,' . $discipline->id,
+            'description' => 'required|string|max:255',
+        ]);
+        $discipline->name = $data['name'];
+        $discipline->description = $data['description'];
+        $status = $discipline->save();
+        return redirect()->route('manager.disciplines')->with([$status ? 'success' : 'fail' => $status ? 'Discipline Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function deactivate_discipline(Discipline $discipline)
+    {
+        $destroy = $discipline->delete();
+        return redirect()->back()->with([$destroy ? 'success' : 'fail' => $destroy ?  'Discipline Deactivated Successfully' : 'Something is wrong!', 'type' => $destroy ? 'success' : 'error']);
+    }
+
+
+    public function activate_discipline($id)
+    {
+        $status = Discipline::onlyTrashed()->find($id)->restore();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Discipline Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 
@@ -39,10 +97,29 @@ class ManagerController extends Controller
         // Get all training programs that their discipline is not soft deleted
         $paginate = 5;
         $discipline_id = $request->query('discipline');
+        $search_value = $request->query('search');
         if ($discipline_id) {
-            $training_programs = TrainingProgram::withTrashed()->where('discipline_id', $discipline_id)->paginate($paginate);
+            $training_programs = TrainingProgram::withTrashed()->where('discipline_id', $discipline_id)->where(function ($query) use ($search_value) {
+                $query->where('name', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('description', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('location', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('fees', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('start_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('end_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration_unit', 'LIKE', '%' . $search_value . '%');
+            })->paginate($paginate);
         } else {
-            $training_programs = TrainingProgram::withTrashed()->paginate($paginate);
+            $training_programs = TrainingProgram::withTrashed()->where(function ($query) use ($search_value) {
+                $query->where('name', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('description', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('location', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('fees', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('start_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('end_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration_unit', 'LIKE', '%' . $search_value . '%');
+            })->paginate($paginate);
         }
         $disciplines = Discipline::select('id', 'name')->get();
         return view('manager.training_programs', compact('training_programs', 'disciplines'));
@@ -99,7 +176,7 @@ class ManagerController extends Controller
         $size = $thumbnailImage->getSize();
         $file->size = $size ? $size : 0;
         $file->save();
-        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Program Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        return redirect()->route('manager.training_programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 
@@ -161,7 +238,7 @@ class ManagerController extends Controller
             $file->save();
         }
         $status = $trainingProgram->save();
-        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        return redirect()->route('manager.training_programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 

@@ -11,9 +11,9 @@
                         Training Programs Information
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <form method="GET" action="{{ route('manager.training-programs') }}">
+                        <form method="GET" action="{{ route('manager.training-programs') }}">
+                            <div class="row">
+                                <div class="col-md-4">
                                     <label for="gender">Filter based on discipline</label>
                                     <div class="row">
                                         <div class="col-md-10">
@@ -32,14 +32,25 @@
                                             <button type="submit" class="btn btn-success">Filter</button>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
+                                </div>
 
-                            <div class="col-md-8 d-flex justify-content-end align-items-end pb-3">
-                                <a class="btn btn-success" href="{{ route('manager.create-training-program') }}">Add New
-                                    Training Program</a>
+                                <div class="col-md-8 d-flex justify-content-end align-items-end pb-3">
+                                    <a class="btn btn-success" href="{{ route('manager.create-training-program') }}">Add New
+                                        Training Program</a>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <input type="search" class="form-control" placeholder="Search for training programs"
+                                        aria-label="Search" name="search" value="{{ request()->query('search') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-dark" type="submit">Search</button>
+                                </div>
+                            </div>
+                            <br>
+                        </form>
+
                         <table class="table table-striped table-bordered">
                             <thead class="table-dark">
                                 <tr>
@@ -119,7 +130,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="6" class="text-center">No Training Programs Found</td>
+                                        <td colspan="10" class="text-center">No Training Programs Found</td>
                                     </tr>
                                 @endif
                             </tbody>

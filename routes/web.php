@@ -94,6 +94,12 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::get('/training-requests', [ManagerController::class, 'training_requests'])->name('training-requests');
         Route::get('/authorize-trainees', [ManagerController::class, 'authorize_trainees'])->name('authorize-trainees');
         Route::get('/disciplines', [ManagerController::class, 'disciplines'])->name('disciplines');
+        Route::get('/disciplines/create', [ManagerController::class, 'create_discipline'])->name('create-discipline');
+        Route::post('/disciplines/store', [ManagerController::class, 'store_discipline'])->name('store-discipline');
+        Route::get('/disciplines/edit/{discipline}', [ManagerController::class, 'edit_discipline'])->name('edit-discipline');
+        Route::post('/disciplines/store/{discipline}', [ManagerController::class, 'update_discipline'])->name('update-discipline');
+        Route::post('/disciplines/deactivate/{discipline}', [ManagerController::class, 'deactivate_discipline'])->name('deactivate-discipline');
+        Route::post('/disciplines/activate/{id}', [ManagerController::class, 'activate_discipline'])->name('activate-discipline');
         Route::get('/training-programs', [ManagerController::class, 'training_programs'])->name('training-programs');
         Route::get('/training-programs/create', [ManagerController::class, 'create_training_program'])->name('create-training-program');
         Route::post('/training-programs/store', [ManagerController::class, 'store_training_program'])->name('store-training-program');
