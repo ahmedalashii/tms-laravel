@@ -104,6 +104,10 @@ class TraineeController extends Controller
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
         }
 
+
+        // cv-file
+
+
         // Check the disciplines selected by the user and remove the old disciplines and add the new ones
         $disciplines = $data['disciplines'];
         $trainee->disciplines()->detach();
