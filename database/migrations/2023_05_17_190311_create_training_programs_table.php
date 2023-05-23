@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('fees')->nullable();
+            $table->integer('capacity')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

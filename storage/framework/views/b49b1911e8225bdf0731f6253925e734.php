@@ -58,6 +58,7 @@
                                     <th>Duration</th>
                                     <th>Discipline</th>
                                     <th>Location</th>
+                                    <th>Users Length / Capacity</th>
                                     <th>Fees</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
@@ -76,6 +77,8 @@
                                             </td>
                                             <td><?php echo e($training_program->discipline->name); ?></td>
                                             <td><?php echo e($training_program->location); ?></td>
+                                            <td><?php echo e($training_program->users_length); ?> / <?php echo e($training_program->capacity); ?>
+
                                             <td>
                                                 <?php if($training_program->fees): ?>
                                                     <?php echo e($training_program->fees); ?> ₪
@@ -130,7 +133,7 @@
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="10" class="text-center">No Training Programs Found</td>
+                                        <td colspan="11" class="text-center">No Training Programs Found</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>

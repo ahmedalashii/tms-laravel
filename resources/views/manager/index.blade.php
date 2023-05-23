@@ -2,8 +2,13 @@
 
 @section('MainContent')
     <main>
+        @php
+            $manager = Auth::guard('manager')->user();
+            $manager_db = \App\Models\Manager::where('firebase_uid', $manager->localId)->first();
+        @endphp
         <div class="container-fluid px-4">
-            <h1 class="mt-4">We're excited to have you on board, <span class="text-success">{{ Auth::guard('manager')->user()->displayName }} 😎</span>
+            <h1 class="mt-4">We're excited to have you on board, <span class="text-success">{{ $manager->displayName }}
+                    😎</span>
             </h1>
 
             <section class="mt-3 mb-3">
@@ -89,7 +94,7 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Training Request</div>
+                        <div class="card-body">Training Requests</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{{ route('manager.training-requests') }}">View
                                 Details</a>
@@ -100,6 +105,39 @@
 
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Disciplines</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="{{ route('manager.disciplines') }}">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Training Programs</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="{{ route('manager.training-programs') }}">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Authorize Trainees</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="{{ route('manager.authorize-trainees') }}">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
+                    <div class="card bg-success text-white mb-4">
                         <div class="card-body">Trainees</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{{ route('manager.trainees') }}">View
@@ -109,15 +147,29 @@
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Issues</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.issues') }}">View Details</a>
+                            <a class="small text-white stretched-link" href="{{ route('manager.issues') }}">View
+                                Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
+
+                @if ($manager_db?->role == 'super_manager')
+                    <div class="col-xl-4 col-md-6">
+                        <div class="card bg-success text-white mb-4">
+                            <div class="card-body">Managers Authorization</div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="{{ route('manager.managers') }}">View
+                                    Details</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </main>

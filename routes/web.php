@@ -4,7 +4,8 @@ use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdvisorController;
-use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\StripePaymentController;
+use App\Http\Controllers\Manager\ManagerController;
 use App\Http\Controllers\Trainee\TraineeController;
 use App\Http\Controllers\Advisor\AdvisorLoginController;
 use App\Http\Controllers\Manager\ManagerLoginController;
@@ -26,6 +27,10 @@ use App\Http\Controllers\Trainee\TraineePasswordResetController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+Route::get('stripe', [StripePaymentController::class, 'paymentStripe'])->name('stripe');
+Route::post('stripe', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe.post');
 
 Route::get('/', function () {
     return view('index');

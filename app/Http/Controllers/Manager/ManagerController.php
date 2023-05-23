@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Manager;
 
 use App\Models\Manager;
 use App\Models\Trainee;
@@ -8,6 +8,7 @@ use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
 use App\Mail\ManagerActivationMail;
+use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\TraineeAuthorizationMail;
@@ -142,10 +143,11 @@ class ManagerController extends Controller
             'description' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'fees' => 'required|numeric|min:0',
+            'fees' => 'nullable|numeric|min:0',
             'duration' => 'required|numeric|min:0',
             'duration_unit' => 'required|in:days,weeks,months,years',
             'location' => 'required|string|max:255',
+            'capacity' => 'required|numeric|min:5|max:100',
         ]);
         $trainingProgram = new TrainingProgram;
         $trainingProgram->name = $data['name'];
@@ -157,6 +159,7 @@ class ManagerController extends Controller
         $trainingProgram->duration = $data['duration'];
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
+        $trainingProgram->capacity = $data['capacity'];
         // Upload Thumbnail
         $thumbnailImage = $request->file('thumbnail');
         // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
@@ -176,7 +179,7 @@ class ManagerController extends Controller
         $size = $thumbnailImage->getSize();
         $file->size = $size ? $size : 0;
         $file->save();
-        return redirect()->route('manager.training_programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        return redirect()->route('manager.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 
@@ -201,6 +204,7 @@ class ManagerController extends Controller
             'duration' => 'required|numeric|min:0',
             'duration_unit' => 'required|in:days,weeks,months,years',
             'location' => 'required|string|max:255',
+            'capacity' => 'required|numeric|min:5|max:100|gte:users_length|gte:capacity',
         ]);
 
         $trainingProgram->name = $data['name'];
@@ -212,6 +216,7 @@ class ManagerController extends Controller
         $trainingProgram->duration = $data['duration'];
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
+        $trainingProgram->capacity = $data['capacity'];
         if (request()->hasFile('thumbnail')) {
             // Upload Thumbnail
             $thumbnailImage = request()->file('thumbnail');
@@ -238,7 +243,7 @@ class ManagerController extends Controller
             $file->save();
         }
         $status = $trainingProgram->save();
-        return redirect()->route('manager.training_programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        return redirect()->route('manager.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 

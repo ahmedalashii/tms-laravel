@@ -59,6 +59,7 @@
                                     <th>Duration</th>
                                     <th>Discipline</th>
                                     <th>Location</th>
+                                    <th>Users Length / Capacity</th>
                                     <th>Fees</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
@@ -76,6 +77,7 @@
                                             </td>
                                             <td>{{ $training_program->discipline->name }}</td>
                                             <td>{{ $training_program->location }}</td>
+                                            <td>{{ $training_program->users_length }} / {{ $training_program->capacity }}
                                             <td>
                                                 @if ($training_program->fees)
                                                     {{ $training_program->fees }} ₪
@@ -130,7 +132,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="10" class="text-center">No Training Programs Found</td>
+                                        <td colspan="11" class="text-center">No Training Programs Found</td>
                                     </tr>
                                 @endif
                             </tbody>

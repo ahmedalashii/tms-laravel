@@ -86,6 +86,14 @@
                 </div>
 
 
+
+                <div class="form-group mb-2">
+                    <label for="capacity">Capacity: <b style="color: #d50100">*</b></label>
+                    <input class="form-control" type="number" placeholder="Program Capacity"
+                        value="{{ $trainingProgram->capacity }}" name="capacity" id="capacity" min="5"
+                        max="100" required />
+                </div>
+
                 <div class="form-group mb-2">
                     <label for="duration">Duration <b style="color: #d50100">*</b></label>
                     <input type="text" class="form-control" id="duration" value="{{ $trainingProgram->duration }}"

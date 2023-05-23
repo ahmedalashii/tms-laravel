@@ -63,6 +63,10 @@
                             Disciplines
                         </a>
 
+                        <a class="nav-link" href="{{ route('manager.create-discipline') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Add New Discipline
+                        </a>
                         {{-- Training Programs --}}
 
                         <a class="nav-link" href="{{ route('manager.training-programs') }}">

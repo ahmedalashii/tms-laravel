@@ -281,8 +281,9 @@ class TrainingProgramSeeder extends Seeder
                     'duration_unit' => ['days', 'weeks', 'months', 'years'][rand(0, 3)],
                     'location' => $faker->address(),
                     'fees' => rand(0, 100) > 50 ? null : rand(0, 100),
-                    'start_date' => now(),
-                    'end_date' => now()->addDays(rand(1, 30)),
+                    'start_date' => now()->addDays(rand(1, 30)),
+                    'end_date' => now()->addDays(rand(31, 60)),
+                    'capacity' => rand(10, 100),
                 ]);
             }
         }

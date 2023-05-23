@@ -96,6 +96,12 @@
                 </div>
 
                 <div class="form-group mb-2">
+                    <label for="capacity">Capacity: <b style="color: #d50100">*</b></label>
+                    <input class="form-control" type="number" placeholder="Program Capacity" value="5" name="capacity"
+                        id="capacity" min="5" max="100" required />
+                </div>
+
+                <div class="form-group mb-2">
                     <label for="duration">Duration: <b style="color: #d50100">*</b></label>
                     <input class="form-control" type="number" placeholder="Program Duration" value="1" name="duration"
                         id="duration" min="1" required />

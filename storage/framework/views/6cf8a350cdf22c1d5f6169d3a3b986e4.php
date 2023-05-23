@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>TrainMaster - Trainee</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+    <link href="<?php echo e(asset('css/styles.css')); ?>" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand ps-3" href="{{ route('trainee') }}">TrainMaster</a>
+        <a class="navbar-brand ps-3" href="<?php echo e(route('trainee')); ?>">TrainMaster</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
@@ -25,17 +25,18 @@
                     data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('trainee.logout') }}"
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('trainee.logout')); ?>"
                             onclick="event.preventDefault();
                                  document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
+                            <?php echo e(__('Logout')); ?>
+
                         </a>
-                        <form id="logout-form" action="{{ route('trainee.logout') }}" method="POST" class="d-none">
-                            @csrf
+                        <form id="logout-form" action="<?php echo e(route('trainee.logout')); ?>" method="POST" class="d-none">
+                            <?php echo csrf_field(); ?>
                         </form>
                     </li>
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('trainee.edit') }}">
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('trainee.edit')); ?>">
                             Edit Profile
                         </a>
                     </li>
@@ -50,28 +51,28 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="{{ route('trainee') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt text-success"></i></div>
                             Dashboard
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.edit') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee.edit')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-edit text-success"></i></div>
                             Edit My Profile
                         </a>
                         <hr class="sidebar-divider">
-                        <a class="nav-link" href="{{ route('trainee.upload') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee.upload')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-upload text-success"></i></div>
                             Upload
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.apply-for-training') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee.apply-for-training')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             Apply For Training Program
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.training-attendance') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee.training-attendance')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>
                             Training Attendance
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.request-meeting') }}">
+                        <a class="nav-link" href="<?php echo e(route('trainee.request-meeting')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Request Meeting
                         </a>
@@ -79,12 +80,13 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as: <span class="text-warning">Trainee</span></div>
-                    {{ Auth::guard('trainee')->user()->displayName }}
+                    <?php echo e(Auth::guard('trainee')->user()->displayName); ?>
+
                 </div>
             </nav>
         </div>
         <div id="layoutSidenav_content">
-            @yield('MainContent')
+            <?php echo $__env->yieldContent('MainContent'); ?>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -99,7 +101,8 @@
         </div>
     </div>
     </div>
-    @include('includes.js.allJS')
+    <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 </body>
 
 </html>
+<?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/layouts/traineeLayout.blade.php ENDPATH**/ ?>

@@ -63,6 +63,10 @@
                             Disciplines
                         </a>
 
+                        <a class="nav-link" href="<?php echo e(route('manager.create-discipline')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Add New Discipline
+                        </a>
                         
 
                         <a class="nav-link" href="<?php echo e(route('manager.training-programs')); ?>">

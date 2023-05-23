@@ -31,7 +31,15 @@ class TraineeController extends Controller
 
     public function apply_for_training()
     {
-        return view('trainee.apply_for_training');
+        $paginate = 3;
+        $firebaseTrainee = Auth::guard('trainee')->user();
+        $trainee = Trainee::where('firebase_uid', $firebaseTrainee->localId)->first();
+        $training_programs = \App\Models\TrainingProgram::withoutTrashed()->whereIn('discipline_id', $trainee->disciplines->pluck('id'))->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
+            $query->where('trainee_id', $trainee->id);
+        })->whereHas('training_program_users', function ($query) {
+            $query->havingRaw('count(*) < capacity');
+        })->paginate($paginate);
+        return view('trainee.apply_for_training', compact('training_programs'));
     }
 
     public function training_attendance()

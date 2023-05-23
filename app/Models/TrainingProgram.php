@@ -22,6 +22,7 @@ class TrainingProgram extends Model
         'duration_unit',
         'start_date',
         'end_date',
+        'capacity',
     ];
 
     public function discipline()
@@ -37,5 +38,16 @@ class TrainingProgram extends Model
     public function getThumbnailAttribute()
     {
         return $this->files()->where('name', 'like', $this->thumbnail_file_name . '%')->first()?->url;
+    }
+
+
+    public function training_program_users()
+    {
+        return $this->hasMany(TrainingProgramUser::class);
+    }
+
+    public function getUsersLengthAttribute()
+    {
+        return $this->training_program_users()->count();
     }
 }
