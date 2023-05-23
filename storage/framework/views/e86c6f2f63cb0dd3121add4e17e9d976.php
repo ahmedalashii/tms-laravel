@@ -158,6 +158,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-group mb-2">
+                    <label for="gender">Advisor <b style="color: #d50100">*</b></label>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select class="form-select mb-3" aria-label=".form-select-lg example" name="advisor_id"
+                                required>
+                                <option selected value="">Select Advisor</option>
+                                <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($advisor->id); ?>">
+                                        <?php echo e($advisor->name); ?>
+
+                                    </option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="d-flex align-items-end pb-2 justify-content-end">
                     <button type="submit" class="btn btn-success pe-4 ps-4">Create</button>
                     <a href="<?php echo e(route('manager.training-programs')); ?>" class="btn btn-danger ms-2">Cancel</a>

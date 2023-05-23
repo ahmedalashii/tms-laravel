@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string("thumbnail_file_name")->nullable();
             $table->unsignedBigInteger('discipline_id');
             $table->foreign('discipline_id')->references('id')->on('disciplines')->onDelete('cascade');
+            $table->unsignedBigInteger('advisor_id')->nullable();
+            $table->foreign('advisor_id')->references('id')->on('advisors')->onDelete('cascade');
             $table->integer('duration');
             $table->enum('duration_unit', ['days', 'weeks', 'months', 'years'])->default('days');
             $table->string('location')->nullable();

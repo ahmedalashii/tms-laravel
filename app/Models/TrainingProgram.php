@@ -18,6 +18,7 @@ class TrainingProgram extends Model
         'location',
         'fees',
         'discipline_id',
+        'advisor_id',
         'duration',
         'duration_unit',
         'start_date',
@@ -28,6 +29,11 @@ class TrainingProgram extends Model
     public function discipline()
     {
         return $this->belongsTo(Discipline::class)->withTrashed();
+    }
+
+
+    public function advisor(){
+        return $this->belongsTo(Advisor::class)->withTrashed();
     }
 
     public function files()

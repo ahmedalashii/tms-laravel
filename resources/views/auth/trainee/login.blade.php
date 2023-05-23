@@ -20,7 +20,7 @@
                     <div class="form-floating mb-3">
                         <input class="form-control @error('id') is-invalid @enderror" id="id" type="text"
                             name="id" value="{{ old('id') }}" required autocomplete="id" autofocus />
-                        <label for="id">Your Trainee ID</label>
+                        <label for="id">Your ID</label>
                         @error('id')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>

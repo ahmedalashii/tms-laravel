@@ -64,7 +64,7 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-upload text-success"></i></div>
                             Upload
                         </a>
-                        <a class="nav-link" href="<?php echo e(route('trainee.apply-for-training')); ?>">
+                        <a class="nav-link" href="<?php echo e(route('trainee.available-training-programs')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             Apply For Training Program
                         </a>

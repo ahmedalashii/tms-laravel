@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainee;
 use App\Models\Trainee;
 use Illuminate\Http\Request;
 use PhpParser\Builder\Trait_;
+use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -29,7 +30,7 @@ class TraineeController extends Controller
         return view('trainee.upload', compact('files'));
     }
 
-    public function apply_for_training()
+    public function available_training_programs()
     {
         $paginate = 3;
         $firebaseTrainee = Auth::guard('trainee')->user();
@@ -39,7 +40,24 @@ class TraineeController extends Controller
         })->whereHas('training_program_users', function ($query) {
             $query->havingRaw('count(*) < capacity');
         })->paginate($paginate);
-        return view('trainee.apply_for_training', compact('training_programs'));
+        return view('trainee.available_training_programs', compact('training_programs'));
+    }
+
+
+    public function apply_training_program(TrainingProgram $trainingProgram)
+    {
+        $firebaseTrainee = Auth::guard('trainee')->user();
+        $trainee = Trainee::where('firebase_uid', $firebaseTrainee->localId)->first();
+        $training_program_user = $trainingProgram->training_program_users()->create([
+            'trainee_id' => $trainee->id,
+            'training_program_id' => $trainingProgram->id,
+            'advisor_id' => $trainingProgram->advisor_id,
+        ]);
+        if ($training_program_user) {
+            return redirect()->back()->with(['success' => 'Your request has been sent successfully!', 'type' => 'success']);
+        } else {
+            return redirect()->back()->with(['fail' => 'Something is wrong!', 'type' => 'error']);
+        }
     }
 
     public function training_attendance()

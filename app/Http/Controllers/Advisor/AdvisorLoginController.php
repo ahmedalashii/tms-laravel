@@ -47,34 +47,41 @@ class AdvisorLoginController extends Controller
     {
         try {
             $request->validate([
-                "email" => "required|string|email|exists:advisors,email",
+                "id" => "required|string|exists:advisors,auth_id",
                 "password" => "required|string|min:8",
             ]);
-            $advisor = Advisor::where('email', $request->email);
+
+            $advisor = Advisor::withTrashed()->where('auth_id', $request->id);
             if (!$advisor) {
-                Session::flash('error', 'Advisor not found.');
+                Session::flash('error', 'Email not found.');
                 return back()->withInput();
             }
+            $email = $advisor?->first()?->email;
+
             $auth = app("firebase.auth");
             $signInResult = $auth->signInWithEmailAndPassword(
-                $request["email"],
+                $email,
                 $request["password"]
             );
             $firebaseId = $signInResult->firebaseUserId();
             $firebaseUser = $auth->getUser($firebaseId);
             if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
-                $verification_url = app('firebase.auth')->getEmailVerificationLink($request->email);
-                $firebaseUser = app('firebase.auth')->getUserByEmail($request->email);
+                $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+                $firebaseUser = app('firebase.auth')->getUserByEmail($email);
                 $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
-                $this->sendEmail($request->email, $mailable);
+                $this->sendEmail($email, $mailable);
                 return back()->withInput();
             }
-            $user = Advisor::where('firebase_uid', $firebaseId)->first();
+            $user = Advisor::withTrashed()->where('firebase_uid', $firebaseId)->first();
             if (!$user) {
                 throw ValidationException::withMessages([
                     $this->username() => [trans("auth.failed")],
                 ]);
+            }
+            if ($user->trashed()) {
+                Session::flash('error', 'Your account has been deactivated by the manager.');
+                return back()->withInput();
             }
             // Logout from other guards
             Auth::guard("manager")->logout();

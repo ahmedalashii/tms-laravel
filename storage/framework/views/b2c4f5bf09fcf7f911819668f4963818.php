@@ -1,6 +1,4 @@
-@extends('layouts.authLayout')
-
-@section('MainContent')
+<?php $__env->startSection('MainContent'); ?>
     <div class="col-lg-7">
         <div class="card shadow-lg border-0 rounded-lg mt-5">
             <div class="card-header">
@@ -8,51 +6,80 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    @if (Session::has('error'))
+                    <?php if(Session::has('error')): ?>
                         <div class="alert alert-danger alert-dismissible fade show">
-                            {{ Session::get('error') }}
+                            <?php echo e(Session::get('error')); ?>
+
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="col-12 mt-2">
-                        @foreach ($errors->all() as $message)
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="alert alert-danger"><?php echo e($message); ?></div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
-                <form action="{{ route('advisor.register') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+                <form action="<?php echo e(route('advisor.register')); ?>" method="POST" enctype="multipart/form-data">
+                    <?php echo csrf_field(); ?>
                     <div class="row mb-2">
                         <div class="col-md-12">
                             <div class="form-floating">
-                                <input class="form-control @error('name') is-invalid @enderror" id="name"
+                                <input class="form-control <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="name"
                                     type="text" name="name" required autocomplete="name" autofocus
-                                    value="{{ old('name') }}" />
+                                    value="<?php echo e(old('name')); ?>" />
                                 <label for="name">Name
                                     <strong class="text-danger">*</strong>
 
                                 </label>
-                                @error('name')
+                                <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <strong><?php echo e($message); ?></strong>
                                     </span>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
                     <div class="form-floating mb-3">
-                        <input class="form-control @error('email') is-invalid @enderror" id="email" type="email"
-                            name="email" value="{{ old('email') }}" required autocomplete="email" />
+                        <input class="form-control <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="email" type="email"
+                            name="email" value="<?php echo e(old('email')); ?>" required autocomplete="email" />
                         <label for="email">Email address
                             <strong class="text-danger">*</strong>
 
                         </label>
-                        @error('email')
+                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
+                                <strong><?php echo e($message); ?></strong>
                             </span>
-                        @enderror
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                     <div class="form-floating mb-3">
                         <input class="form-control" id="phone" type="phone" placeholder="+972 XX XXX XXX XXXX"
@@ -72,14 +99,14 @@
                         <strong class="text-danger">*</strong>
                     </label>
                     <div class="form-group">
-                        @foreach ($disciplines as $discipline)
+                        <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="form-check">
-                                <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
-                                    class="form-check-input" id="discipline-{{ $discipline->id }}">
+                                <input type="checkbox" name="disciplines[]" value="<?php echo e($discipline->id); ?>"
+                                    class="form-check-input" id="discipline-<?php echo e($discipline->id); ?>">
                                 <label class="form-check-label"
-                                    for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
+                                    for="discipline-<?php echo e($discipline->id); ?>"><?php echo e($discipline->name); ?></label>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                     <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="gender"
                         name="gender" required>
@@ -112,16 +139,30 @@
                     <div class="row mb-3">
                         <div>
                             <div class="form-floating mb-3 mb-md-0">
-                                <input class="form-control @error('password') is-invalid @enderror" id="password"
+                                <input class="form-control <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="password"
                                     type="password" name="password" required autocomplete="new-password" />
                                 <label for="password">Password
                                     <strong class="text-danger">*</strong>
                                 </label>
-                                @error('password')
+                                <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <strong><?php echo e($message); ?></strong>
                                     </span>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                         <div class="mt-3">
@@ -144,10 +185,12 @@
                 </form>
             </div>
             <div class="card-footer text-center py-3">
-                <div class="small"><a href="{{ route('advisor.login') }}">Have an account? Go to login</a></div>
+                <div class="small"><a href="<?php echo e(route('advisor.login')); ?>">Have an account? Go to login</a></div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.authLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/auth/advisor/register.blade.php ENDPATH**/ ?>

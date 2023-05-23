@@ -28,15 +28,15 @@
                     @endforeach
                 @endif
 
-                <div class="small mb-3 text-muted">Enter your Email and we will send you a link to reset your
+                <div class="small mb-3 text-muted">Enter your Advisor ID and we will send you a link to reset your
                     password.</div>
                 <form id="reset-form" action="{{ route('advisor.reset') }}" method="POST">
                     @csrf
                     <div class="form-floating mb-3">
-                        <input class="form-control @error('email') is-invalid @enderror" id="email" type="email"
-                            name="email" value="{{ old('id') }}" required autocomplete="email" autofocus />
-                        <label for="email">Email address</label>
-                        @error('email')
+                        <input class="form-control @error('id') is-invalid @enderror" id="id" type="text"
+                            name="id" value="{{ old('id') }}" required autocomplete="id" autofocus />
+                        <label for="id">Your Advisor ID</label>
+                        @error('id')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>

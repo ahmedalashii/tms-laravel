@@ -15,29 +15,13 @@
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                     </div>
                 @endif
-
-                @if (Session::has('error'))
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        {{ Session::get('error') }}
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    @foreach ($errors->all() as $error)
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            {{ $error }}
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    @endforeach
-                @endif
                 <form method="POST" action="{{ route('advisor.login') }}">
                     @csrf
                     <div class="form-floating mb-3">
-                        <input class="form-control @error('email') is-invalid @enderror" id="email" type="email"
-                            name="email" value="{{ old('email') }}" required autocomplete="email" autofocus />
-                        <label for="email">Email address</label>
-                        @error('email')
+                        <input class="form-control @error('id') is-invalid @enderror" id="id" type="text"
+                            name="id" value="{{ old('id') }}" required autocomplete="id" autofocus />
+                        <label for="id">Your ID</label>
+                        @error('id')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>

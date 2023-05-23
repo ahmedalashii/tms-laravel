@@ -3,10 +3,8 @@
 @section('MainContent')
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">Apply for Training</h1>
-
+            <h1 class="mt-4 mb-4">Apply for Training Program</h1>
             <form action="./apply-for-training" method="post" enctype="multipart/form-data">
-                <!-- Training Programs -->
                 <div class="mb-3">
                     <h5 class="form-label fs-5">Training Programs</h5>
                     <div class="row">
@@ -33,36 +31,27 @@
                                             {{ $training_program->users_length }} /
                                             {{ $training_program->capacity }} trainees registered for this program so far.
                                         </p>
-                                        {{-- discipline --}}
                                         <p class="card-text"><strong>Discipline: </strong>
-                                            {{ $training_program->discipline->name }}
-                                            <input type="checkbox" name="training-programs[]" value="program1">
-                                            <label for="program1">Select the program</label>
+                                            {{ $training_program->discipline->name }} </p>
+                                        {{-- radio button --}}
+                                        <input type="radio" name="training_program"
+                                            id="program{{ $training_program->id }}" value="{{ $training_program->id }}">
+                                        <label for="program{{ $training_program->id }}">Apply for this program</label>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-                        @if ($training_programs->hasPages())
-                            <br>
-                        @endif
-                        {{ $training_programs->links('pagination::bootstrap-5') }}
                     </div>
+                    @if ($training_programs->hasPages())
+                        <br>
+                    @endif
+                    {{ $training_programs->links('pagination::bootstrap-5') }}
                 </div>
 
-                <!-- Cover Letter -->
-                <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="Write a cover letter" id="floatingTextarea2" style="height: 100px"></textarea>
-                    <label for="floatingTextarea2">Cover Letter <b class="text-danger">*</b></label>
+                <!-- Submit -->
+                <div class="mb-3 d-flex justify-content-end">
+                    <button class="btn btn-success" type="submit" style="width: 100px">Apply</button>
                 </div>
-
-                <!-- Resume -->
-                <div class="mb-3">
-                    <label for="resume" class="form-label">Resume</label>
-                    <input class="form-control" type="file" name="resume" id="resume">
-                </div>
-
-                <button type="submit" class="btn btn-success">Submit</button>
-
             </form>
         </div>
     </main>

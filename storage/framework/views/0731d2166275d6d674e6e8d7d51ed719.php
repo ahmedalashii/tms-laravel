@@ -9,19 +9,19 @@
     <meta name="author" content="" />
     <title>TrainMaster - Advisor</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+    <link href="<?php echo e(asset('css/styles.css')); ?>" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 
 <body class="sb-nav-fixed">
-    @php
+    <?php
         $advisor = Auth::guard('advisor')->user();
         $advisor_db = \App\Models\Advisor::where('firebase_uid', $advisor->localId)->first();
-    @endphp
+    ?>
 
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="{{ route('advisor') }}">Train Master</a>
+        <a class="navbar-brand ps-3" href="<?php echo e(route('advisor')); ?>">Train Master</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
@@ -33,14 +33,14 @@
                     data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('advisor.logout') }}"
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('advisor.logout')); ?>"
                             onclick="event.preventDefault(); document.getElementById('form').submit()">Logout</a>
-                        <form method="POST" action="{{ route('advisor.logout') }}" id="form">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('advisor.logout')); ?>" id="form">
+                            <?php echo csrf_field(); ?>
                         </form>
                     </li>
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('advisor.edit') }}">
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('advisor.edit')); ?>">
                             Edit Profile
                         </a>
                     </li>
@@ -53,24 +53,24 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="{{ route('advisor') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt text-success"></i></div>
                             Dashboard
                         </a>
                         <hr class="sidebar-divider">
-                        <a class="nav-link" href="{{ route('advisor.trainees-requests') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor.trainees-requests')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
                             Training Requests
                         </a>
-                        <a class="nav-link" href="{{ route('advisor.meetings-schedule') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor.meetings-schedule')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Meetings Schedule
                         </a>
-                        <a class="nav-link" href="{{ route('advisor.notifications') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor.notifications')); ?>">
                             <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
                             Emails
                         </a>
-                        <a class="nav-link" href="{{ route('advisor.trainees') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor.trainees')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-solid fa-user  text-success"></i></div>
                             Trainee Profile
                         </a>
@@ -78,12 +78,13 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as: <span class="text-warning">Advisor</span></div>
-                    {{ Auth::guard('advisor')->user()->displayName }}
+                    <?php echo e(Auth::guard('advisor')->user()->displayName); ?>
+
                 </div>
             </nav>
         </div>
         <div id="layoutSidenav_content">
-            @yield('MainContent')
+            <?php echo $__env->yieldContent('MainContent'); ?>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -98,7 +99,8 @@
         </div>
     </div>
     </div>
-    @include('includes.js.allJS')
+    <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 </body>
 
 </html>
+<?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/layouts/advisorLayout.blade.php ENDPATH**/ ?>

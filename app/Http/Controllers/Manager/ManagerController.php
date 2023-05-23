@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Manager;
 
+use App\Models\Advisor;
 use App\Models\Manager;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
+use App\Mail\EmailVerificationMail;
 use App\Mail\ManagerActivationMail;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\AdvisorAuthorizationMail;
 use App\Mail\TraineeAuthorizationMail;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 
@@ -130,7 +133,8 @@ class ManagerController extends Controller
     {
         $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
         $duration_units = ['days' => 'Days', 'weeks' => 'Weeks', 'months' => 'Months', 'years' => 'Years'];
-        return view('manager.create_training_program', compact('disciplines', 'duration_units'));
+        $advisors = Advisor::withoutTrashed()->select('id', 'displayName')->get();
+        return view('manager.create_training_program', compact('disciplines', 'duration_units', 'advisors'));
     }
 
 
@@ -139,6 +143,7 @@ class ManagerController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'discipline_id' => 'required|exists:disciplines,id',
+            'advisor_id' => 'required|exists:advisors,id',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -152,6 +157,7 @@ class ManagerController extends Controller
         $trainingProgram = new TrainingProgram;
         $trainingProgram->name = $data['name'];
         $trainingProgram->discipline_id = $data['discipline_id'];
+        $trainingProgram->advisor_id = $data['advisor_id'];
         $trainingProgram->description = $data['description'];
         $trainingProgram->start_date = $data['start_date'];
         $trainingProgram->end_date = $data['end_date'];
@@ -196,6 +202,7 @@ class ManagerController extends Controller
         $data = request()->validate([
             'name' => 'required|string|max:255',
             'discipline_id' => 'required|exists:disciplines,id',
+            'advisor_id' => 'required|exists:advisors,id',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -260,6 +267,23 @@ class ManagerController extends Controller
         return view('manager.authorize_trainees', compact('trainees'));
     }
 
+
+    public function authorize_advisors(Request $request)
+    {
+        $search_value = $request->search;
+        $paginate = 5;
+        $advisors = Advisor::withoutTrashed()->whereNull('auth_id')->where(function ($query) use ($search_value) {
+            $query->where('displayName', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('email', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('phone', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('address', 'LIKE', '%' . $search_value . '%');
+        })->paginate($paginate);
+        return view('manager.authorize_advisors', compact('advisors'));
+    }
+
+
+
+
     public function trainees(Request $request)
     {
         $search_value = $request->search;
@@ -271,6 +295,19 @@ class ManagerController extends Controller
                 ->orWhere('address', 'LIKE', '%' . $search_value . '%');
         })->paginate($paginate);
         return view('manager.trainees', compact('trainees'));
+    }
+
+    public function advisors(Request $request)
+    {
+        $search_value = $request->search;
+        $paginate = 5;
+        $advisors = Advisor::where(function ($query) use ($search_value) {
+            $query->where('displayName', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('email', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('phone', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('address', 'LIKE', '%' . $search_value . '%');
+        })->paginate($paginate);
+        return view('manager.advisors', compact('advisors'));
     }
 
 
@@ -310,6 +347,23 @@ class ManagerController extends Controller
     }
 
 
+    public function authorize_advisor(Advisor $advisor)
+    {
+        // Unique Generated ID for the trainee (auth_id) that will be used to login to the system and never taken before
+        $auth_id = uniqid();
+        while (Advisor::where('auth_id', $auth_id)->exists()) {
+            $auth_id = uniqid();
+        }
+        // Send Email to the trainee with the auth_id
+        $advisor->auth_id = $auth_id;
+        $manager = Auth::guard('manager')->user();
+        $mailable = new AdvisorAuthorizationMail($advisor, $manager);
+        $this->sendEmail($advisor->email, $mailable);
+        $status = $advisor->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Authorized Successfully and an email has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
     public function activate_manager(Manager $manager)
     {
         $manager->is_active = true;
@@ -344,7 +398,20 @@ class ManagerController extends Controller
     public function verify_trainee(Trainee $trainee)
     {
         $auth = app('firebase.auth');
-        $auth->sendEmailVerificationLink($trainee->email);
+        $verification_url = $auth->getEmailVerificationLink($trainee->email);
+        $firebaseUser = $auth->getUserByEmail($trainee->email);
+        $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+        $this->sendEmail($trainee->email, $mailable);
+        return redirect()->back()->with(['success' => 'Email Verification Link Sent Successfully!', 'type' => 'success']);
+    }
+
+    public function verify_advisor(Advisor $advisor)
+    {
+        $auth = app('firebase.auth');
+        $verification_url = $auth->getEmailVerificationLink($advisor->email);
+        $firebaseUser = $auth->getUserByEmail($advisor->email);
+        $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
+        $this->sendEmail($advisor->email, $mailable);
         return redirect()->back()->with(['success' => 'Email Verification Link Sent Successfully!', 'type' => 'success']);
     }
 
@@ -364,6 +431,24 @@ class ManagerController extends Controller
     {
         $status = Trainee::onlyTrashed()->find($id)->restore();
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
+    public function deactivate_advisor(Advisor $advisor)
+    {
+        /*
+            Soft Delete:
+            deleted_at >> timestamp >> null
+            when deleting the row >> deleted_at = current timestamp 
+        */
+        $destroy = $advisor->delete();
+        return redirect()->back()->with([$destroy ? 'success' : 'fail' => $destroy ?  'Advisor Deactivated Successfully' : 'Something is wrong!', 'type' => $destroy ? 'success' : 'error']);
+    }
+
+    public function activate_advisor($id)
+    {
+        $status = Advisor::onlyTrashed()->find($id)->restore();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Advisor Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 

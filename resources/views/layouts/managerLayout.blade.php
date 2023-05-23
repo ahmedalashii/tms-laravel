@@ -87,6 +87,14 @@
                             <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
                             Trainees
                         </a>
+                        <a class="nav-link" href="{{ route('manager.authorize-advisors') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-plus text-success"></i></div>
+                            Authorize advisors
+                        </a>
+                        <a class="nav-link" href="{{ route('manager.advisors') }}">
+                            <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
+                            Advisors
+                        </a>
                         <a class="nav-link" href="{{ route('manager.issues') }}">
                             <div class="sb-nav-link-icon"><i class="far fa-calendar-check text-success"></i></div>
                             Issues

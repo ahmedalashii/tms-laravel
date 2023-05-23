@@ -52,18 +52,6 @@
 
                 </div>
 
-                <!-- Cover Letter -->
-                <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="Write a cover letter" id="floatingTextarea2" style="height: 100px"></textarea>
-                    <label for="floatingTextarea2">Cover Letter <b class="text-danger">*</b></label>
-                </div>
-
-                <!-- Resume -->
-                <div class="mb-3">
-                    <label for="resume" class="form-label">Resume</label>
-                    <input class="form-control" type="file" name="resume" id="resume">
-                </div>
-
                 <!-- Submit -->
                 <div class="mb-3 d-flex justify-content-end">
                     <button class="btn btn-success" type="submit" style="width: 100px">Apply</button>
@@ -73,4 +61,4 @@
     </main>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/apply_for_training.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/available_training_programs.blade.php ENDPATH**/ ?>

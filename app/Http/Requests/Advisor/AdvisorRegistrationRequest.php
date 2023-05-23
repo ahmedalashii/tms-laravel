@@ -26,9 +26,12 @@ class AdvisorRegistrationRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:advisors',
             'phone' => 'required|numeric|digits:10|unique:advisors',
             'address' => 'required|string|max:255',
+            'gender' => 'required|string|in:male,female',
             'disciplines' => 'required|array|min:1',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required',
+            'avatar-image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'cv-file' => 'required|mimes:pdf,doc,docx,txt,rtf,odt,ods,odp,odg,odc,odb,xls,xlsx,ppt,pptx',
         ];
     }
 
