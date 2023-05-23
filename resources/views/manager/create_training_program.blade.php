@@ -120,7 +120,7 @@
                 <div class="form-group mb-2">
                     <label for="fees">Fees (Leave it blank if it is free):</label>
                     <input class="form-control" type="number" placeholder="Program Fees" value="" name="fees"
-                        id="fees" required />
+                        id="fees" />
                 </div>
 
                 <div class="form-group mb-2">

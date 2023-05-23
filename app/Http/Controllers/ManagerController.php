@@ -110,6 +110,61 @@ class ManagerController extends Controller
         return view('manager.edit_training_program', compact('trainingProgram', 'disciplines', 'duration_units'));
     }
 
+
+    public function update_training_program(TrainingProgram $trainingProgram)
+    {
+        $data = request()->validate([
+            'name' => 'required|string|max:255',
+            'discipline_id' => 'required|exists:disciplines,id',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'description' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'fees' => 'nullable|numeric|min:0',
+            'duration' => 'required|numeric|min:0',
+            'duration_unit' => 'required|in:days,weeks,months,years',
+            'location' => 'required|string|max:255',
+        ]);
+
+        $trainingProgram->name = $data['name'];
+        $trainingProgram->discipline_id = $data['discipline_id'];
+        $trainingProgram->description = $data['description'];
+        $trainingProgram->start_date = $data['start_date'];
+        $trainingProgram->end_date = $data['end_date'];
+        $trainingProgram->fees = $data['fees'];
+        $trainingProgram->duration = $data['duration'];
+        $trainingProgram->duration_unit = $data['duration_unit'];
+        $trainingProgram->location = $data['location'];
+        if (request()->hasFile('thumbnail')) {
+            // Upload Thumbnail
+            $thumbnailImage = request()->file('thumbnail');
+            // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
+            $thumbnail_file_name = $data['name'] . '_' . time() . '.' . $thumbnailImage->getClientOriginalExtension();
+            $thumbnail_file_path = 'TrainingProgram/Thumbnails/' . $thumbnail_file_name;
+            $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
+            if ($trainingProgram->thumbnail_file_name) {
+                // Delete the old thumbnail file
+                $old_thumbnail_file = $trainingProgram->files()->where('name', 'like', $trainingProgram->thumbnail_file_name . '%')->first();
+                $this->deleteFirebaseStorageFile($old_thumbnail_file->firebase_file_path);
+                $old_thumbnail_file->delete();
+            }
+            $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $thumbnail_file_name;
+            $file->firebase_file_path = $thumbnail_file_path;
+            $file->extension = $thumbnailImage->getClientOriginalExtension();
+            $file->training_program_id = $trainingProgram->id;
+            $file->description = 'Thumbnail for ' . $trainingProgram->name;
+            $size = $thumbnailImage->getSize();
+            $file->size = $size ? $size : 0;
+            $file->save();
+        }
+        $status = $trainingProgram->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
     public function authorize_trainees(Request $request)
     {
         $search_value = $request->search;

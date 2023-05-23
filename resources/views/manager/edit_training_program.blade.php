@@ -56,7 +56,8 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4"><span class="text-success">{{ $trainingProgram->name }}</span></h1>
-            <form action="" class="mt-2 mb-4">
+            <form action="{{ route('manager.update-training-program', $trainingProgram->id) }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 <div class="form-group mb-2">
                     <label for="banner_input">Banner image</label>
@@ -74,9 +75,16 @@
 
                 <div class="form-group mb-2">
                     <label for="description">Description <b style="color: #d50100">*</b></label>
-                    <input type="email" class="form-control" id="description" value="{{ $trainingProgram->description }}"
+                    <input type="text" class="form-control" id="description" value="{{ $trainingProgram->description }}"
                         name="description" required>
                 </div>
+
+                <div class="form-group mb-2">
+                    <label for="location">Location <b style="color: #d50100">*</b></label>
+                    <input type="text" class="form-control" id="description" name="location" required
+                        value="{{ $trainingProgram->location }}">
+                </div>
+
 
                 <div class="form-group mb-2">
                     <label for="duration">Duration <b style="color: #d50100">*</b></label>
@@ -84,6 +92,27 @@
                         name="duration" required>
                 </div>
 
+                <div class="form-group mb-2">
+                    <label for="gender">Duration Unit: <b style="color: #d50100">*</b></label>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select class="form-select" aria-label=".form-select-lg example" name="duration_unit" required>
+                                <option selected value="">Select Duration Unit</option>
+                                @foreach ($duration_units as $key => $duration_unit)
+                                    <option value="{{ $key }}" @if ($trainingProgram->duration_unit == $key) selected @endif>
+                                        {{ $duration_unit }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="fees">Fees (Leave it blank if it is free):</label>
+                    <input class="form-control" type="number" placeholder="Program Fees" name="fees"
+                        value="{{ $trainingProgram->fees }}" id="fees" />
+                </div>
                 <div class="form-group mb-2">
                     <label for="start-date">Start Date <b style="color: #d50100">*</b></label>
                     <input type="date" class="form-control" id="start-date" value="{{ $trainingProgram->start_date }}"
@@ -96,28 +125,27 @@
                         name="end_date" required>
                 </div>
 
-                <div class="form-group mt-3 mb-2">
-                    <label for="gender">Discipline</label>
-                    <select class="form-select mb-3" aria-label=".form-select-lg example">
-                        <option value="Web Development">Web Development</option>
-                        <option value="Mobile Development">Mobile Development</option>
-                        <option value="Software Development">Software Development</option>
-                        <option value="Database Administration">Database Administration</option>
-                        <option value="Data Science">Data Science</option>
-                        <option value="Artificial Intelligence">Artificial Intelligence</option>
-                        <option value="Machine Learning">Machine Learning</option>
-                        <option value="Cyber Security">Cyber Security</option>
-                        <option value="Cloud Computing">Cloud Computing</option>
-                        <option value="Network Administration">Network Administration</option>
-                        <option value="Game Development">Game Development</option>
-                        <option value="DevOps">DevOps</option>
-                    </select>
+                <div class="form-group mb-2">
+                    <label for="gender">Discipline <b style="color: #d50100">*</b></label>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select class="form-select mb-3" aria-label=".form-select-lg example" name="discipline_id"
+                                required>
+                                <option selected value="">Select Discipline</option>
+                                @foreach ($disciplines as $discipline)
+                                    <option value="{{ $discipline->id }}"
+                                        @if ($trainingProgram->discipline_id == $discipline->id) selected @endif>
+                                        {{ $discipline->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="h-100 d-flex align-items-end pb-2 justify-content-end">
-                    <button type="button" class="btn btn-success pe-4 ps-4">Save</button>
-                    <a href="training_programs.html" class="btn btn-danger ms-2">Cancel</a>
-                    <button type="button" class="btn btn-danger ms-2">Delete</button>
+                <div class="d-flex align-items-end pb-2 justify-content-end">
+                    <button type="submit" class="btn btn-success pe-4 ps-4">Save</button>
+                    <a href="{{ route('manager.training-programs') }}" class="btn btn-danger ms-2">Cancel</a>
                 </div>
 
             </form>

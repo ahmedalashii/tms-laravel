@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('fees')->default(0);
+            $table->integer('fees')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
