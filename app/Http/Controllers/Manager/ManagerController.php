@@ -101,8 +101,31 @@ class ManagerController extends Controller
         // Get all training programs that their discipline is not soft deleted
         $paginate = 5;
         $discipline_id = $request->query('discipline');
+        $advisor_id = $request->query('advisor');
         $search_value = $request->query('search');
-        if ($discipline_id) {
+        if ($discipline_id && $advisor_id) {
+            $training_programs = TrainingProgram::withTrashed()->where('discipline_id', $discipline_id)->where('advisor_id', $advisor_id)->where(function ($query) use ($search_value) {
+                $query->where('name', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('description', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('location', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('fees', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('start_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('end_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration_unit', 'LIKE', '%' . $search_value . '%');
+            })->paginate($paginate);
+        } else if ($advisor_id) {
+            $training_programs = TrainingProgram::withTrashed()->where('advisor_id', $advisor_id)->where(function ($query) use ($search_value) {
+                $query->where('name', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('description', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('location', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('fees', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('start_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('end_date', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration', 'LIKE', '%' . $search_value . '%')
+                    ->orWhere('duration_unit', 'LIKE', '%' . $search_value . '%');
+            })->paginate($paginate);
+        } else if ($discipline_id) {
             $training_programs = TrainingProgram::withTrashed()->where('discipline_id', $discipline_id)->where(function ($query) use ($search_value) {
                 $query->where('name', 'LIKE', '%' . $search_value . '%')
                     ->orWhere('description', 'LIKE', '%' . $search_value . '%')
@@ -126,7 +149,8 @@ class ManagerController extends Controller
             })->paginate($paginate);
         }
         $disciplines = Discipline::select('id', 'name')->get();
-        return view('manager.training_programs', compact('training_programs', 'disciplines'));
+        $advisors = Advisor::select('id', 'displayName')->get();
+        return view('manager.training_programs', compact('training_programs', 'disciplines', 'advisors'));
     }
 
     public function create_training_program()
@@ -140,10 +164,21 @@ class ManagerController extends Controller
 
     public function store_training_program(Request $request)
     {
+        if ($request->advisor_id) {
+            $advisor = Advisor::withoutTrashed()->find($request->advisor_id);
+            // advisor_id must be exists in the database and must be an advisor and has the discipline_id is in the disciplines of the advisor (an advisor may have more than one discipline)
+            if (!$advisor) {
+                return redirect()->back()->with(['fail' => 'Advisor not found!', 'type' => 'error']);
+            }
+            if (!$advisor->hasDiscipline($request->discipline_id)) {
+                return redirect()->back()->with(['fail' => 'Advisor does not have this discipline!', 'type' => 'error']);
+            }
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'discipline_id' => 'required|exists:disciplines,id',
-            'advisor_id' => 'required|exists:advisors,id',
+            'advisor_id' => 'nullable|exists:advisors,id',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -193,29 +228,44 @@ class ManagerController extends Controller
     {
         $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
         $duration_units = ['days' => 'Days', 'weeks' => 'Weeks', 'months' => 'Months', 'years' => 'Years'];
-        return view('manager.edit_training_program', compact('trainingProgram', 'disciplines', 'duration_units'));
+        $advisors = Advisor::withoutTrashed()->select('id', 'displayName')->get();
+        return view('manager.edit_training_program', compact('trainingProgram', 'disciplines', 'duration_units', 'advisors'));
     }
 
 
-    public function update_training_program(TrainingProgram $trainingProgram)
+    public function update_training_program(Request $request, TrainingProgram $trainingProgram)
     {
+
+        if ($request->advisor_id) {
+            $advisor = Advisor::withoutTrashed()->find($request->advisor_id);
+            // advisor_id must be exists in the database and must be an advisor and has the discipline_id is in the disciplines of the advisor (an advisor may have more than one discipline)
+            if (!$advisor) {
+                return redirect()->back()->with(['fail' => 'Advisor not found!', 'type' => 'error']);
+            }
+            if (!$advisor->hasDiscipline($request->discipline_id)) {
+                return redirect()->back()->with(['fail' => 'Advisor does not have this discipline!', 'type' => 'error']);
+            }
+        }
+
         $data = request()->validate([
             'name' => 'required|string|max:255',
             'discipline_id' => 'required|exists:disciplines,id',
-            'advisor_id' => 'required|exists:advisors,id',
+            'advisor_id' => 'nullable|exists:advisors,id',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'fees' => 'nullable|numeric|min:0',
+            // currency and required if fees is not null
             'duration' => 'required|numeric|min:0',
             'duration_unit' => 'required|in:days,weeks,months,years',
             'location' => 'required|string|max:255',
-            'capacity' => 'required|numeric|min:5|max:100|gte:users_length|gte:capacity',
+            'capacity' => 'required|numeric|min:5|max:100|gte:users_length',
         ]);
 
         $trainingProgram->name = $data['name'];
         $trainingProgram->discipline_id = $data['discipline_id'];
+        $trainingProgram->advisor_id = $data['advisor_id'];
         $trainingProgram->description = $data['description'];
         $trainingProgram->start_date = $data['start_date'];
         $trainingProgram->end_date = $data['end_date'];
@@ -310,7 +360,6 @@ class ManagerController extends Controller
         return view('manager.advisors', compact('advisors'));
     }
 
-
     public function managers(Request $request)
     {
         $manager = Auth::guard('manager')->user();
@@ -346,7 +395,6 @@ class ManagerController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Authorized Successfully and an email has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-
     public function authorize_advisor(Advisor $advisor)
     {
         // Unique Generated ID for the trainee (auth_id) that will be used to login to the system and never taken before
@@ -360,9 +408,8 @@ class ManagerController extends Controller
         $mailable = new AdvisorAuthorizationMail($advisor, $manager);
         $this->sendEmail($advisor->email, $mailable);
         $status = $advisor->save();
-        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Trainee Authorized Successfully and an email has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Advisor Authorized Successfully and an email has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
-
 
     public function activate_manager(Manager $manager)
     {

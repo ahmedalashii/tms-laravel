@@ -19,11 +19,21 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
+                            <label for="cv_file">Change CV File</label>
+                            <input class="form-control form-control-lg" id="cv_file" type="file" name="cv-file"
+                                accept=".pdf,.docx,.doc">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
                             <label for="avatar_input">Change Avatar</label>
                             <input class="form-control form-control-lg" id="avatar_input" type="file" name="avatar-image"
                                 accept="image/*">
                         </div>
                     </div>
+
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
                             <label for="address">Address
@@ -33,8 +43,6 @@
                                 value="<?php echo e($trainee->address); ?>" name="address">
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
                             <label for="name">Name
@@ -44,6 +52,9 @@
                                 value="<?php echo e($trainee->displayName); ?>" name="displayName">
                         </div>
                     </div>
+
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
                             <label for="gender">Gender
@@ -61,8 +72,6 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
                             <label for="email">Email address
@@ -72,7 +81,10 @@
                                 name="email">
                         </div>
                     </div>
-                    <div class="col-md-6">
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="form-group mb-2">
                             <label for="phone">Phone number
                                 <strong class="text-danger">*</strong>
@@ -100,7 +112,6 @@
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
-                    
                 </div>
                 <div class="row">
                     <div class="col-md-6">

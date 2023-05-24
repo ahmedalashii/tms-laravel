@@ -11,6 +11,85 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        /* notifications */
+        .notifications_container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .notifications_bell_btn {
+            cursor: pointer;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            position: relative;
+        }
+
+        .notifications_count {
+            --size: 20px;
+            background-color: var(--bs-danger);
+            color: #FFF;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: var(--size);
+            height: var(--size);
+
+            font-size: 12px;
+            padding: 4px;
+            border-radius: 12px;
+
+            position: absolute;
+            inset-inline-start: 100%;
+            top: 0;
+            transform: translateX(calc((var(--size) * -1) /1.2)) translateY(calc((var(--size) * -1) /3));
+        }
+
+        .notifications_bell_icon {
+            font-size: 24px;
+        }
+
+        .notifications {
+            width: 400px;
+            border-radius: 8px;
+
+            position: absolute;
+            inset-inline-end: -500px;
+            /* 8px = nav padding  + 8px gap*/
+            top: calc(100% + 16px);
+            z-index: 999;
+            transition: 0.3s all ease-in-out;
+
+            max-height: 80dvh;
+            overflow: auto;
+        }
+
+        .notifications.active {
+            inset-inline-end: 0;
+        }
+
+        .notification_item:has(+.notification_item) {
+            border-bottom: 1px solid #CCC;
+        }
+
+        .notification_text {
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        @media(max-width:720px) {
+            .notifications {
+                width: 350px;
+            }
+
+            .notifications.active {
+                inset-inline-end: -60px;
+            }
+        }
+    </style>
 </head>
 
 <body class="sb-nav-fixed">
@@ -47,6 +126,14 @@
                 </ul>
             </li>
         </ul>
+        <div class="ms-auto me-3 notifications_container">
+            <button class="notifications_bell_btn" id="notifications_bell">
+                <span class="notifications_count d-none" id="notifications_count"></span>
+                <i class="fa-solid fa-bell text-light notifications_bell_icon"></i>
+            </button>
+            <div class="notifications bg-dark text-light shadow-lg" id="notifications">
+            </div>
+        </div>
     </nav>
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
@@ -98,7 +185,98 @@
         </div>
     </div>
     </div>
+    <script>
+        // toggle notifications
+        const notifications_bell = document.getElementById("notifications_bell");
+        const notifications = document.getElementById("notifications");
+        const notifications_count = document.getElementById("notifications_count");
+        // mock data at first
+        let notifications_list = ["Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, enim?",
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, enim?",
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, enim?"
+        ];
+
+        let closeTimeOutId = null;
+        if (notifications_bell && notifications && notifications_count) {
+
+            const updateNotificationsCount = (count) => {
+                console.log({
+                    count
+                })
+                if (count > 0) {
+                    notifications_count.innerText = count > 99 ? "+99" : count;
+                    notifications_count.classList.remove("d-none")
+                } else {
+                    console.log("NO NOTIFICATIONS")
+                    notifications_count.classList.add("d-none")
+                }
+            }
+
+            const appendNotification = (notification_text) => {
+                updateNotificationsCount(notifications_list.length);
+
+                const notificationItem = document.createElement("div");
+                notificationItem.classList = "notification_item p-3 pt-2 pb-0";
+
+                const notificationText = document.createElement("p")
+                notificationText.classList = "notification_text"
+                notificationText.innerText = notification_text;
+
+                notificationItem.appendChild(notificationText);
+                notifications.appendChild(notificationItem);
+            }
+
+            // show initial data
+            notifications_list.map(el => appendNotification(el));
+
+            notifications_bell.addEventListener('click', (e) => {
+                notifications.classList.toggle('active');
+                if (closeTimeOutId) {
+                    clearTimeout(closeTimeOutId);
+                    closeTimeOutId = null;
+                }
+
+                closeTimeOutId = setTimeout(() => {
+                    notifications.classList.remove('active');
+                    closeTimeOutId = null;
+                }, 10000)
+            })
+        }
+    </script>
     @include('includes.js.allJS')
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            var pusher = new Pusher('50fd908f86ab9aec746a', {
+                cluster: 'ap2',
+                authEndpoint: '/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    }
+                }
+            });
+            // get the auth user id
+            var authId = {{ auth_advisor()->id }};
+            // get the channel
+            var channel = pusher.subscribe('private-App.Models.Advisor.' + authId);
+            // bind the event
+            channel.bind("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", function(data) {
+                var data = JSON.stringify(data);
+                var message = JSON.parse(data).message;
+                Swal.fire({
+                    title: message,
+                    toast: true,
+                    showConfirmButton: false,
+                    position: "top-end",
+                    icon: "info",
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -32,7 +32,7 @@ class TraineeAuthorizationMail extends Mailable
     {
         $app_name = config('app.name');
         return new Envelope(
-            subject: "Your $app_name Account is Ready to Use",
+            subject: "Hooraay!😎 You are now a trainee of $app_name",
         );
     }
 

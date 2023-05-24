@@ -56,9 +56,17 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4"><span class="text-success">{{ $trainingProgram->name }}</span></h1>
+            <div class="col-12 mt-2">
+                @foreach ($errors->all() as $message)
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @endforeach
+            </div>
             <form action="{{ route('manager.update-training-program', $trainingProgram->id) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
+
+                <input type="hidden" name="users_length" value="{{ $trainingProgram->users_length }}">
+
                 <div class="form-group mb-2">
                     <label for="banner_input">Banner image</label>
                     <div class="banner_input shadow-sm">
@@ -84,7 +92,6 @@
                     <input type="text" class="form-control" id="description" name="location" required
                         value="{{ $trainingProgram->location }}">
                 </div>
-
 
 
                 <div class="form-group mb-2">
@@ -117,10 +124,11 @@
                 </div>
 
                 <div class="form-group mb-2">
-                    <label for="fees">Fees (Leave it blank if it is free):</label>
+                    <label for="fees">Fees (Leave it blank if it is free) (In USD): </label>
                     <input class="form-control" type="number" placeholder="Program Fees" name="fees"
                         value="{{ $trainingProgram->fees }}" id="fees" />
                 </div>
+
                 <div class="form-group mb-2">
                     <label for="start-date">Start Date <b style="color: #d50100">*</b></label>
                     <input type="date" class="form-control" id="start-date" value="{{ $trainingProgram->start_date }}"
@@ -134,16 +142,33 @@
                 </div>
 
                 <div class="form-group mb-2">
-                    <label for="gender">Discipline <b style="color: #d50100">*</b></label>
+                    <label for="discipline">Discipline <b style="color: #d50100">*</b></label>
                     <div class="row">
                         <div class="col-md-12">
-                            <select class="form-select mb-3" aria-label=".form-select-lg example" name="discipline_id"
-                                required>
+                            <select class="form-select" aria-label=".form-select-lg example" name="discipline_id"
+                                id="discipline" required>
                                 <option selected value="">Select Discipline</option>
                                 @foreach ($disciplines as $discipline)
                                     <option value="{{ $discipline->id }}"
                                         @if ($trainingProgram->discipline_id == $discipline->id) selected @endif>
                                         {{ $discipline->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="advisor">Advisor </label>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select class="form-select mb-3" aria-label=".form-select-lg example" name="advisor_id"
+                                id="advisor">
+                                <option selected value="">Select Advisor</option>
+                                @foreach ($advisors as $advisor)
+                                    <option value="{{ $advisor->id }}" @if ($trainingProgram->advisor_id == $advisor->id) selected @endif>
+                                        {{ $advisor->displayName }}
                                     </option>
                                 @endforeach
                             </select>

@@ -23,7 +23,8 @@ class TraineeController extends Controller
         $trainee_db = auth_trainee();
         $message = 'Welcome ' . $trainee_db->displayName . ' To your dashboard';
         $trainee_db->notify(new TraineeNotification(null, $message));
-        return view('trainee.index');
+        $notifications = $trainee_db->notifications()->latest()->take(5)->get();
+        return view('trainee.index', compact('notifications'));
     }
 
     public function upload()
@@ -35,6 +36,7 @@ class TraineeController extends Controller
         return view('trainee.upload', compact('files'));
     }
 
+
     public function available_training_programs()
     {
         $paginate = 3;
@@ -44,7 +46,7 @@ class TraineeController extends Controller
             $query->where('trainee_id', $trainee->id);
         })->whereHas('training_program_users', function ($query) {
             $query->havingRaw('count(*) < capacity');
-        })->paginate($paginate);
+        })->whereNotNull('advisor_id')->paginate($paginate);
         return view('trainee.available_training_programs', compact('training_programs'));
     }
 
@@ -101,16 +103,54 @@ class TraineeController extends Controller
                 if ($reference->exists()) {
                     $reference->delete();
                 }
+                $trainee->avatar_file->delete();
             }
             $avatarImage = request()->file('avatar-image');
             // Using firebase storage to upload files and make a record for File in the database linked with the trainee
             $avatar_file_name = $trainee->firebase_uid . '_trainee_avatar_image.' . $avatarImage->getClientOriginalExtension();
             $avatar_file_path = 'Trainee/Images/' . $avatar_file_name;
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
+
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $avatar_file_name;
+            $file->firebase_file_path = $avatar_file_path;
+            $file->extension = $avatarImage->getClientOriginalExtension();
+            $file->trainee_id = $trainee->id;
+            $file->description = 'Trainee Avatar Image';
+            $size = $avatarImage->getSize();
+            $file->size = $size ? $size : 0;
+            $file->save();
         }
 
-
         // cv-file
+        // Check if the user uploaded a new cv file
+        if (request()->hasFile('cv-file')) {
+            // Delete the old cv file from firebase storage
+            if ($trainee->cv) {
+                $reference = app('firebase.storage')->getBucket()->object($trainee->cv);
+                if ($reference->exists()) {
+                    $reference->delete();
+                }
+                $trainee->cv_file->delete();
+            }
+            $cvFile = request()->file('cv-file');
+            // Using firebase storage to upload files and make a record for File in the database linked with the trainee
+            $cv_file_name = $trainee->firebase_uid . '_trainee_cv_file.' . $cvFile->getClientOriginalExtension();
+            $cv_file_path = 'Trainee/CVs/' . $cv_file_name;
+            $this->uploadFirebaseStorageFile($cvFile, $cv_file_path);
+
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $cv_file_name;
+            $file->firebase_file_path = $cv_file_path;
+            $file->extension = $cvFile->getClientOriginalExtension();
+            $file->trainee_id = $trainee->id;
+            $file->description = 'Trainee CV File';
+            $size = $cvFile->getSize();
+            $file->size = $size ? $size : 0;
+            $file->save();
+        }
 
 
         // Check the disciplines selected by the user and remove the old disciplines and add the new ones
@@ -127,17 +167,21 @@ class TraineeController extends Controller
             if ($firebaseUser->uid != $trainee->firebase_uid) {
                 return redirect()->back()->with(['fail' => 'The email address is already in use by another account!', 'type' => 'error']);
             }
-        } catch (\Throwable $th) { // If the email is not used before then the getUserByEmail will throw an exception
-            // Do nothing
-        } finally {
             // Update firebase user
             $user = $auth->getUser($trainee->firebase_uid);
             $auth->updateUser($user->uid, [
                 'email' => $data['email'],
                 'displayName' => $data['displayName'],
             ]);
+            $trainee->email = $data['email'];
+            $trainee->displayName = $data['displayName'];
+            $trainee->phone = $data['phone'];
+            $trainee->address = $data['address'];
             $status = $trainee->update($data);
             return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your Information has been updated successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        } catch (\Throwable $th) { // If the email is not used before then the getUserByEmail will throw an exception
+            // Do nothing
+            return redirect()->back()->with(['fail' => $th->getMessage(), 'type' => 'error']);
         }
     }
 }

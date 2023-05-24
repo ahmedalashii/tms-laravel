@@ -51,61 +51,60 @@
     }
 </style>
 
-@extends('layouts.managerLayout')
 
-@section('MainContent')
+<?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4"><span class="text-success">Create New Training Program</span></h1>
-            @if (Session::has('error'))
-                <div class="alert alert-danger alert-dismissible fade show">
-                    {{ Session::get('error') }}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                </div>
-            @endif
-
+            <h1 class="mt-4 mb-4"><span class="text-success"><?php echo e($trainingProgram->name); ?></span></h1>
             <div class="col-12 mt-2">
-                @foreach ($errors->all() as $message)
-                    <div class="alert alert-danger">{{ $message }}</div>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="alert alert-danger"><?php echo e($message); ?></div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-            <form class="mt-2 mb-4" action="{{ route('manager.store-training-program') }}" method="POST"
+            <form action="<?php echo e(route('manager.update-training-program', $trainingProgram->id)); ?>" method="POST"
                 enctype="multipart/form-data">
-                @csrf
+                <?php echo csrf_field(); ?>
+
+                <input type="hidden" name="users_length" value="<?php echo e($trainingProgram->users_length); ?>">
 
                 <div class="form-group mb-2">
-                    <label for="banner_input">Banner image <b style="color: #d50100">*</b></label>
+                    <label for="banner_input">Banner image</label>
                     <div class="banner_input shadow-sm">
-                        <img id="banner_input-image" src="" alt="">
+                        <img id="banner_input-image" src="<?php echo e($trainingProgram->thumbnail); ?>" alt="">
                         <label for="banner_input" class="banner_input-label fs-1">+</label>
-                        <input type="file" accept="image/*" class="d-none" id="banner_input" name="thumbnail" required>
+                        <input type="file" accept="image/*" class="d-none" id="banner_input" name="thumbnail">
                     </div>
                 </div>
                 <div class="form-group mb-2">
                     <label for="name">Name <b style="color: #d50100">*</b></label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" value="<?php echo e($trainingProgram->name); ?>"
+                        name="name" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="description">Description <b style="color: #d50100">*</b></label>
-                    <input type="text" class="form-control" id="description" name="description" required>
+                    <input type="text" class="form-control" id="description" value="<?php echo e($trainingProgram->description); ?>"
+                        name="description" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="location">Location <b style="color: #d50100">*</b></label>
-                    <input type="text" class="form-control" id="description" name="location" required>
+                    <input type="text" class="form-control" id="description" name="location" required
+                        value="<?php echo e($trainingProgram->location); ?>">
                 </div>
+
 
                 <div class="form-group mb-2">
                     <label for="capacity">Capacity: <b style="color: #d50100">*</b></label>
-                    <input class="form-control" type="number" placeholder="Program Capacity" value="5" name="capacity"
-                        id="capacity" min="5" max="100" required />
+                    <input class="form-control" type="number" placeholder="Program Capacity"
+                        value="<?php echo e($trainingProgram->capacity); ?>" name="capacity" id="capacity" min="5"
+                        max="100" required />
                 </div>
 
                 <div class="form-group mb-2">
-                    <label for="duration">Duration: <b style="color: #d50100">*</b></label>
-                    <input class="form-control" type="number" placeholder="Program Duration" value="1" name="duration"
-                        id="duration" min="1" required />
+                    <label for="duration">Duration <b style="color: #d50100">*</b></label>
+                    <input type="text" class="form-control" id="duration" value="<?php echo e($trainingProgram->duration); ?>"
+                        name="duration" required>
                 </div>
 
                 <div class="form-group mb-2">
@@ -114,11 +113,12 @@
                         <div class="col-md-12">
                             <select class="form-select" aria-label=".form-select-lg example" name="duration_unit" required>
                                 <option selected value="">Select Duration Unit</option>
-                                @foreach ($duration_units as $key => $duration_unit)
-                                    <option value="{{ $key }}">
-                                        {{ $duration_unit }}
+                                <?php $__currentLoopData = $duration_units; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $duration_unit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($key); ?>" <?php if($trainingProgram->duration_unit == $key): ?> selected <?php endif; ?>>
+                                        <?php echo e($duration_unit); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -126,18 +126,20 @@
 
                 <div class="form-group mb-2">
                     <label for="fees">Fees (Leave it blank if it is free) (In USD): </label>
-                    <input class="form-control" type="number" placeholder="Program Fees" value="" name="fees"
-                        min="1" id="fees" />
+                    <input class="form-control" type="number" placeholder="Program Fees" name="fees"
+                        value="<?php echo e($trainingProgram->fees); ?>" id="fees" />
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="start-date">Start Date <b style="color: #d50100">*</b></label>
-                    <input type="date" class="form-control" id="start-date" name="start_date" required>
+                    <input type="date" class="form-control" id="start-date" value="<?php echo e($trainingProgram->start_date); ?>"
+                        name="start_date" required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="end-date">End Date <b style="color: #d50100">*</b></label>
-                    <input type="date" class="form-control" id="end-date" name="end_date" required>
+                    <input type="date" class="form-control" id="end-date" value="<?php echo e($trainingProgram->end_date); ?>"
+                        name="end_date" required>
                 </div>
 
                 <div class="form-group mb-2">
@@ -147,11 +149,13 @@
                             <select class="form-select" aria-label=".form-select-lg example" name="discipline_id"
                                 id="discipline" required>
                                 <option selected value="">Select Discipline</option>
-                                @foreach ($disciplines as $discipline)
-                                    <option value="{{ $discipline->id }}">
-                                        {{ $discipline->name }}
+                                <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($discipline->id); ?>"
+                                        <?php if($trainingProgram->discipline_id == $discipline->id): ?> selected <?php endif; ?>>
+                                        <?php echo e($discipline->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -164,23 +168,25 @@
                             <select class="form-select mb-3" aria-label=".form-select-lg example" name="advisor_id"
                                 id="advisor">
                                 <option selected value="">Select Advisor</option>
-                                @foreach ($advisors as $advisor)
-                                    <option value="{{ $advisor->id }}">
-                                        {{ $advisor->displayName }}
+                                <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($advisor->id); ?>" <?php if($trainingProgram->advisor_id == $advisor->id): ?> selected <?php endif; ?>>
+                                        <?php echo e($advisor->displayName); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
                 </div>
+
                 <div class="d-flex align-items-end pb-2 justify-content-end">
-                    <button type="submit" class="btn btn-success pe-4 ps-4">Create</button>
-                    <a href="{{ route('manager.training-programs') }}" class="btn btn-danger ms-2">Cancel</a>
+                    <button type="submit" class="btn btn-success pe-4 ps-4">Save</button>
+                    <a href="<?php echo e(route('manager.training-programs')); ?>" class="btn btn-danger ms-2">Cancel</a>
                 </div>
+
             </form>
         </div>
     </main>
-
     <script>
         // change banner image
         const bannerInput = document.getElementById("banner_input");
@@ -197,4 +203,6 @@
             })
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/edit_training_program.blade.php ENDPATH**/ ?>

@@ -43,14 +43,27 @@ class Trainee extends Authenticatable
         return $this->localId;
     }
 
+    
     public function files()
     {
         return $this->hasMany(File::class);
     }
 
+
+    public function getAvatarFileAttribute()
+    {
+        return $this->files()->where('name', 'like',  $this->firebase_uid . '_trainee_avatar_image%')->first();
+    }
+
     public function getAvatarAttribute()
     {
         return $this->files()->where('name', 'like',  $this->firebase_uid . '_trainee_avatar_image%')->first()?->url;
+    }
+
+
+    public function getCvFileAttribute()
+    {
+        return $this->files()->where('name', 'like', $this->firebase_uid . '_trainee_cv%')->first();
     }
 
     public function getCvAttribute()

@@ -45,17 +45,53 @@ class AdvisorController extends Controller
                 if ($reference->exists()) {
                     $reference->delete();
                 }
+                $advisor->avatar_file->delete();
             }
             $avatarImage = request()->file('avatar-image');
             // Using firebase storage to upload files and make a record for File in the database linked with the advisor
             $avatar_file_name = $advisor->firebase_uid . '_advisor_avatar_image.' . $avatarImage->getClientOriginalExtension();
             $avatar_file_path = 'Advisor/Images/' . $avatar_file_name;
             $this->uploadFirebaseStorageFile($avatarImage, $avatar_file_path);
+
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $avatar_file_name;
+            $file->firebase_file_path = $avatar_file_path;
+            $file->extension = $avatarImage->getClientOriginalExtension();
+            $file->advisor_id = $advisor->id;
+            $file->description = 'Advisor Avatar Image';
+            $size = $avatarImage->getSize();
+            $file->size = $size ? $size : 0;
         }
 
-
         // cv-file
-
+        // Check if the user uploaded a new cv file
+        if (request()->hasFile('cv-file')) {
+            // Delete the old cv file from firebase storage
+            if ($advisor->cv) {
+                info('Advisor has a cv file');
+                $reference = app('firebase.storage')->getBucket()->object($advisor->cv);
+                if ($reference->exists()) {
+                    $reference->delete();
+                }
+                $advisor->cv_file->delete();
+            }
+            $cvFile = request()->file('cv-file');
+            // Using firebase storage to upload files and make a record for File in the database linked with the advisor
+            $cv_file_name = $advisor->firebase_uid . '_advisor_cv_file.' . $cvFile->getClientOriginalExtension();
+            $cv_file_path = 'Advisor/CVs/' . $cv_file_name;
+            $this->uploadFirebaseStorageFile($cvFile, $cv_file_path);
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $cv_file_name;
+            $file->firebase_file_path = $cv_file_path;
+            $file->extension = $cvFile->getClientOriginalExtension();
+            $file->advisor_id = $advisor->id;
+            $file->description = 'Advisor CV File';
+            $size = $cvFile->getSize();
+            $file->size = $size ? $size : 0;
+            $file->save();
+        }
 
         // Check the disciplines selected by the user and remove the old disciplines and add the new ones
         $disciplines = $data['disciplines'];
@@ -71,9 +107,6 @@ class AdvisorController extends Controller
             if ($firebaseUser->uid != $advisor->firebase_uid) {
                 return redirect()->back()->with(['fail' => 'The email address is already in use by another account!', 'type' => 'error']);
             }
-        } catch (\Throwable $th) { // If the email is not used before then the getUserByEmail will throw an exception
-            // Do nothing
-        } finally {
             // Update firebase user
             $user = $auth->getUser($advisor->firebase_uid);
             $auth->updateUser($user->uid, [
@@ -82,6 +115,9 @@ class AdvisorController extends Controller
             ]);
             $status = $advisor->update($data);
             return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your Information has been updated successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+        } catch (\Throwable $th) { // If the email is not used before then the getUserByEmail will throw an exception
+            // Do nothing
+            return redirect()->back()->with(['fail' => $th->getMessage(), 'type' => 'error']);
         }
     }
 

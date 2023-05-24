@@ -1,6 +1,4 @@
-@extends('layouts.managerLayout')
-
-@section('MainContent')
+<?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">Training Programs</h1>
@@ -11,7 +9,7 @@
                         Training Programs Information
                     </div>
                     <div class="card-body">
-                        <form method="GET" action="{{ route('manager.training-programs') }}">
+                        <form method="GET" action="<?php echo e(route('manager.training-programs')); ?>">
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for="discipline">Filter based on discipline</label>
@@ -20,12 +18,13 @@
                                             <select class="form-select mb-3" aria-label=".form-select-lg example"
                                                 id="discipline" name="discipline">
                                                 <option selected value="">Select Discipline</option>
-                                                @foreach ($disciplines as $discipline)
-                                                    <option value="{{ $discipline->id }}"
-                                                        @if (request()->get('discipline') == $discipline->id) selected @endif>
-                                                        {{ $discipline->name }}
+                                                <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($discipline->id); ?>"
+                                                        <?php if(request()->get('discipline') == $discipline->id): ?> selected <?php endif; ?>>
+                                                        <?php echo e($discipline->name); ?>
+
                                                     </option>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="col-md-2">
@@ -40,12 +39,13 @@
                                             <select class="form-select mb-3" aria-label=".form-select-lg example"
                                                 id="advisor" name="advisor">
                                                 <option selected value="">Select Advisor</option>
-                                                @foreach ($advisors as $advisor)
-                                                    <option value="{{ $advisor->id }}"
-                                                        @if (request()->get('advisor') == $advisor->id) selected @endif>
-                                                        {{ $advisor->displayName }}
+                                                <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($advisor->id); ?>"
+                                                        <?php if(request()->get('advisor') == $advisor->id): ?> selected <?php endif; ?>>
+                                                        <?php echo e($advisor->displayName); ?>
+
                                                     </option>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="col-md-2">
@@ -55,14 +55,14 @@
                                 </div>
 
                                 <div class="col-md-4 d-flex justify-content-end align-items-end pb-3">
-                                    <a class="btn btn-success" href="{{ route('manager.create-training-program') }}">Add New
+                                    <a class="btn btn-success" href="<?php echo e(route('manager.create-training-program')); ?>">Add New
                                         Training Program</a>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-10">
                                     <input type="search" class="form-control" placeholder="Search for training programs"
-                                        aria-label="Search" name="search" value="{{ request()->query('search') }}">
+                                        aria-label="Search" name="search" value="<?php echo e(request()->query('search')); ?>">
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-dark" type="submit">Search</button>
@@ -89,83 +89,88 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($training_programs->isNotEmpty())
-                                    @foreach ($training_programs as $training_program)
+                                <?php if($training_programs->isNotEmpty()): ?>
+                                    <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <tr>
-                                            <td>{{ $training_program->name }}</td>
-                                            <td>{{ $training_program->description }}</td>
-                                            <td>{{ $training_program->duration }} {{ $training_program->duration_unit }}
+                                            <td><?php echo e($training_program->name); ?></td>
+                                            <td><?php echo e($training_program->description); ?></td>
+                                            <td><?php echo e($training_program->duration); ?> <?php echo e($training_program->duration_unit); ?>
+
                                             </td>
-                                            <td>{{ $training_program->discipline->name }}</td>
-                                            <td>{{ $training_program->advisor?->displayName ?? '--' }}</td>
-                                            <td>{{ $training_program->location }}</td>
-                                            <td>{{ $training_program->users_length }} / {{ $training_program->capacity }}
+                                            <td><?php echo e($training_program->discipline->name); ?></td>
+                                            <td><?php echo e($training_program->advisor?->displayName ?? '--'); ?></td>
+                                            <td><?php echo e($training_program->location); ?></td>
+                                            <td><?php echo e($training_program->users_length); ?> / <?php echo e($training_program->capacity); ?>
+
                                             <td>
-                                                @if ($training_program->fees)
-                                                    {{ $training_program->fees }} ₪
-                                                @else
+                                                <?php if($training_program->fees): ?>
+                                                    <?php echo e($training_program->fees); ?> ₪
+                                                <?php else: ?>
                                                     <b style="color: green">Free</b>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
-                                            <td>{{ $training_program->start_date }}</td>
-                                            <td>{{ $training_program->end_date }}</td>
+                                            <td><?php echo e($training_program->start_date); ?></td>
+                                            <td><?php echo e($training_program->end_date); ?></td>
                                             <td>
-                                                @if ($training_program->trashed())
+                                                <?php if($training_program->trashed()): ?>
                                                     <button class="btn btn-secondary rounded-full btn-hover"
                                                         style="width: 100px; padding: 11px; cursor: not-allowed !important;"
                                                         disabled>
                                                         Edit
                                                     </button>
-                                                @else
+                                                <?php else: ?>
                                                     <form
-                                                        action="{{ route('manager.edit-training-program', $training_program->id) }}"
+                                                        action="<?php echo e(route('manager.edit-training-program', $training_program->id)); ?>"
                                                         method="GET">
                                                         <button class="btn btn-success btn-sm" type="submit"
                                                             style="width: 100px; padding: 11px;">
                                                             Edit
                                                         </button>
                                                     </form>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                @if ($training_program->trashed())
+                                                <?php if($training_program->trashed()): ?>
                                                     <form
-                                                        action="{{ route('manager.activate-training-program', $training_program->id) }}"
+                                                        action="<?php echo e(route('manager.activate-training-program', $training_program->id)); ?>"
                                                         method="POST">
-                                                        @csrf
+                                                        <?php echo csrf_field(); ?>
                                                         <button class="btn btn-success rounded-full btn-hover"
                                                             type="submit" style="width: 100px; padding: 11px;">
                                                             Activate
                                                         </button>
                                                     </form>
-                                                @else
+                                                <?php else: ?>
                                                     <form
-                                                        action="{{ route('manager.deactivate-training-program', $training_program->id) }}"
+                                                        action="<?php echo e(route('manager.deactivate-training-program', $training_program->id)); ?>"
                                                         method="POST">
-                                                        @csrf
+                                                        <?php echo csrf_field(); ?>
                                                         <button class="btn btn-danger rounded-full btn-hover" type="submit"
                                                             style="width: 100px; padding: 11px;">
                                                             Deactivate
                                                         </button>
                                                     </form>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
-                                    @endforeach
-                                @else
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
                                     <tr>
                                         <td colspan="12" class="text-center">No Training Programs Found</td>
                                     </tr>
-                                @endif
+                                <?php endif; ?>
                             </tbody>
                         </table>
-                        @if ($training_programs->hasPages())
+                        <?php if($training_programs->hasPages()): ?>
                             <br>
-                        @endif
-                        {{ $training_programs->links('pagination::bootstrap-5') }}
+                        <?php endif; ?>
+                        <?php echo e($training_programs->links('pagination::bootstrap-5')); ?>
+
                     </div>
                 </div>
             </section>
         </div>
     </main>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/training_programs.blade.php ENDPATH**/ ?>

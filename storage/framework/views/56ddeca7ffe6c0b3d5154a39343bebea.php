@@ -1,23 +1,24 @@
-@extends('layouts.traineeLayout')
 
-@section('MainContent')
-    @php
-        $traineeFirbase = Auth::guard('trainee')->user();
-        $trainee = \App\Models\Trainee::where('firebase_uid', $traineeFirbase->localId)->first();
-        $trainee->load('disciplines');
-    @endphp
+
+
+<?php $__env->startSection('MainContent'); ?>
+    <?php
+        $advisorFirebase = Auth::guard('advisor')->user();
+        $advisor = \App\Models\Advisor::where('firebase_uid', $advisorFirebase->localId)->first();
+        $advisor->load('disciplines');
+    ?>
 
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4"><span class="text-success">Edit</span> your profile</h1>
             <div class="row">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <img src="{{ $trainee->avatar }}" id="user_avatar" class="avatar_img shadow-lg" alt="avatar" />
+                    <img src="<?php echo e($advisor->avatar); ?>" id="user_avatar" class="avatar_img shadow-lg" alt="avatar" />
                 </div>
             </div>
-            <form class="mt-2 mb-4" method="POST" action="{{ route('trainee.update', $trainee->id) }}"
+            <form class="mt-2 mb-4" method="POST" action="<?php echo e(route('advisor.update', $advisor->id)); ?>"
                 enctype="multipart/form-data">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-2">
@@ -42,7 +43,7 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="address" placeholder="Address"
-                                value="{{ $trainee->address }}" name="address">
+                                value="<?php echo e($advisor->address); ?>" name="address">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -51,7 +52,7 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="name" placeholder="Name"
-                                value="{{ $trainee->displayName }}" name="displayName">
+                                value="<?php echo e($advisor->displayName); ?>" name="displayName">
                         </div>
                     </div>
 
@@ -64,13 +65,13 @@
                             </label>
                             <select class="form-control" id="gender" name="gender">
                                 <option value="-1">Select your gender</option>
-                                @php
+                                <?php
                                     $genders = ['male', 'female'];
-                                @endphp
-                                @foreach ($genders ?? [] as $gender)
-                                    <option value="{{ $gender }}" @if ($trainee->gender == $gender) selected @endif>
-                                        {{ ucfirst($gender) }}</option>
-                                @endforeach
+                                ?>
+                                <?php $__currentLoopData = $genders ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gender): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($gender); ?>" <?php if($advisor->gender == $gender): ?> selected <?php endif; ?>>
+                                        <?php echo e(ucfirst($gender)); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -79,7 +80,7 @@
                             <label for="email">Email address
                                 <strong class="text-danger">*</strong>
                             </label>
-                            <input type="email" class="form-control" id="email" value="{{ $trainee->email }}"
+                            <input type="email" class="form-control" id="email" value="<?php echo e($advisor->email); ?>"
                                 name="email">
                         </div>
                     </div>
@@ -92,7 +93,7 @@
                                 <strong class="text-danger">*</strong>
                             </label>
                             <input type="text" class="form-control" id="phone" placeholder="Phone number"
-                                value="{{ $trainee->phone }}" name="phone">
+                                value="<?php echo e($advisor->phone); ?>" name="phone">
                         </div>
                     </div>
                 </div>
@@ -103,15 +104,15 @@
                         </label>
                         <br>
                         <div class="form-group">
-                            @foreach ($disciplines as $discipline)
+                            <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="form-check">
-                                    <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
-                                        class="form-check-input" id="discipline-{{ $discipline->id }}"
-                                        @if ($trainee->hasDiscipline($discipline->id)) checked @endif>
+                                    <input type="checkbox" name="disciplines[]" value="<?php echo e($discipline->id); ?>"
+                                        class="form-check-input" id="discipline-<?php echo e($discipline->id); ?>"
+                                        <?php if($advisor->hasDiscipline($discipline->id)): ?> checked <?php endif; ?>>
                                     <label class="form-check-label"
-                                        for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
+                                        for="discipline-<?php echo e($discipline->id); ?>"><?php echo e($discipline->name); ?></label>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
                 </div>
@@ -125,10 +126,12 @@
             </form>
 
             <div class="col-12 mt-2">
-                @foreach ($errors->all() as $message)
-                    <div class="alert alert-danger">{{ $message }}</div>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="alert alert-danger"><?php echo e($message); ?></div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </main>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.advisorLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/advisor/edit.blade.php ENDPATH**/ ?>

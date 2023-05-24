@@ -1,10 +1,11 @@
-@extends('layouts.traineeLayout')
+@extends('layouts.advisorLayout')
+
 
 @section('MainContent')
     @php
-        $traineeFirbase = Auth::guard('trainee')->user();
-        $trainee = \App\Models\Trainee::where('firebase_uid', $traineeFirbase->localId)->first();
-        $trainee->load('disciplines');
+        $advisorFirebase = Auth::guard('advisor')->user();
+        $advisor = \App\Models\Advisor::where('firebase_uid', $advisorFirebase->localId)->first();
+        $advisor->load('disciplines');
     @endphp
 
     <main>
@@ -12,10 +13,10 @@
             <h1 class="mt-4 mb-4"><span class="text-success">Edit</span> your profile</h1>
             <div class="row">
                 <div class="d-flex align-items-center justify-content-center mb-3">
-                    <img src="{{ $trainee->avatar }}" id="user_avatar" class="avatar_img shadow-lg" alt="avatar" />
+                    <img src="{{ $advisor->avatar }}" id="user_avatar" class="avatar_img shadow-lg" alt="avatar" />
                 </div>
             </div>
-            <form class="mt-2 mb-4" method="POST" action="{{ route('trainee.update', $trainee->id) }}"
+            <form class="mt-2 mb-4" method="POST" action="{{ route('advisor.update', $advisor->id) }}"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="row">
@@ -42,7 +43,7 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="address" placeholder="Address"
-                                value="{{ $trainee->address }}" name="address">
+                                value="{{ $advisor->address }}" name="address">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -51,7 +52,7 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="name" placeholder="Name"
-                                value="{{ $trainee->displayName }}" name="displayName">
+                                value="{{ $advisor->displayName }}" name="displayName">
                         </div>
                     </div>
 
@@ -68,7 +69,7 @@
                                     $genders = ['male', 'female'];
                                 @endphp
                                 @foreach ($genders ?? [] as $gender)
-                                    <option value="{{ $gender }}" @if ($trainee->gender == $gender) selected @endif>
+                                    <option value="{{ $gender }}" @if ($advisor->gender == $gender) selected @endif>
                                         {{ ucfirst($gender) }}</option>
                                 @endforeach
                             </select>
@@ -79,7 +80,7 @@
                             <label for="email">Email address
                                 <strong class="text-danger">*</strong>
                             </label>
-                            <input type="email" class="form-control" id="email" value="{{ $trainee->email }}"
+                            <input type="email" class="form-control" id="email" value="{{ $advisor->email }}"
                                 name="email">
                         </div>
                     </div>
@@ -92,7 +93,7 @@
                                 <strong class="text-danger">*</strong>
                             </label>
                             <input type="text" class="form-control" id="phone" placeholder="Phone number"
-                                value="{{ $trainee->phone }}" name="phone">
+                                value="{{ $advisor->phone }}" name="phone">
                         </div>
                     </div>
                 </div>
@@ -107,7 +108,7 @@
                                 <div class="form-check">
                                     <input type="checkbox" name="disciplines[]" value="{{ $discipline->id }}"
                                         class="form-check-input" id="discipline-{{ $discipline->id }}"
-                                        @if ($trainee->hasDiscipline($discipline->id)) checked @endif>
+                                        @if ($advisor->hasDiscipline($discipline->id)) checked @endif>
                                     <label class="form-check-label"
                                         for="discipline-{{ $discipline->id }}">{{ $discipline->name }}</label>
                                 </div>

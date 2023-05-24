@@ -40,3 +40,4 @@ if (avatarImage && avatarInput) {
         reader.readAsDataURL(avatarInput.files[0]);
     })
 }
+

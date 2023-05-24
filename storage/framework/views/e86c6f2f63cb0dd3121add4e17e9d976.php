@@ -51,28 +51,28 @@
     }
 </style>
 
-@extends('layouts.managerLayout')
 
-@section('MainContent')
+
+<?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4"><span class="text-success">Create New Training Program</span></h1>
-            @if (Session::has('error'))
+            <?php if(Session::has('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show">
-                    {{ Session::get('error') }}
+                    <?php echo e(Session::get('error')); ?>
+
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <div class="col-12 mt-2">
-                @foreach ($errors->all() as $message)
-                    <div class="alert alert-danger">{{ $message }}</div>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="alert alert-danger"><?php echo e($message); ?></div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-            <form class="mt-2 mb-4" action="{{ route('manager.store-training-program') }}" method="POST"
+            <form class="mt-2 mb-4" action="<?php echo e(route('manager.store-training-program')); ?>" method="POST"
                 enctype="multipart/form-data">
-                @csrf
-
+                <?php echo csrf_field(); ?>
                 <div class="form-group mb-2">
                     <label for="banner_input">Banner image <b style="color: #d50100">*</b></label>
                     <div class="banner_input shadow-sm">
@@ -114,20 +114,21 @@
                         <div class="col-md-12">
                             <select class="form-select" aria-label=".form-select-lg example" name="duration_unit" required>
                                 <option selected value="">Select Duration Unit</option>
-                                @foreach ($duration_units as $key => $duration_unit)
-                                    <option value="{{ $key }}">
-                                        {{ $duration_unit }}
+                                <?php $__currentLoopData = $duration_units; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $duration_unit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($key); ?>">
+                                        <?php echo e($duration_unit); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group mb-2">
-                    <label for="fees">Fees (Leave it blank if it is free) (In USD): </label>
-                    <input class="form-control" type="number" placeholder="Program Fees" value="" name="fees"
-                        min="1" id="fees" />
+                    <label for="fees">Fees (Leave it blank if it is free):</label>
+                    <input class="form-control" type="number" placeholder="Program Fees" value="" name="fees" min="1"
+                        id="fees" />
                 </div>
 
                 <div class="form-group mb-2">
@@ -147,11 +148,12 @@
                             <select class="form-select" aria-label=".form-select-lg example" name="discipline_id"
                                 id="discipline" required>
                                 <option selected value="">Select Discipline</option>
-                                @foreach ($disciplines as $discipline)
-                                    <option value="{{ $discipline->id }}">
-                                        {{ $discipline->name }}
+                                <?php $__currentLoopData = $disciplines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $discipline): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($discipline->id); ?>">
+                                        <?php echo e($discipline->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -164,18 +166,19 @@
                             <select class="form-select mb-3" aria-label=".form-select-lg example" name="advisor_id"
                                 id="advisor">
                                 <option selected value="">Select Advisor</option>
-                                @foreach ($advisors as $advisor)
-                                    <option value="{{ $advisor->id }}">
-                                        {{ $advisor->displayName }}
+                                <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($advisor->id); ?>">
+                                        <?php echo e($advisor->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-end pb-2 justify-content-end">
                     <button type="submit" class="btn btn-success pe-4 ps-4">Create</button>
-                    <a href="{{ route('manager.training-programs') }}" class="btn btn-danger ms-2">Cancel</a>
+                    <a href="<?php echo e(route('manager.training-programs')); ?>" class="btn btn-danger ms-2">Cancel</a>
                 </div>
             </form>
         </div>
@@ -197,4 +200,6 @@
             })
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/create_training_program.blade.php ENDPATH**/ ?>

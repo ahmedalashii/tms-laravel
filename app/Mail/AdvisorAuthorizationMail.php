@@ -31,7 +31,7 @@ class AdvisorAuthorizationMail extends Mailable
     {
         $app_name = config('app.name');
         return new Envelope(
-            subject: "Your $app_name Account is Ready to Use",
+            subject: "Hooraay!😎 You are now an advisor of $app_name",
         );
     }
 
