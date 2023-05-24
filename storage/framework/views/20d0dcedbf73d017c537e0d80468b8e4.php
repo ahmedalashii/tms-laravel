@@ -10,6 +10,7 @@
 # Hello <?php echo e($user->displayName); ?>,
 We just need to verify your email address before you can access <?php echo e(config('app.name')); ?>.<br>
 To verify your email address, please click the button below:<br>
+You'll not be authorized to access <?php echo e(config('app.name')); ?> until you verify your email address.<br>
 <?php if (isset($component)) { $__componentOriginal71c6471fa76ce19017edc287b6f4508c = $component; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => $__env->getContainer()->make(Illuminate\View\Factory::class)->make('mail::button'),'data' => ['url' => $verification_url,'color' => 'success']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('mail::button'); ?>

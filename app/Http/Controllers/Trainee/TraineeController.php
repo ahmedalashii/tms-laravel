@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainee;
 use App\Models\Trainee;
 use Illuminate\Http\Request;
 use PhpParser\Builder\Trait_;
+use App\Notifications\TraineeNotification;
 use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,10 @@ class TraineeController extends Controller
 
     public function index()
     {
+
+        $trainee_db = auth_trainee();
+        $message = 'Welcome ' . $trainee_db->displayName . ' To your dashboard';
+        $trainee_db->notify(new TraineeNotification(null, $message));
         return view('trainee.index');
     }
 

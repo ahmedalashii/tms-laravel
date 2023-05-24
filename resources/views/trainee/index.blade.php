@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4">We're excited to have you on board, <span
-                    class="text-success">{{ Auth::guard('trainee')->user()->displayName }} 😎</span></h1>
+                    class="text-success">{{ auth_trainee()->displayName }} 😎</span></h1>
 
             <section class="mt-3 mb-3">
                 <div class="card mb-4">

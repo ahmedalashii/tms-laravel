@@ -13,7 +13,6 @@ class DisciplineSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Factory::create();
         // Add these disciplines to the database
         $disciplines = [
             'Web Development' => 'Web development is the work involved in developing a Web site for the Internet or an intranet. Web development can range from developing a simple single static page of plain text to complex web applications, electronic businesses, and social network services.',

@@ -9,6 +9,26 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('50fd908f86ab9aec746a', {
+            cluster: 'ap2',
+            authEndpoint: '/broadcasting/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                }
+            }
+        });
+
+        var channel = pusher.subscribe('private-App.Models.Trainee.' + {{ auth_trainee()->id }});
+        channel.bind("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", function(data) {
+            alert(JSON.stringify(data));
+        });
+    </script>
 </head>
 
 <body class="sb-nav-fixed">
@@ -79,7 +99,7 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as: <span class="text-warning">Trainee</span></div>
-                    {{ Auth::guard('trainee')->user()->displayName }}
+                    {{ auth_trainee()->displayName }}
                 </div>
             </nav>
         </div>

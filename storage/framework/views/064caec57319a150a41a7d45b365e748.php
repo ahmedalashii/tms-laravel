@@ -7,7 +7,7 @@
 <?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
-# Hello <?php echo e($trainee->displayName); ?>,
+# Hello Trainee <?php echo e($trainee->displayName); ?>,
 You have been authorized by <?php echo e($manager->displayName); ?> to access the system. Please click the button below to
 login.<br>
 Your ID is: <?php echo e($trainee->auth_id); ?><br>
