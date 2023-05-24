@@ -149,7 +149,7 @@ class ManagerController extends Controller
             })->paginate($paginate);
         }
         $disciplines = Discipline::select('id', 'name')->get();
-        $advisors = Advisor::select('id', 'displayName')->get();
+        $advisors = Advisor::withoutTrashed()->whereNotNull('auth_id')->select('id', 'displayName')->get();
         return view('manager.training_programs', compact('training_programs', 'disciplines', 'advisors'));
     }
 

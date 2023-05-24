@@ -31,6 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'stripe' => [
+        'key'   => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
     'firebase' => [
         'api_key' => 'api_key', // Only used from JS integration
         'auth_domain' => 'auth_domain', // Only used from JS integration

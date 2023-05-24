@@ -90,27 +90,27 @@
                             </thead>
                             <tbody>
                                 @if ($training_programs->isNotEmpty())
-                                    @foreach ($training_programs as $training_program)
+                                    @foreach ($training_programs as $trainingProgram)
                                         <tr>
-                                            <td>{{ $training_program->name }}</td>
-                                            <td>{{ $training_program->description }}</td>
-                                            <td>{{ $training_program->duration }} {{ $training_program->duration_unit }}
+                                            <td>{{ $trainingProgram->name }}</td>
+                                            <td>{{ $trainingProgram->description }}</td>
+                                            <td>{{ $trainingProgram->duration }} {{ $trainingProgram->duration_unit }}
                                             </td>
-                                            <td>{{ $training_program->discipline->name }}</td>
-                                            <td>{{ $training_program->advisor?->displayName ?? '--' }}</td>
-                                            <td>{{ $training_program->location }}</td>
-                                            <td>{{ $training_program->users_length }} / {{ $training_program->capacity }}
+                                            <td>{{ $trainingProgram->discipline->name }}</td>
+                                            <td>{{ $trainingProgram->advisor?->displayName ?? '--' }}</td>
+                                            <td>{{ $trainingProgram->location }}</td>
+                                            <td>{{ $trainingProgram->users_length }} / {{ $trainingProgram->capacity }}
                                             <td>
-                                                @if ($training_program->fees)
-                                                    {{ $training_program->fees }} ₪
+                                                @if ($trainingProgram->fees)
+                                                    {{ $trainingProgram->fees }} ₪
                                                 @else
                                                     <b style="color: green">Free</b>
                                                 @endif
                                             </td>
-                                            <td>{{ $training_program->start_date }}</td>
-                                            <td>{{ $training_program->end_date }}</td>
+                                            <td>{{ $trainingProgram->start_date }}</td>
+                                            <td>{{ $trainingProgram->end_date }}</td>
                                             <td>
-                                                @if ($training_program->trashed())
+                                                @if ($trainingProgram->trashed())
                                                     <button class="btn btn-secondary rounded-full btn-hover"
                                                         style="width: 100px; padding: 11px; cursor: not-allowed !important;"
                                                         disabled>
@@ -118,7 +118,7 @@
                                                     </button>
                                                 @else
                                                     <form
-                                                        action="{{ route('manager.edit-training-program', $training_program->id) }}"
+                                                        action="{{ route('manager.edit-training-program', $trainingProgram->id) }}"
                                                         method="GET">
                                                         <button class="btn btn-success btn-sm" type="submit"
                                                             style="width: 100px; padding: 11px;">
@@ -128,9 +128,9 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($training_program->trashed())
+                                                @if ($trainingProgram->trashed())
                                                     <form
-                                                        action="{{ route('manager.activate-training-program', $training_program->id) }}"
+                                                        action="{{ route('manager.activate-training-program', $trainingProgram->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         <button class="btn btn-success rounded-full btn-hover"
@@ -140,7 +140,7 @@
                                                     </form>
                                                 @else
                                                     <form
-                                                        action="{{ route('manager.deactivate-training-program', $training_program->id) }}"
+                                                        action="{{ route('manager.deactivate-training-program', $trainingProgram->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         <button class="btn btn-danger rounded-full btn-hover" type="submit"

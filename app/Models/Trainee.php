@@ -49,6 +49,10 @@ class Trainee extends Authenticatable
         return $this->hasMany(File::class);
     }
 
+    public function training_programs(){
+        return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'trainee_id', 'training_program_id');
+    }
+
 
     public function getAvatarFileAttribute()
     {

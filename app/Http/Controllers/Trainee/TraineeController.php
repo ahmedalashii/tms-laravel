@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Trainee;
 
 use App\Models\Trainee;
+use App\Models\Discipline;
 use Illuminate\Http\Request;
-use PhpParser\Builder\Trait_;
-use App\Notifications\TraineeNotification;
 use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\TraineeNotification;
 use App\Http\Traits\FirebaseStorageFileProcessing;
+use App\Mail\TraineeTrainingProgramEnrollmentMail;
 
 class TraineeController extends Controller
 {
@@ -20,10 +21,8 @@ class TraineeController extends Controller
     public function index()
     {
 
-        $trainee_db = auth_trainee();
-        $message = 'Welcome ' . $trainee_db->displayName . ' To your dashboard';
-        $trainee_db->notify(new TraineeNotification(null, $message));
-        $notifications = $trainee_db->notifications()->latest()->take(5)->get();
+        $trainee = auth_trainee();
+        $notifications = $trainee->notifications()->latest()->take(5)->get();
         return view('trainee.index', compact('notifications'));
     }
 
@@ -37,33 +36,97 @@ class TraineeController extends Controller
     }
 
 
-    public function available_training_programs()
+    public function available_training_programs(Request $request)
     {
+        $request->validate([
+            'discipline_id' => 'nullable|exists:disciplines,id',
+        ]);
+
         $paginate = 3;
         $firebaseTrainee = Auth::guard('trainee')->user();
+        $discipline_id = $request->discipline;
+        $search_value = $request->search;
+        $price_filter = $request->price_filter;
+        if ($price_filter == "free") {
+            $price_filter = null;
+        } else {
+            $price_filter = 1000000;
+        }
         $trainee = Trainee::where('firebase_uid', $firebaseTrainee->localId)->first();
-        $training_programs = \App\Models\TrainingProgram::withoutTrashed()->whereIn('discipline_id', $trainee->disciplines->pluck('id'))->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
-            $query->where('trainee_id', $trainee->id);
-        })->whereHas('training_program_users', function ($query) {
-            $query->havingRaw('count(*) < capacity');
-        })->whereNotNull('advisor_id')->paginate($paginate);
-        return view('trainee.available_training_programs', compact('training_programs'));
+        if ($discipline_id) {
+            $training_programs = TrainingProgram::withoutTrashed()
+                ->where('discipline_id', $discipline_id)
+                ->where(function ($query) use ($price_filter) {
+                    if ($price_filter == null) {
+                        $query->whereNull('fees');
+                    } else {
+                        $query->where('fees', '<=', $price_filter);
+                    }
+                })
+                ->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)
+                ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
+                    $query->where('trainee_id', $trainee->id);
+                })->whereHas('training_program_users', function ($query) {
+                    $query->havingRaw('count(*) < capacity');
+                })->where(function ($query) use ($search_value) {
+                    $query->where('name', 'like', '%' . $search_value . '%')
+                        ->orWhere('description', 'like', '%' . $search_value . '%')
+                        ->orWhere('location', 'like', '%' . $search_value . '%');
+                })->paginate($paginate);
+            $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
+        } else {
+            $training_programs = TrainingProgram::withoutTrashed()
+                ->whereIn('discipline_id', $trainee->disciplines->pluck('id'))
+                ->where(function ($query) use ($price_filter) {
+                    if ($price_filter == null) {
+                        $query->whereNull('fees');
+                    } else {
+                        $query->where('fees', '<=', $price_filter);
+                    }
+                })->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)
+                ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
+                    $query->where('trainee_id', $trainee->id);
+                })->whereHas('training_program_users', function ($query) {
+                    $query->havingRaw('count(*) < capacity');
+                })->where(function ($query) use ($search_value) {
+                    $query->where('name', 'like', '%' . $search_value . '%')
+                        ->orWhere('description', 'like', '%' . $search_value . '%')
+                        ->orWhere('location', 'like', '%' . $search_value . '%');
+                })->paginate($paginate);
+        }
+        $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
+
+        return view('trainee.available_training_programs', compact('training_programs', 'disciplines'));
     }
 
 
-    public function apply_training_program(TrainingProgram $trainingProgram)
+    public function apply_training_program(Request $request)
     {
-        $firebaseTrainee = Auth::guard('trainee')->user();
-        $trainee = Trainee::where('firebase_uid', $firebaseTrainee->localId)->first();
-        $training_program_user = $trainingProgram->training_program_users()->create([
-            'trainee_id' => $trainee->id,
-            'training_program_id' => $trainingProgram->id,
-            'advisor_id' => $trainingProgram->advisor_id,
+        $request->validate([
+            'training_program_id' => 'required|exists:training_programs,id',
         ]);
-        if ($training_program_user) {
-            return redirect()->back()->with(['success' => 'Your request has been sent successfully!', 'type' => 'success']);
+        $trainingProgram = TrainingProgram::find($request->training_program_id);
+        $trainee = auth_trainee();
+
+        if ($trainingProgram->fees != null && $trainingProgram->fees > 0) {
+            return redirect()->route('trainee.stripe',  $trainingProgram->id);
         } else {
-            return redirect()->back()->with(['fail' => 'Something is wrong!', 'type' => 'error']);
+            $data = ['trainee_id' => $trainee->id, 'training_program_id' => $trainingProgram->id, 'status' => 'pending'];
+            if ($trainingProgram->advisor_id) {
+                $data['advisor_id'] = $trainingProgram->advisor_id;
+            }
+
+            $data['fees_paid'] = 0;
+            $training_program_user = $trainingProgram->training_program_users()->create($data);
+            if ($training_program_user) {
+                $mailable = new TraineeTrainingProgramEnrollmentMail($trainee, $trainingProgram);
+                $this->sendEmail($trainee->email, $mailable);
+                $message = 'You have applied for the free training program ' . $trainingProgram->name . ' and waiting for approval!';
+                $trainee->notify(new TraineeNotification(null, $message));
+                return redirect()->back()->with(['success' => 'Your request has been sent successfully and waiting for approval!', 'type' => 'success']);
+            } else {
+                return redirect()->back()->with(['fail' => 'Something is wrong!', 'type' => 'error']);
+            }
         }
     }
 

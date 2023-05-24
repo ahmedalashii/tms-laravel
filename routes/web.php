@@ -29,9 +29,6 @@ use App\Http\Controllers\Trainee\TraineePasswordResetController;
 */
 
 
-Route::get('stripe', [StripePaymentController::class, 'paymentStripe'])->name('stripe');
-Route::post('stripe', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe.post');
-
 Route::get('/', function () {
     return view('index');
 })->middleware(['guest:trainee,advisor,manager']);
@@ -50,6 +47,8 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
     Route::post('/logout', [TraineeLoginController::class, 'traineeLogout'])->name('logout')->middleware(['auth:trainee']);
 
     Route::middleware(['fireauth:trainee'])->group(function () {
+        Route::get('training-program/stripe/{id}', [StripePaymentController::class, 'paymentStripe'])->name('stripe');
+        Route::post('training-program/stripe/{id}', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe-payment');
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');

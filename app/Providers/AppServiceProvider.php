@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Cartalyst\Stripe\Laravel\Facades\Stripe;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Stripe::setApiKey(config('services.stripe.secret'));
         if (config('app.env') === 'production') {
             \URL::forceScheme('https');
         }

@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
     {
         $name = 'Ahmed Alashi';
         $email = 'admin@admin.com';
-        $password = '111';
+        $password = '123456';
         try {
             $user = $this->auth->getUserByEmail($email);
         } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {

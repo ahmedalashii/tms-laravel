@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreign('training_program_id')->references('id')->on('training_programs')->onDelete('cascade');
             $table->unsignedBigInteger('trainee_id');
             $table->foreign('trainee_id')->references('id')->on('trainees')->onDelete('cascade');
-            $table->unsignedBigInteger('advisor_id');
+            $table->unsignedBigInteger('advisor_id')->nullable();
             $table->foreign('advisor_id')->references('id')->on('advisors')->onDelete('cascade');
+            $table->double('fees_paid')->default(0);
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

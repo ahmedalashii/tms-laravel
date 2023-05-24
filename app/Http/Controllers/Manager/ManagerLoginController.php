@@ -49,7 +49,7 @@ class ManagerLoginController extends Controller
         try {
             $request->validate([
                 "email" => "required|string|email|exists:managers,email",
-                "password" => "required|string|min:3",
+                "password" => "required|string|min:6",
             ]);
             $manager = Manager::where('email', $request->email);
             if (!$manager) {
