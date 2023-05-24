@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Traits\EmailProcessing;
 use App\Notifications\TraineeNotification;
 use Cartalyst\Stripe\Laravel\Facades\Stripe;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
@@ -14,6 +14,8 @@ use Cartalyst\Stripe\Exception\MissingParameterException;
 
 class StripePaymentController extends Controller
 {
+    use EmailProcessing;
+
     public $stripe;
 
     public function __construct()

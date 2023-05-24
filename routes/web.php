@@ -103,11 +103,14 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
         Route::post('/trainees/authorize/{trainee}', [ManagerController::class, 'authorize_trainee'])->name('authorize-trainee');
         Route::get('/advisors', [ManagerController::class, 'advisors'])->name('advisors');
         Route::get('/authorize-advisors', [ManagerController::class, 'authorize_advisors'])->name('authorize-advisors');
+        Route::post('/update-training-criteria', [ManagerController::class, 'update_training_criteria'])->name('update-training-criteria');
         Route::post('/advisors/authorize/{advisor}', [ManagerController::class, 'authorize_advisor'])->name('authorize-advisor');
         Route::post('/advisors/verify/{advisor}', [ManagerController::class, 'verify_advisor'])->name('verify-advisor');
         Route::post('/advisors/deactivate/{advisor}', [ManagerController::class, 'deactivate_advisor'])->name('deactivate-advisor');
         Route::post('/advisors/activate/{id}', [ManagerController::class, 'activate_advisor'])->name('activate-advisor');
         Route::get('/training-requests', [ManagerController::class, 'training_requests'])->name('training-requests');
+        Route::post('/training-requests/approve/{id}', [ManagerController::class, 'approve_training_request'])->name('approve-training-request');
+        Route::post('/training-requests/reject/{id}', [ManagerController::class, 'reject_training_request'])->name('reject-training-request');
         Route::get('/disciplines', [ManagerController::class, 'disciplines'])->name('disciplines');
         Route::get('/disciplines/create', [ManagerController::class, 'create_discipline'])->name('create-discipline');
         Route::post('/disciplines/store', [ManagerController::class, 'store_discipline'])->name('store-discipline');

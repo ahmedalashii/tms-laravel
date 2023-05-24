@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Seeders\DisciplineSeeder;
 use Database\Seeders\TrainingProgramSeeder;
+use Database\Seeders\TrainingCriterionSeeder;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 
@@ -56,5 +57,6 @@ class DatabaseSeeder extends Seeder
         $manager->save();
         $this->call(DisciplineSeeder::class);
         $this->call(TrainingProgramSeeder::class);
+        $this->call(TrainingCriterionSeeder::class);
     }
 }

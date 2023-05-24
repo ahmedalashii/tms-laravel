@@ -14,19 +14,22 @@
                 <div class="card-body">
                     <p>The following criteria are used to review training requests:</p>
                     <ul>
-                        <li>Trainee's academic background</li>
-                        <li>Trainee's work experience</li>
-                        <li>Trainee's financial need</li>
-                        <li>The availability of training programs</li>
+                        <?php
+                            $training_criteria = \App\Models\TrainingCriterion::all();
+                        ?>
+                        <?php $__currentLoopData = $training_criteria; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_criterion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($training_criterion->name); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                     <div>
-                        <form class="collapse" id="collapseExample">
+                        <form class="collapse" id="collapseExample" action="<?php echo e(route('manager.update-training-criteria')); ?>"
+                            method="POST">
+                            <?php echo csrf_field(); ?>
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
-                                <label for="floatingTextarea2">New criteria each line is a criteria new
-                                    point</label>
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="criterion"></textarea>
+                                <label for="floatingTextarea2">Add New Criterion (Only one at a time represented by one line)</label>
                             </div>
-                            <button class="btn btn-success w-100 mt-2" type="submit">Update criteria</button>
+                            <button class="btn btn-success w-100 mt-2" type="submit">Add Criterion</button>
                         </form>
                     </div>
                 </div>
@@ -35,84 +38,76 @@
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
                     <tr>
-                        <th>Trainee Name</th>
+                        <th>Trainee Avatar & Name</th>
                         <th>Trainee Email Address</th>
                         <th>Training Program Requested</th>
+                        <th>Fees</th>
+                        <th>Has paid?</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>John Doe</td>
-                        <td>john.doe@example.com</td>
-                        <td>Data Structures</td>
-                        <td>May 17th</td>
-                        <td>May 24th</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Doe</td>
-                        <td>jane.doe@example.com</td>
-                        <td>Algorithms</td>
-                        <td>May 25th</td>
-                        <td>June 1st</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Doe</td>
-                        <td>jane.doe@example.com</td>
-                        <td>Algorithms</td>
-                        <td>May 25th</td>
-                        <td>June 1st</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Doe</td>
-                        <td>jane.doe@example.com</td>
-                        <td>Algorithms</td>
-                        <td>May 25th</td>
-                        <td>June 1st</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Doe</td>
-                        <td>jane.doe@example.com</td>
-                        <td>Algorithms</td>
-                        <td>May 25th</td>
-                        <td>June 1st</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Doe</td>
-                        <td>jane.doe@example.com</td>
-                        <td>Algorithms</td>
-                        <td>May 25th</td>
-                        <td>June 1st</td>
-                        <td>
-                            <a href="#" class="btn btn-success">Approve</a> | <a href="#"
-                                class="btn btn-danger">Reject</a>
-                        </td>
-                    </tr>
+                    <?php if($training_requests->isNotEmpty()): ?>
+                        <?php $__currentLoopData = $training_requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_request): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <tr>
+                                <td>
+                                    <img src="<?php echo e($training_request->trainee->avatar); ?>" class="rounded-circle me-1"
+                                        width="37px" height="40px"
+                                        alt="<?php echo e($training_request->trainee->displayName); ?>'s avatar" />
+                                    <?php echo e($training_request->trainee->displayName); ?>
+
+                                </td>
+                                <td><?php echo e($training_request->trainee->email); ?></td>
+                                <td><?php echo e($training_request->trainingProgram->name); ?></td>
+                                <td>
+                                    <?php if($training_request->trainingProgram->fees): ?>
+                                        $<?php echo e($training_request->trainingProgram->fees); ?>
+
+                                    <?php else: ?>
+                                        <span class="badge bg-success">Free</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if($training_request->fees_paid): ?>
+                                        <span class="badge bg-success">Yes: <b
+                                                style="color: white; font-weight: 500">$<?php echo e($training_request->fees_paid); ?></b></span>
+                                    <?php else: ?>
+                                        <span class="badge bg-danger">No</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo e($training_request->trainingProgram->start_date); ?></td>
+                                <td><?php echo e($training_request->trainingProgram->end_date); ?></td>
+                                <td>
+                                    <form action="<?php echo e(route('manager.approve-training-request', $training_request->id)); ?>"
+                                        method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <button class="btn btn-success rounded-full btn-hover" type="submit"
+                                            style="width: 100px; padding: 11px;">
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <br>
+                                    <form action="<?php echo e(route('manager.reject-training-request', $training_request->id)); ?>"
+                                        method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <button class="btn btn-danger rounded-full btn-hover" type="submit"
+                                            style="width: 100px; padding: 11px;">
+                                            Reject
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="text-center">No training requests found.</td>
+                        </tr>
+                    <?php endif; ?>
+
                 </tbody>
             </table>
-
         </div>
     </main>
 <?php $__env->stopSection(); ?>

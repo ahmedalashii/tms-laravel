@@ -10,11 +10,15 @@ use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
 use App\Mail\EmailVerificationMail;
 use App\Mail\ManagerActivationMail;
+use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\AdvisorAuthorizationMail;
 use App\Mail\TraineeAuthorizationMail;
+use App\Notifications\TraineeNotification;
+use App\Mail\TraineeTrainingProgramRejectMail;
+use App\Mail\TraineeTrainingProgramApproveMail;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 
 class ManagerController extends Controller
@@ -28,7 +32,57 @@ class ManagerController extends Controller
 
     public function training_requests()
     {
-        return view('manager.training_requests');
+        $paginate = 5;
+        $training_requests = TrainingProgramUser::where('status', 'pending')->paginate($paginate);
+        return view('manager.training_requests', compact('training_requests'));
+    }
+
+    public function approve_training_request($id)
+    {
+        $training_request = TrainingProgramUser::find($id);
+        $training_request->status = 'approved';
+        $status = $training_request->save();
+        $trainee = $training_request->trainee;
+        $trainingProgram = $training_request->trainingProgram;
+        // $advisor = $training_request->advisor;
+        $manager = auth_manager();
+        // TODO: add advisor to the mail + notification
+        $mailable = new TraineeTrainingProgramApproveMail($trainee, $manager, $trainingProgram);
+        $this->sendEmail($trainee->email, $mailable);
+        $message = 'Your training request for ' . $trainingProgram->name . ' has been approved by ' . $manager->displayName . '.';
+        $trainee->notify(new TraineeNotification($manager, $message));
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Request Approved Successfully and an email/notification has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function update_training_criteria(Request $request)
+    {
+        // criteria imploded by new line
+        $data = $request->validate([
+            'criterion' => 'required|string|max:255',
+        ]);
+        // add this criterion to the training criterion
+        $traininingCriterion = new \App\Models\TrainingCriterion;
+        $traininingCriterion->name = $data['criterion'];
+        $status = $traininingCriterion->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Criterion Added Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+
+    public function reject_training_request($id)
+    {
+        $training_request = TrainingProgramUser::find($id);
+        $training_request->status = 'rejected';
+        $status = $training_request->save();
+        $trainee = $training_request->trainee;
+        $trainingProgram = $training_request->trainingProgram;
+        // $advisor = $training_request->advisor;
+        $manager = auth_manager();
+        // TODO: add advisor to the mail + notification
+        $mailable = new TraineeTrainingProgramRejectMail($trainee, $manager, $trainingProgram);
+        $this->sendEmail($trainee->email, $mailable);
+        $message = 'Your training request for ' . $trainingProgram->name . ' has been rejected by ' . $manager->displayName . '.';
+        $trainee->notify(new TraineeNotification($manager, $message));
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Request Rejected Successfully and an email/notification has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
 

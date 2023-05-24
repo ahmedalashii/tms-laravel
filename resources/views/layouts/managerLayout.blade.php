@@ -95,10 +95,10 @@
                             <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
                             Advisors
                         </a>
-                        <a class="nav-link" href="{{ route('manager.issues') }}">
+                        {{-- <a class="nav-link" href="{{ route('manager.issues') }}">
                             <div class="sb-nav-link-icon"><i class="far fa-calendar-check text-success"></i></div>
                             Issues
-                        </a>
+                        </a> --}}
 
                         @if ($manager_db?->role == 'super_manager')
                             <hr class="sidebar-divider">

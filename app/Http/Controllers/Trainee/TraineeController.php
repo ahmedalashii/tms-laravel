@@ -7,6 +7,7 @@ use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\TraineeNotification;
@@ -16,7 +17,7 @@ use App\Mail\TraineeTrainingProgramEnrollmentMail;
 class TraineeController extends Controller
 {
 
-    use FirebaseStorageFileProcessing;
+    use FirebaseStorageFileProcessing, EmailProcessing;
 
     public function index()
     {
