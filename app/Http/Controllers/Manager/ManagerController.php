@@ -27,7 +27,8 @@ class ManagerController extends Controller
 
     public function index()
     {
-        return view('manager.index');
+        $training_requests = TrainingProgramUser::where('status', 'pending')->orderBy('created_at', 'desc')->take(5)->get();
+        return view('manager.index', compact('training_requests'));
     }
 
     public function training_requests()

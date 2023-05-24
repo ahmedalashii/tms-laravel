@@ -14,76 +14,81 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-warning me-1"></i>
-                        Issues
+                        Recent Training Requests
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-bordered table-bordered">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Sender</th>
-                                    <th>Title</th>
-                                    <th>Type</th>
-                                    <th>Description</th>
-                                    <th>Response</th>
+                                    <th>Trainee Avatar & Name</th>
+                                    <th>Trainee Email Address</th>
+                                    <th>Training Program Requested</th>
+                                    <th>Fees</th>
+                                    <th>Has paid?</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <img src="https://randomuser.me/api/portraits/men/60.jpg"
-                                            class="rounded-circle me-1" width="40px" alt="Jane Doe's avatar" />
-                                        John Doe
-                                    </td>
-                                    <td>Bug 1</td>
-                                    <td>Bug</td>
-                                    <td>This is a bug that needs to be fixed.</td>
-                                    <td>
-                                        <a href="<?php echo e(route('manager.issue-response', 1)); ?>"
-                                            class="btn btn-success">Respond</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="https://randomuser.me/api/portraits/men/60.jpg"
-                                            class="rounded-circle me-1" width="40px" alt="Jane Doe's avatar" />
-                                        John Doe
-                                    </td>
-                                    <td>Enhancement 1</td>
-                                    <td>Enhancement</td>
-                                    <td>This is an enhancement that would be nice to have.</td>
-                                    <td>
-                                        <a href="<?php echo e(route('manager.issue-response', 1)); ?>"
-                                            class="btn btn-success">Respond</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="https://randomuser.me/api/portraits/men/60.jpg"
-                                            class="rounded-circle me-1" width="40px" alt="Jane Doe's avatar" />
-                                        John Doe
-                                    </td>
-                                    <td>Task 1</td>
-                                    <td>Task</td>
-                                    <td>This is a task that needs to be completed.</td>
-                                    <td>
-                                        <a href="<?php echo e(route('manager.issue-response', 1)); ?>"
-                                            class="btn btn-success">Respond</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="https://randomuser.me/api/portraits/men/60.jpg"
-                                            class="rounded-circle me-1" width="40px" alt="Jane Doe's avatar" />
-                                        John Doe
-                                    </td>
-                                    <td>Bug 1</td>
-                                    <td>Bug</td>
-                                    <td>This is a bug that needs to be fixed.</td>
-                                    <td>
-                                        <a href="<?php echo e(route('manager.issue-response', 1)); ?>"
-                                            class="btn btn-success">Respond</a>
-                                    </td>
-                                </tr>
+                                <?php if($training_requests->isNotEmpty()): ?>
+                                    <?php $__currentLoopData = $training_requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_request): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                            <td>
+                                                <img src="<?php echo e($training_request->trainee->avatar); ?>"
+                                                    class="rounded-circle me-1" width="37px" height="40px"
+                                                    alt="<?php echo e($training_request->trainee->displayName); ?>'s avatar" />
+                                                <?php echo e($training_request->trainee->displayName); ?>
+
+                                            </td>
+                                            <td><?php echo e($training_request->trainee->email); ?></td>
+                                            <td><?php echo e($training_request->trainingProgram->name); ?></td>
+                                            <td>
+                                                <?php if($training_request->trainingProgram->fees): ?>
+                                                    $<?php echo e($training_request->trainingProgram->fees); ?>
+
+                                                <?php else: ?>
+                                                    <span class="badge bg-success">Free</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if($training_request->fees_paid): ?>
+                                                    <span class="badge bg-success">Yes: <b
+                                                            style="color: white; font-weight: 500">$<?php echo e($training_request->fees_paid); ?></b></span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger">No</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo e($training_request->trainingProgram->start_date); ?></td>
+                                            <td><?php echo e($training_request->trainingProgram->end_date); ?></td>
+                                            <td>
+                                                <form
+                                                    action="<?php echo e(route('manager.approve-training-request', $training_request->id)); ?>"
+                                                    method="POST">
+                                                    <?php echo csrf_field(); ?>
+                                                    <button class="btn btn-success rounded-full btn-hover" type="submit"
+                                                        style="width: 100px; padding: 11px;">
+                                                        Approve
+                                                    </button>
+                                                </form>
+                                                <br>
+                                                <form
+                                                    action="<?php echo e(route('manager.reject-training-request', $training_request->id)); ?>"
+                                                    method="POST">
+                                                    <?php echo csrf_field(); ?>
+                                                    <button class="btn btn-danger rounded-full btn-hover" type="submit"
+                                                        style="width: 100px; padding: 11px;">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="8" class="text-center">No training requests found.</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -126,7 +131,8 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Authorize Trainees</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.authorize-trainees')); ?>">View
+                            <a class="small text-white stretched-link"
+                                href="<?php echo e(route('manager.authorize-trainees')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>

@@ -28,8 +28,10 @@
                             method="POST">
                             @csrf
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="criterion"></textarea>
-                                <label for="floatingTextarea2">Add New Criterion (Only one at a time represented by one line)</label>
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"
+                                    name="criterion"></textarea>
+                                <label for="floatingTextarea2">Add New Criterion (Only one at a time represented by one
+                                    line)</label>
                             </div>
                             <button class="btn btn-success w-100 mt-2" type="submit">Add Criterion</button>
                         </form>
@@ -102,12 +104,15 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="6" class="text-center">No training requests found.</td>
+                            <td colspan="8" class="text-center">No training requests found.</td>
                         </tr>
                     @endif
-
                 </tbody>
             </table>
+            @if ($trainees->hasPages())
+                <br>
+            @endif
+            {{ $trainees->links('pagination::bootstrap-5') }}
         </div>
     </main>
 @endsection
