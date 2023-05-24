@@ -15,7 +15,7 @@
 
 <body class="sb-nav-fixed">
     @php
-        $advisor = Auth::guard('advisor')->user();
+        $advisor = auth_advisor();
         $advisor_db = \App\Models\Advisor::where('firebase_uid', $advisor->localId)->first();
     @endphp
 
@@ -78,7 +78,7 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as: <span class="text-warning">Advisor</span></div>
-                    {{ Auth::guard('advisor')->user()->displayName }}
+                    {{ auth_advisor()->displayName }}
                 </div>
             </nav>
         </div>
