@@ -9,6 +9,7 @@ use App\Http\Traits\EmailProcessing;
 use App\Notifications\TraineeNotification;
 use Cartalyst\Stripe\Laravel\Facades\Stripe;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
+use App\Notifications\ManagerNotification;
 use Cartalyst\Stripe\Exception\CardErrorException;
 use Cartalyst\Stripe\Exception\MissingParameterException;
 
@@ -71,8 +72,12 @@ class StripePaymentController extends Controller
                 ];
                 $mailable = new TraineeTrainingProgramEnrollmentMail($trainee, $trainingProgram);
                 $this->sendEmail($trainee->email, $mailable);
-                $message = 'You have applied for the free training program ' . $trainingProgram->name . ' and waiting for approval!';
-                $trainee->notify(new TraineeNotification(null, $message));
+                $message = "$trainee->displayName has requested to enroll in $trainingProgram->name training program";
+                // send notification to all managers
+                $managers = \App\Models\Manager::all();
+                foreach ($managers as $manager) {
+                    $manager->notify(new ManagerNotification(null, null, $message));
+                }
                 $trainingProgram->training_program_users()->create($data);
                 return redirect()->route('trainee.available-training-programs')->with(['success' => 'Payment has been successfully done!! Your request has been sent successfully and waiting for approval!', 'type' => 'success']);
             } else {

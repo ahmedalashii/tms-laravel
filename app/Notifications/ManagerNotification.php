@@ -3,26 +3,26 @@
 namespace App\Notifications;
 
 use App\Models\Advisor;
-use App\Models\Manager;
+use App\Models\Trainee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class TraineeNotification extends Notification
+class ManagerNotification extends Notification
 {
     use Queueable;
 
-    public ?Manager $manager;
     public ?Advisor $advisor;
+    public ?Trainee $trainee;
     public ?string $message;
     /**
      * Create a new notification instance.
      */
-    public function __construct(?Manager $manager = null, ?Advisor $advisor, ?string $message= null)
+    public function __construct(?Advisor $advisor = null, ?Trainee $trainee = null, ?string $message= null)
     {
-        $this->manager = $manager;
         $this->advisor = $advisor;
+        $this->trainee = $trainee;
         $this->message = $message;
     }
 

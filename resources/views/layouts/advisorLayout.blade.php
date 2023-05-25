@@ -245,8 +245,75 @@
     </script>
     @include('includes.js.allJS')
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         $(document).ready(function() {
+            // toggle notifications
+            const notifications_bell = document.getElementById("notifications_bell");
+            const notifications = document.getElementById("notifications");
+            const notifications_count = document.getElementById("notifications_count");
+            let notifications_list = [];
+            let unreadNotifications = @json(auth_advisor()->notifications).filter(el => el.read_at == null);
+            @json(auth_advisor()->notifications).map(el => notifications_list.push(el.data.message));
+
+            let closeTimeOutId = null;
+
+            const updateNotificationsCount = (count) => {
+                console.log({
+                    count
+                })
+                if (count > 0) {
+                    notifications_count.innerText = count > 99 ? "+99" : count;
+                    notifications_count.classList.remove("d-none")
+                } else {
+                    console.log("NO NOTIFICATIONS")
+                    notifications_count.classList.add("d-none")
+                }
+            }
+
+            const appendNotification = (notification_text, notifications_list, notifications,
+                unreadNotifications) => {
+                // don't update the notifications count if the notification is already read
+                updateNotificationsCount(unreadNotifications.length);
+
+                const notificationItem = document.createElement("div");
+                notificationItem.classList = "notification_item p-3 pt-2 pb-0";
+
+                const notificationText = document.createElement("p")
+                notificationText.classList = "notification_text"
+                notificationText.innerText = notification_text;
+
+                notificationItem.appendChild(notificationText);
+                notifications.appendChild(notificationItem);
+            }
+
+            if (notifications_bell && notifications && notifications_count) {
+                // show initial data
+                notifications_list.map(el => appendNotification(el, notifications_list, notifications,
+                    unreadNotifications));
+
+                notifications_bell.addEventListener('click', (e) => {
+                    // make all notifications of advisor as read when the bell is clicked
+                    axios.post("{{ route('advisor.notifications.read') }}").then(res => {
+                        console.log(res.data)
+                    }).catch(err => {
+                        console.log(err.response.data)
+                    })
+                    notifications.classList.toggle('active');
+                    if (closeTimeOutId) {
+                        clearTimeout(closeTimeOutId);
+                        closeTimeOutId = null;
+                    }
+                    // update notifications count to 0
+                    updateNotificationsCount(0);
+                    closeTimeOutId = setTimeout(() => {
+                        notifications.classList.remove('active');
+                        closeTimeOutId = null;
+                    }, 10000)
+                })
+            }
+
+
             // Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
 
@@ -267,11 +334,16 @@
             channel.bind("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", function(data) {
                 var data = JSON.stringify(data);
                 var message = JSON.parse(data).message;
+                // append the message to the notifications list at the beginning
+                notifications_list.unshift(message);
+                unreadNotifications.unshift(message);
+                appendNotification(message, notifications_list, notifications, unreadNotifications);
                 Swal.fire({
                     title: message,
                     toast: true,
+                    width: 450,
                     showConfirmButton: false,
-                    position: "top-end",
+                    position: "bottom-end",
                     icon: "info",
                 });
             });

@@ -26,8 +26,10 @@
                             method="POST">
                             <?php echo csrf_field(); ?>
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="criterion"></textarea>
-                                <label for="floatingTextarea2">Add New Criterion (Only one at a time represented by one line)</label>
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"
+                                    name="criterion"></textarea>
+                                <label for="floatingTextarea2">Add New Criterion (Only one at a time represented by one
+                                    line)</label>
                             </div>
                             <button class="btn btn-success w-100 mt-2" type="submit">Add Criterion</button>
                         </form>
@@ -102,12 +104,16 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center">No training requests found.</td>
+                            <td colspan="8" class="text-center">No training requests found.</td>
                         </tr>
                     <?php endif; ?>
-
                 </tbody>
             </table>
+            <?php if($training_requests->hasPages()): ?>
+                <br>
+            <?php endif; ?>
+            <?php echo e($training_requests->links('pagination::bootstrap-5')); ?>
+
         </div>
     </main>
 <?php $__env->stopSection(); ?>

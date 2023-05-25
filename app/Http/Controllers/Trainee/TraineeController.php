@@ -9,8 +9,7 @@ use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use App\Notifications\TraineeNotification;
+use App\Notifications\ManagerNotification;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
 
@@ -37,6 +36,15 @@ class TraineeController extends Controller
     }
 
 
+
+    public function read_notifications(Request $request){
+        $trainee = auth_trainee();
+        $notifications = $trainee->notifications();
+        $notifications->update(['read_at' => now()]);
+        return response()->json(['success' => true]);
+    }
+
+
     public function available_training_programs(Request $request)
     {
         $request->validate([
@@ -44,7 +52,6 @@ class TraineeController extends Controller
         ]);
 
         $paginate = 3;
-        $firebaseTrainee = Auth::guard('trainee')->user();
         $discipline_id = $request->discipline;
         $search_value = $request->search;
         $price_filter = $request->price_filter;
@@ -53,7 +60,7 @@ class TraineeController extends Controller
         } else {
             $price_filter = 1000000;
         }
-        $trainee = Trainee::where('firebase_uid', $firebaseTrainee->localId)->first();
+        $trainee = auth_trainee();
         if ($discipline_id) {
             $training_programs = TrainingProgram::withoutTrashed()
                 ->where('discipline_id', $discipline_id)
@@ -100,6 +107,36 @@ class TraineeController extends Controller
         return view('trainee.available_training_programs', compact('training_programs', 'disciplines'));
     }
 
+    public function training_programs(Request $request)
+    {
+        $request->validate([
+            'discipline_id' => 'nullable|exists:disciplines,id',
+        ]);
+        $paginate = 3;
+        $discipline_id = $request->discipline;
+        $search_value = $request->search;
+        $price_filter = $request->price_filter;
+        if ($price_filter == "free") {
+            $price_filter = null;
+        } else {
+            $price_filter = 1000000;
+        }
+        $training_programs = auth_trainee()->training_programs()->where(function ($query) use ($price_filter) {
+            if ($price_filter == null) {
+                $query->whereNull('fees');
+            } else {
+                $query->where('fees', '<=', $price_filter);
+            }
+        })->where(function ($query) use ($search_value) {
+            $query->where('name', 'like', '%' . $search_value . '%')
+                ->orWhere('description', 'like', '%' . $search_value . '%')
+                ->orWhere('location', 'like', '%' . $search_value . '%');
+        })->paginate($paginate);
+        $trainee = auth_trainee();
+        $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
+        return view('trainee.training_programs', compact('training_programs', 'disciplines'));
+    }
+
 
     public function apply_training_program(Request $request)
     {
@@ -116,14 +153,17 @@ class TraineeController extends Controller
             if ($trainingProgram->advisor_id) {
                 $data['advisor_id'] = $trainingProgram->advisor_id;
             }
-
             $data['fees_paid'] = 0;
             $training_program_user = $trainingProgram->training_program_users()->create($data);
             if ($training_program_user) {
                 $mailable = new TraineeTrainingProgramEnrollmentMail($trainee, $trainingProgram);
                 $this->sendEmail($trainee->email, $mailable);
-                $message = 'You have applied for the free training program ' . $trainingProgram->name . ' and waiting for approval!';
-                $trainee->notify(new TraineeNotification(null, $message));
+                $message = "$trainee->displayName has requested to enroll in $trainingProgram->name training program";
+                // send notification to all managers
+                $managers = \App\Models\Manager::all();
+                foreach ($managers as $manager) {
+                    $manager->notify(new ManagerNotification(null, null, $message));
+                }
                 return redirect()->back()->with(['success' => 'Your request has been sent successfully and waiting for approval!', 'type' => 'success']);
             } else {
                 return redirect()->back()->with(['fail' => 'Something is wrong!', 'type' => 'error']);

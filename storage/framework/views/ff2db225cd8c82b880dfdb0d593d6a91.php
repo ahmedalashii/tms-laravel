@@ -11,6 +11,7 @@
         Swal.fire({
             title: "<?php echo e(session('success')); ?>",
             toast: true,
+            width: 350,
             showConfirmButton: false,
             position: "bottom-end",
             icon: "<?php echo e(session('type')); ?>",
@@ -19,6 +20,7 @@
         Swal.fire({
             title: "<?php echo e(session('fail')); ?>",
             toast: true,
+            width: 350,
             showConfirmButton: false,
             position: "bottom-end",
             icon: "<?php echo e(session('type')); ?>",

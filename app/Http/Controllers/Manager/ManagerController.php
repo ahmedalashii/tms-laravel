@@ -16,6 +16,7 @@ use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\AdvisorAuthorizationMail;
 use App\Mail\TraineeAuthorizationMail;
+use App\Notifications\AdvisorNotification;
 use App\Notifications\TraineeNotification;
 use App\Mail\TraineeTrainingProgramRejectMail;
 use App\Mail\TraineeTrainingProgramApproveMail;
@@ -38,6 +39,14 @@ class ManagerController extends Controller
         return view('manager.training_requests', compact('training_requests'));
     }
 
+    public function read_notifications()
+    {
+        $manager = auth_manager();
+        $notifications = $manager->notifications();
+        $notifications->update(['read_at' => now()]);
+        return response()->json(['success' => true]);
+    }
+
     public function approve_training_request($id)
     {
         $training_request = TrainingProgramUser::find($id);
@@ -51,7 +60,12 @@ class ManagerController extends Controller
         $mailable = new TraineeTrainingProgramApproveMail($trainee, $manager, $trainingProgram);
         $this->sendEmail($trainee->email, $mailable);
         $message = 'Your training request for ' . $trainingProgram->name . ' has been approved by ' . $manager->displayName . '.';
-        $trainee->notify(new TraineeNotification($manager, $message));
+        $trainee->notify(new TraineeNotification($manager, null, $message));
+        $advisor = $trainingProgram->advisor;
+        if ($advisor) {
+            $message = 'A trainee has been approved for your training program ' . $trainingProgram->name . '.';
+            $advisor->notify(new AdvisorNotification($manager, null, $message));
+        }
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Request Approved Successfully and an email/notification has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
@@ -82,7 +96,7 @@ class ManagerController extends Controller
         $mailable = new TraineeTrainingProgramRejectMail($trainee, $manager, $trainingProgram);
         $this->sendEmail($trainee->email, $mailable);
         $message = 'Your training request for ' . $trainingProgram->name . ' has been rejected by ' . $manager->displayName . '.';
-        $trainee->notify(new TraineeNotification($manager, $message));
+        $trainee->notify(new TraineeNotification($manager, null, $message));
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Request Rejected Successfully and an email/notification has been sent!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 

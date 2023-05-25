@@ -109,10 +109,10 @@
                     @endif
                 </tbody>
             </table>
-            @if ($trainees->hasPages())
+            @if ($training_requests->hasPages())
                 <br>
             @endif
-            {{ $trainees->links('pagination::bootstrap-5') }}
+            {{ $training_requests->links('pagination::bootstrap-5') }}
         </div>
     </main>
 @endsection

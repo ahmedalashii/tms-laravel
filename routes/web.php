@@ -49,9 +49,11 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
     Route::middleware(['fireauth:trainee'])->group(function () {
         Route::get('training-program/stripe/{id}', [StripePaymentController::class, 'paymentStripe'])->name('stripe');
         Route::post('training-program/stripe/{id}', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe-payment');
+        Route::post('notifications/read', [TraineeController::class, 'read_notifications'])->name('notifications.read');
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
+        Route::get('/training-programs', [TraineeController::class, 'training_programs'])->name('training-programs');
         Route::get('/available-training-programs', [TraineeController::class, 'available_training_programs'])->name('available-training-programs');
         Route::post('/apply-training-program', [TraineeController::class, 'apply_training_program'])->name('apply-training-program');
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
@@ -98,6 +100,7 @@ Route::group(['prefix' => 'manager/', 'as' => 'manager.'], function () {
     });
     Route::post('/logout', [ManagerLoginController::class, 'managerLogout'])->name('logout')->middleware(['auth:manager']);
     Route::middleware(['fireauth:manager'])->group(function () {
+        Route::post('notifications/read', [ManagerController::class, 'read_notifications'])->name('notifications.read');
         Route::get('/trainees', [ManagerController::class, 'trainees'])->name('trainees');
         Route::get('/authorize-trainees', [ManagerController::class, 'authorize_trainees'])->name('authorize-trainees');
         Route::post('/trainees/authorize/{trainee}', [ManagerController::class, 'authorize_trainee'])->name('authorize-trainee');

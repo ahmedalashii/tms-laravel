@@ -11,6 +11,7 @@
         Swal.fire({
             title: "{{ session('success') }}",
             toast: true,
+            width: 350,
             showConfirmButton: false,
             position: "bottom-end",
             icon: "{{ session('type') }}",
@@ -19,6 +20,7 @@
         Swal.fire({
             title: "{{ session('fail') }}",
             toast: true,
+            width: 350,
             showConfirmButton: false,
             position: "bottom-end",
             icon: "{{ session('type') }}",
