@@ -53,7 +53,7 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
-        Route::get('/training-programs', [TraineeController::class, 'training_programs'])->name('training-programs');
+        Route::get('/my-training-programs', [TraineeController::class, 'my_training_programs'])->name('my-training-programs');
         Route::get('/available-training-programs', [TraineeController::class, 'available_training_programs'])->name('available-training-programs');
         Route::post('/apply-training-program', [TraineeController::class, 'apply_training_program'])->name('apply-training-program');
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');

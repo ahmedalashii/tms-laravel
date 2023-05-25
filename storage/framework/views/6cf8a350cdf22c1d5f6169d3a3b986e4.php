@@ -154,7 +154,7 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             Apply For Training Program
                         </a>
-                        <a class="nav-link" href="<?php echo e(route('trainee.training-programs')); ?>">
+                        <a class="nav-link" href="<?php echo e(route('trainee.my-training-programs')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             My Training Programs
                         </a>

@@ -37,7 +37,8 @@ class TraineeController extends Controller
 
 
 
-    public function read_notifications(Request $request){
+    public function read_notifications(Request $request)
+    {
         $trainee = auth_trainee();
         $notifications = $trainee->notifications();
         $notifications->update(['read_at' => now()]);
@@ -55,27 +56,30 @@ class TraineeController extends Controller
         $discipline_id = $request->discipline;
         $search_value = $request->search;
         $price_filter = $request->price_filter;
-        if ($price_filter == "free") {
-            $price_filter = null;
-        } else {
-            $price_filter = 1000000;
-        }
+
         $trainee = auth_trainee();
         if ($discipline_id) {
             $training_programs = TrainingProgram::withoutTrashed()
                 ->where('discipline_id', $discipline_id)
                 ->where(function ($query) use ($price_filter) {
-                    if ($price_filter == null) {
-                        $query->whereNull('fees');
-                    } else {
-                        $query->where('fees', '<=', $price_filter);
-                    }
+                    // when $price_filter filled with value (either free or paid) >> do conditions 
+                    $query->when($price_filter, function ($query, $price_filter) {
+                        if ($price_filter == "free") {
+                            $query->whereNull('fees');
+                        } else {
+                            // the maximum double value 
+                            $price = 1.7976931348623157E+308;
+                            $query->where('fees', '<=', $price);
+                        }
+                    });
                 })
-                ->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)
+                ->where('start_date', '>', date('Y-m-d'))
+                ->where('end_date', '>', date('Y-m-d'))
+                ->where('capacity', '>', 0)
                 ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
                     $query->where('trainee_id', $trainee->id);
                 })->whereHas('training_program_users', function ($query) {
-                    $query->havingRaw('count(*) < capacity');
+                    $query->where('status', 'approved')->havingRaw('count(*) < capacity');
                 })->where(function ($query) use ($search_value) {
                     $query->where('name', 'like', '%' . $search_value . '%')
                         ->orWhere('description', 'like', '%' . $search_value . '%')
@@ -86,16 +90,23 @@ class TraineeController extends Controller
             $training_programs = TrainingProgram::withoutTrashed()
                 ->whereIn('discipline_id', $trainee->disciplines->pluck('id'))
                 ->where(function ($query) use ($price_filter) {
-                    if ($price_filter == null) {
-                        $query->whereNull('fees');
-                    } else {
-                        $query->where('fees', '<=', $price_filter);
-                    }
-                })->where('start_date', '>', date('Y-m-d'))->where('capacity', '>', 0)
+                    // when $price_filter filled with value (either free or paid) >> do conditions 
+                    $query->when($price_filter, function ($query, $price_filter) {
+                        if ($price_filter == "free") {
+                            $query->whereNull('fees');
+                        } else {
+                            // the maximum double value 
+                            $price = 1.7976931348623157E+308;
+                            $query->where('fees', '<=', $price);
+                        }
+                    });
+                })->where('start_date', '>', date('Y-m-d'))
+                ->where('end_date', '>', date('Y-m-d'))
+                ->where('capacity', '>', 0)
                 ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
                     $query->where('trainee_id', $trainee->id);
                 })->whereHas('training_program_users', function ($query) {
-                    $query->havingRaw('count(*) < capacity');
+                    $query->where('status', 'approved')->havingRaw('count(*) < capacity');
                 })->where(function ($query) use ($search_value) {
                     $query->where('name', 'like', '%' . $search_value . '%')
                         ->orWhere('description', 'like', '%' . $search_value . '%')
@@ -107,7 +118,7 @@ class TraineeController extends Controller
         return view('trainee.available_training_programs', compact('training_programs', 'disciplines'));
     }
 
-    public function training_programs(Request $request)
+    public function my_training_programs(Request $request)
     {
         $request->validate([
             'discipline_id' => 'nullable|exists:disciplines,id',
@@ -116,25 +127,29 @@ class TraineeController extends Controller
         $discipline_id = $request->discipline;
         $search_value = $request->search;
         $price_filter = $request->price_filter;
-        if ($price_filter == "free") {
-            $price_filter = null;
-        } else {
-            $price_filter = 1000000;
-        }
         $training_programs = auth_trainee()->training_programs()->where(function ($query) use ($price_filter) {
-            if ($price_filter == null) {
-                $query->whereNull('fees');
-            } else {
-                $query->where('fees', '<=', $price_filter);
-            }
+            // when $price_filter filled with value (either free or paid) >> do conditions 
+            $query->when($price_filter, function ($query, $price_filter) {
+                if ($price_filter == "free") {
+                    $query->whereNull('fees');
+                } else {
+                    // the maximum double value 
+                    $price = 1.7976931348623157E+308;
+                    $query->where('fees', '<=', $price);
+                }
+            });
         })->where(function ($query) use ($search_value) {
             $query->where('name', 'like', '%' . $search_value . '%')
                 ->orWhere('description', 'like', '%' . $search_value . '%')
                 ->orWhere('location', 'like', '%' . $search_value . '%');
+        })->where(function ($query) use ($discipline_id) {
+            $query->when($discipline_id, function ($query, $discipline_id) {
+                $query->where('discipline_id', $discipline_id);
+            });
         })->paginate($paginate);
         $trainee = auth_trainee();
         $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
-        return view('trainee.training_programs', compact('training_programs', 'disciplines'));
+        return view('trainee.my_training_programs', compact('training_programs', 'disciplines'));
     }
 
 

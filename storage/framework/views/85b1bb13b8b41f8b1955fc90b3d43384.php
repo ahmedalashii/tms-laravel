@@ -93,6 +93,15 @@
                                             <?php echo e($trainingProgram->capacity); ?> trainees registered for this program so
                                             far.
                                         </p>
+                                        <p class="card-text"><strong>Status: </strong>
+                                            <?php if($trainingProgram->trainee_status == 'pending'): ?>
+                                                <span class="text-warning">Pending</span>
+                                            <?php elseif($trainingProgram->trainee_status == 'approved'): ?>
+                                                <span class="text-success">Approved</span>
+                                            <?php else: ?>
+                                                <span class="text-danger">Rejected</span>
+                                            <?php endif; ?>
+                                        </p>
                                         <p class="card-text"><strong>Discipline: </strong>
                                             <?php echo e($trainingProgram->discipline->name); ?> </p>
                                         <p class="card-text">
@@ -134,4 +143,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/training_programs.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/my_training_programs.blade.php ENDPATH**/ ?>

@@ -52,6 +52,11 @@ class TrainingProgram extends Model
         return $this->hasMany(TrainingProgramUser::class);
     }
 
+    public function getTraineeStatusAttribute(){
+        return $this->training_program_users()->where('trainee_id', auth_trainee()->id)->first()?->status;
+    }
+
+
     public function getUsersLengthAttribute()
     {
         return $this->training_program_users()->count();

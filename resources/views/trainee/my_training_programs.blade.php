@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">My Training Programs</h1>
-            <form method="GET" action="{{ route('trainee.training-programs') }}">
+            <form method="GET" action="{{ route('trainee.my-training-programs') }}">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="price_filter">Filter based on price</label>
@@ -86,6 +86,15 @@
                                             {{ $trainingProgram->users_length }} /
                                             {{ $trainingProgram->capacity }} trainees registered for this program so
                                             far.
+                                        </p>
+                                        <p class="card-text"><strong>Status: </strong>
+                                            @if ($trainingProgram->trainee_status == 'pending')
+                                                <span class="text-warning">Pending</span>
+                                            @elseif($trainingProgram->trainee_status == 'approved')
+                                                <span class="text-success">Approved</span>
+                                            @else
+                                                <span class="text-danger">Rejected</span>
+                                            @endif
                                         </p>
                                         <p class="card-text"><strong>Discipline: </strong>
                                             {{ $trainingProgram->discipline->name }} </p>
