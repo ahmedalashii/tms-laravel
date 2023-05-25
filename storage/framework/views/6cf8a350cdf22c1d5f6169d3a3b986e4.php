@@ -156,7 +156,7 @@
                         </a>
                         <a class="nav-link" href="<?php echo e(route('trainee.my-training-programs')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
-                            My Training Programs
+                            My Training Requests
                         </a>
                         <a class="nav-link" href="<?php echo e(route('trainee.training-attendance')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>

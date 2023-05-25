@@ -27,3 +27,14 @@ function auth_manager()
     $manager_db = Manager::where('firebase_uid', $manager->localId)->first();
     return $manager_db;
 }
+
+function getDayOfWeek(string $date) {
+    // Convert the date to a timestamp.
+    $timestamp = strtotime($date);
+  
+    // Get the day of the week from the timestamp.
+    $dayOfWeek = date('l', $timestamp);
+  
+    // Return the day of the week.
+    return $dayOfWeek;
+  }

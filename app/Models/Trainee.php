@@ -89,6 +89,9 @@ class Trainee extends Authenticatable
         return $this->belongsToMany(Discipline::class, 'trainee_disciplines', 'trainee_id', 'discipline_id');
     }
 
+    public function attendance_histories(){
+        return $this->hasMany(TrainingAttendanceTrainee::class, 'trainee_id');
+    }
 
     public function hasDiscipline($id)
     {

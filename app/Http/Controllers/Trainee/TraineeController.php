@@ -9,6 +9,7 @@ use App\Models\TrainingProgram;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TrainingAttendanceTrainee;
 use App\Notifications\ManagerNotification;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
@@ -89,6 +90,7 @@ class TraineeController extends Controller
         $trainee = auth_trainee();
         if ($discipline_id) {
             $training_programs = TrainingProgram::withoutTrashed()
+                ->with('training_attendances')
                 ->where('discipline_id', $discipline_id)
                 ->where(function ($query) use ($price_filter) {
                     // when $price_filter filled with value (either free or paid) >> do conditions 
@@ -117,6 +119,7 @@ class TraineeController extends Controller
             $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
         } else {
             $training_programs = TrainingProgram::withoutTrashed()
+                ->with('training_attendances')
                 ->whereIn('discipline_id', $trainee->disciplines->pluck('id'))
                 ->where(function ($query) use ($price_filter) {
                     // when $price_filter filled with value (either free or paid) >> do conditions 
@@ -143,7 +146,6 @@ class TraineeController extends Controller
                 })->paginate($paginate);
         }
         $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
-
         return view('trainee.available_training_programs', compact('training_programs', 'disciplines'));
     }
 
@@ -217,8 +219,32 @@ class TraineeController extends Controller
 
     public function training_attendance()
     {
-        return view('trainee.training_attendance');
+        $training_programs = auth_trainee()->approved_training_programs()->with('training_attendances')->get();
+        $attendance_histories = auth_trainee()->attendance_histories()->get();
+        return view('trainee.training_attendance', compact('training_programs', 'attendance_histories'));
     }
+
+    public function post_training_attendance(Request $request){
+        $request->validate([
+            'training_program_id' => 'required|exists:training_programs,id',
+            'training_attendance_id' => 'required|exists:training_attendances,id',
+            'date' => 'required|date',
+            'attendance_status' => 'required|in:present,absent,late,excused',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $training_attendance = $training_program->training_attendances()->find($request->training_attendance_id);
+        $training_attendance_trainee = new TrainingAttendanceTrainee();
+        $training_attendance_trainee->trainee_id = auth_trainee()->id;
+        $training_attendance_trainee->training_attendance_id = $training_attendance->id;
+        $training_attendance_trainee->attendance_date = $request->date;
+        $training_attendance_trainee->attendance_status = $request->attendance_status;
+        $training_attendance_trainee->notes = $request->notes;
+        $status = $training_attendance_trainee->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your attendance has been recorded successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
 
     public function request_meeting()
     {

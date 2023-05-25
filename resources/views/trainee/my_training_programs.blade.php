@@ -108,6 +108,22 @@
                                                 <span class="text-danger">No advisor assigned yet.</span>
                                             @endif
                                         </p>
+                                        <p class="card-text">
+                                            <strong>Training Attendances Dates: </strong>
+                                            @foreach ($trainingProgram->training_attendances as $training_attendances)
+                                                <ul>
+                                                    <li>
+                                                        {{ $training_attendances->attendance_day }}
+                                                    </li>
+                                                    <li>
+                                                        From
+                                                        {{ date('g:i A', strtotime($training_attendances->start_time)) }}
+                                                        to
+                                                        {{ date('g:i A', strtotime($training_attendances->end_time)) }}
+                                                    </li>
+                                                </ul>
+                                            @endforeach
+                                        </p>
                                         <p>
                                             <strong>Fees: </strong>
                                             @if ($trainingProgram->fees <= 0)

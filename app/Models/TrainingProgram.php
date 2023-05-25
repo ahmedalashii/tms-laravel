@@ -57,6 +57,11 @@ class TrainingProgram extends Model
     }
 
 
+    public function training_attendances()
+    {
+        return $this->hasMany(TrainingAttendance::class);
+    }
+
     public function getUsersLengthAttribute()
     {
         return $this->training_program_users()->count();

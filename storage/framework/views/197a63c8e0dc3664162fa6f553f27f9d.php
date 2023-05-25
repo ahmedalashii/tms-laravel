@@ -39,7 +39,8 @@
                             <button type="submit" class="btn btn-success">Upload</button>
                         <?php else: ?>
                             <div class="alert alert-danger">
-                                <strong>Warning!</strong> You can't upload any files because you haven't joined any training programs
+                                <strong>Warning!</strong> You can't upload any files because you haven't joined any training
+                                programs
                                 yet.
                             </div>
                         <?php endif; ?>

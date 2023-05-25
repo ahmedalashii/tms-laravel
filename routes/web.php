@@ -49,6 +49,7 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
     Route::middleware(['fireauth:trainee'])->group(function () {
         Route::get('training-program/stripe/{id}', [StripePaymentController::class, 'paymentStripe'])->name('stripe')->middleware(['stripe']);
         Route::post('training-program/stripe/{id}', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe-payment')->middleware(['stripe']);
+        Route::post('training-program', [TraineeController::class, 'post_training_attendance'])->name('training_attendance');
         Route::post('notifications/read', [TraineeController::class, 'read_notifications'])->name('notifications.read');
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');

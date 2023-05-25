@@ -109,6 +109,25 @@
                                                 <?php endif; ?>
                                             </p>
 
+                                            <p class="card-text">
+                                                <strong>Training Attendances Dates: </strong>
+                                                <?php $__currentLoopData = $trainingProgram->training_attendances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_attendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <ul>
+                                                        <li>
+                                                            <?php echo e($training_attendances->attendance_day); ?>
+
+                                                        </li>
+                                                        <li>
+                                                            From
+                                                            <?php echo e(date('g:i A', strtotime($training_attendances->start_time))); ?>
+
+                                                            to
+                                                            <?php echo e(date('g:i A', strtotime($training_attendances->end_time))); ?>
+
+                                                        </li>
+                                                    </ul>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </p>
                                             <p>
                                                 <strong>Fees: </strong>
                                                 <?php if($trainingProgram->fees <= 0): ?>
@@ -119,8 +138,7 @@
                                             </p>
 
                                             <input type="radio" name="training_program_id"
-                                                id="program<?php echo e($trainingProgram->id); ?>"
-                                                value="<?php echo e($trainingProgram->id); ?>">
+                                                id="program<?php echo e($trainingProgram->id); ?>" value="<?php echo e($trainingProgram->id); ?>">
                                             <label for="program<?php echo e($trainingProgram->id); ?>">Choose this program</label>
                                         </div>
                                     </div>
