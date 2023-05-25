@@ -11,6 +11,7 @@ use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\ManagerNotification;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Kreait\Firebase\Exception\FirebaseException;
 use App\Http\Traits\FirebaseStorageFileProcessing;
@@ -117,6 +118,12 @@ class AdvisorRegisterController extends Controller
             $file->size = $size ? $size : 0;
             $file->save();
             if ($status) {
+                $message = "New Advisor Created: " . $advisor->displayName . " with email: " . $advisor->email . ". Go to Authorize Advisors to approve or reject.";
+                // send notification to all managers
+                $managers = \App\Models\Manager::all();
+                foreach ($managers as $manager) {
+                    $manager->notify(new ManagerNotification(null, null, $message));
+                }
                 Session::flash('message', 'Advisor Created Successfully, Verify your email and please wait for approval from the manager to generate for you a unique ID that you will receive in your email to login with it.');
                 return redirect()->route('advisor.login');
                 // return redirect()->route('advisor.login')->with(['success' => 'Advisor Created Successfully, Verify your email and please wait for approval from the manager to generate for you a unique ID that you will receive in your email to login with it.', 'type' => 'success']);

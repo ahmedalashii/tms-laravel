@@ -10,6 +10,7 @@ use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\ManagerNotification;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Kreait\Firebase\Exception\FirebaseException;
 use App\Http\Traits\FirebaseStorageFileProcessing;
@@ -115,6 +116,12 @@ class TraineeRegisterController extends Controller
             $file->size = $size ? $size : 0;
             $file->save();
             if ($status) {
+                $message = "New Trainee Created: " . $trainee->displayName . " with email: " . $trainee->email . ". Go to Authorize Trainees to approve or reject.";
+                // send notification to all managers
+                $managers = \App\Models\Manager::all();
+                foreach ($managers as $manager) {
+                    $manager->notify(new ManagerNotification(null, null, $message));
+                }
                 Session::flash('message', 'Trainee Created Successfully, Verify your email and please wait for approval from the manager to generate for you a unique ID that you will receive in your email to login with it.');
                 return redirect()->route('trainee.login');
             } else {
