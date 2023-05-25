@@ -53,6 +53,9 @@ class Trainee extends Authenticatable
         return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'trainee_id', 'training_program_id');
     }
 
+    public function approved_training_programs(){
+        return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'trainee_id', 'training_program_id')->wherePivot('status', 'approved');
+    }
 
     public function getAvatarFileAttribute()
     {

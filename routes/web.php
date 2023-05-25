@@ -47,12 +47,13 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
     Route::post('/logout', [TraineeLoginController::class, 'traineeLogout'])->name('logout')->middleware(['auth:trainee']);
 
     Route::middleware(['fireauth:trainee'])->group(function () {
-        Route::get('training-program/stripe/{id}', [StripePaymentController::class, 'paymentStripe'])->name('stripe');
-        Route::post('training-program/stripe/{id}', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe-payment');
+        Route::get('training-program/stripe/{id}', [StripePaymentController::class, 'paymentStripe'])->name('stripe')->middleware(['stripe']);
+        Route::post('training-program/stripe/{id}', [StripePaymentController::class, 'postPaymentStripe'])->name('stripe-payment')->middleware(['stripe']);
         Route::post('notifications/read', [TraineeController::class, 'read_notifications'])->name('notifications.read');
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
+        Route::post('/upload', [TraineeController::class, 'upload_file'])->name('upload');
         Route::get('/my-training-programs', [TraineeController::class, 'my_training_programs'])->name('my-training-programs');
         Route::get('/available-training-programs', [TraineeController::class, 'available_training_programs'])->name('available-training-programs');
         Route::post('/apply-training-program', [TraineeController::class, 'apply_training_program'])->name('apply-training-program');

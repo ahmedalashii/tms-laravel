@@ -3,23 +3,46 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4">Upload</h1>
 
-            <form action="./upload-files" method="post" enctype="multipart/form-data" class="mt-3">
+            <form action="<?php echo e(route('trainee.upload')); ?>" method="POST" enctype="multipart/form-data" class="mt-3">
+                <?php echo csrf_field(); ?>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-upload me-1"></i>
                         Upload New File
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label for="file" class="form-label">File</label>
-                            <input class="form-control" type="file" name="file" id="file">
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">File Description</label>
-                            <input class="form-control" type="text" name="description" id="description"
-                                placeholder="File Description">
-                        </div>
-                        <button type="submit" class="btn btn-success">Upload</button>
+                        <?php if($training_programs->isNotEmpty()): ?>
+                            <div class="mb-3">
+                                <label for="file" class="form-label">File (Max: 10MB)</label>
+                                <input class="form-control" type="file" name="file" id="file" accept="*/*"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="training_program" class="form-label">Which training program is this file
+                                    related to?</label>
+                                <select class="form-select mb-3" aria-label=".form-select-lg example" id="training_program"
+                                    name="training_program_id" required>
+                                    <option selected value="">Select Training Program</option>
+                                    <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($training_program->id); ?>">
+                                            <?php echo e($training_program->name); ?>
+
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">File Description</label>
+                                <input class="form-control" type="text" name="description" id="description"
+                                    placeholder="File Description" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Upload</button>
+                        <?php else: ?>
+                            <div class="alert alert-danger">
+                                <strong>Warning!</strong> You can't upload any files because you haven't joined any training programs
+                                yet.
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </form>

@@ -28,14 +28,43 @@ class TraineeController extends Controller
 
     public function upload()
     {
-        $trainee = Auth::guard('trainee')->user();
-        $trainee_db = Trainee::where('firebase_uid', $trainee->localId)->first();
         $paginate = 3;
-        $files = $trainee_db->files()->paginate($paginate);
-        return view('trainee.upload', compact('files'));
+        $files = auth_trainee()->files()->paginate($paginate);
+        $training_programs = auth_trainee()->approved_training_programs()->get();
+        return view('trainee.upload', compact('files', 'training_programs'));
     }
 
+    public function upload_file(Request $request)
+    {
+        $trainee_programs = auth_trainee()->approved_training_programs()->get();
+        if ($request->training_program_id && !in_array($request->training_program_id, $trainee_programs->pluck('id')->toArray())) {
+            return redirect()->back()->with(['fail' => 'You are not enrolled in this training program!', 'type' => 'error']);
+        }
 
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'description' => 'required|string|max:255',
+            'training_program_id' => 'nullable|exists:training_programs,id',
+        ]);
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $trainee = auth_trainee();
+        $file = $request->file('file');
+        $file_name =  $training_program->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $file_path = "TrainingPrograms/$training_program->name/Trainees/$trainee->displayName/$file_name";
+        $this->uploadFirebaseStorageFile($file, $file_path);
+
+        $file_db = new \App\Models\File;
+        $file_db->name = $file_name;
+        $file_db->firebase_file_path = $file_path;
+        $file_db->extension = $file->getClientOriginalExtension();
+        $file_db->trainee_id = $trainee->id;
+        $file_db->training_program_id = $request->training_program_id;
+        $file_db->description = $request->description;
+        $size = $file->getSize();
+        $file_db->size = $size ? $size : 0;
+        $status = $file_db->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'File Related to ' . $training_program->name . ' training program has been uploaded successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
 
     public function read_notifications(Request $request)
     {

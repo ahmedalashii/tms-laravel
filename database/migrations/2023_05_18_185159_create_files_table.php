@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('extension');
             $table->unsignedBigInteger('trainee_id')->nullable();
             $table->foreign('trainee_id')->references('id')->on('trainees')->onDelete('cascade');
+            $table->foreign('training_program_id')->references('id')->on('training_programs')->onDelete('cascade');
             $table->unsignedBigInteger('manager_id')->nullable();
             $table->foreign('manager_id')->references('id')->on('managers')->onDelete('cascade');
             $table->unsignedBigInteger('advisor_id')->nullable();
