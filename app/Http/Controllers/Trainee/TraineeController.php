@@ -293,7 +293,7 @@ class TraineeController extends Controller
     public function request_meeting()
     {
         $trainee = auth_trainee();
-        $advisors = $trainee->advisors()->get();
+        $advisors = $trainee->advisors()->distinct()->get();
         return view('trainee.request_meeting', compact('advisors'));
     }
 

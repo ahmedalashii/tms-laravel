@@ -64,8 +64,8 @@
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
-                                        src="{{ $trainingRequest->trainingProgram->thumbnail ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png' }}"
-                                        alt="{{ $trainingRequest->trainingProgram->name }}'s image">
+                                        src="{{ $trainingRequest->trainingProgram->thumbnail ? (@getimagesize($trainingRequest->trainingProgram->thumbnail) ? $trainingRequest->trainingProgram->thumbnail : 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png') : 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png' }}"
+                                        alt="{{ $trainingRequest->trainingProgram->name }}'s image" height="300px">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $trainingRequest->trainingProgram->name }}</h5>
                                         <p class="card-text">{{ $trainingRequest->trainingProgram->description }}</p>

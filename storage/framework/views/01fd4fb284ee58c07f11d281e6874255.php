@@ -66,8 +66,8 @@
                                 <div class="col-md-4">
                                     <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                         <img class="card-img-top"
-                                            src="<?php echo e($trainingProgram->thumbnail ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
-                                            alt="<?php echo e($trainingProgram->name); ?>'s image">
+                                            src="<?php echo e($trainingProgram->thumbnail ? (@getimagesize($trainingProgram->thumbnail) ? $trainingProgram->thumbnail : 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png') : 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
+                                            alt="<?php echo e($trainingProgram->name); ?>'s image" height="300px">
                                         <div class="card-body">
                                             <h5 class="card-title"><?php echo e($trainingProgram->name); ?></h5>
                                             <p class="card-text"><?php echo e($trainingProgram->description); ?></p>

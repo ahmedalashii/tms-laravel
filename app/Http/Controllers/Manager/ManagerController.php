@@ -333,7 +333,6 @@ class ManagerController extends Controller
 
         $trainingProgram->name = $data['name'];
         $trainingProgram->discipline_id = $data['discipline_id'];
-        $trainingProgram->advisor_id = $data['advisor_id'];
         $trainingProgram->description = $data['description'];
         $trainingProgram->start_date = $data['start_date'];
         $trainingProgram->end_date = $data['end_date'];
@@ -342,12 +341,36 @@ class ManagerController extends Controller
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
         $trainingProgram->capacity = $data['capacity'];
-
+        
+        if ($trainingProgram->advisor && $trainingProgram->advisor->id != $data['advisor_id']) {
+            // notify the old advisor that he is not the advisor for the training program anymore
+            $old_advisor = $trainingProgram->advisor;
+            $manager = auth_manager();
+            $message = 'You are not the advisor for ' . $trainingProgram->name . ' anymore.';
+            $old_advisor->notify(new AdvisorNotification($manager, null, $message));
+            // notify the trainees also
+            $trainingProgramUsers = $trainingProgram->training_program_users()->get();
+            $new_advisor = Advisor::find($data['advisor_id']);
+            foreach ($trainingProgramUsers as $trainingProgramUser) {
+                $trainee = $trainingProgramUser->trainee;
+                $message = 'The advisor ' . $old_advisor->displayName . ' is not the advisor for ' . $trainingProgram->name . ' anymore. The new advisor is ' . $new_advisor->displayName . '.';
+                $trainee->notify(new TraineeNotification($manager, $old_advisor, $message));
+            }
+        }
+        $trainingProgram->advisor_id = $data['advisor_id'];
         // Each training program user in the training program must be updated if it doesn't have an advisor
         $trainingProgramUsers = $trainingProgram->training_program_users()->whereNull('advisor_id')->get();
         foreach ($trainingProgramUsers as $trainingProgramUser) {
             $trainingProgramUser->advisor_id = $data['advisor_id'];
             $trainingProgramUser->save();
+            // notify the trainee that the advisor has been changed for the training program
+            $trainee = $trainingProgramUser->trainee;
+            $advisor = $trainingProgramUser->advisor;
+            $manager = auth_manager();
+            $message = 'The advisor ' . $advisor->displayName . ' has been assigned to ' . $trainingProgram->name . '.';
+            $trainee->notify(new TraineeNotification($manager, $advisor, $message));
+            $message = 'You have been assigned to ' . $trainingProgram->name . ' by ' . $manager->displayName . '.';
+            $advisor->notify(new AdvisorNotification($manager, $trainee, $message));
         }
 
         if (request()->hasFile('thumbnail')) {
