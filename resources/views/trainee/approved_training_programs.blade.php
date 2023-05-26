@@ -147,14 +147,21 @@
                     </div>
                 @else
                     <br>
-                    <div class="alert alert-info">You have not registered for any training program yet.</div>
-                @endif
-                @if ($training_programs->hasPages())
-                    <br>
-                @endif
-                {{ $training_programs->links('pagination::bootstrap-5') }}
+                    <div class="alert alert-info">You have not registered for any training program yet @if (request()->query('search'))
+                            with the search term <b>{{ request()->query('search') }}</b>
+                            @endif @if (request()->query('price_filter'))
+                                with the price filter factor <b>{{ request()->query('price_filter') }}</b>
+                                @endif @if (request()->query('discipline'))
+                                    with the discipline
+                                    <b>{{ \App\Models\Discipline::find(request()->query('discipline'))?->name }}</b>
+                                @endif
+                            @endif
+                            @if ($training_programs->hasPages())
+                                <br>
+                            @endif
+                            {{ $training_programs->links('pagination::bootstrap-5') }}
+                    </div>
             </div>
-        </div>
     </main>
 
 @endsection

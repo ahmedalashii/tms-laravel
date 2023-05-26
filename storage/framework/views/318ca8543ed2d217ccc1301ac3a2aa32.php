@@ -159,15 +159,22 @@
                     </div>
                 <?php else: ?>
                     <br>
-                    <div class="alert alert-info">You have not registered for any training program yet.</div>
-                <?php endif; ?>
-                <?php if($training_programs->hasPages()): ?>
-                    <br>
-                <?php endif; ?>
-                <?php echo e($training_programs->links('pagination::bootstrap-5')); ?>
+                    <div class="alert alert-info">You have not registered for any training program yet <?php if(request()->query('search')): ?>
+                            with the search term <b><?php echo e(request()->query('search')); ?></b>
+                            <?php endif; ?> <?php if(request()->query('price_filter')): ?>
+                                with the price filter factor <b><?php echo e(request()->query('price_filter')); ?></b>
+                                <?php endif; ?> <?php if(request()->query('discipline')): ?>
+                                    with the discipline
+                                    <b><?php echo e(\App\Models\Discipline::find(request()->query('discipline'))?->name); ?></b>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            <?php if($training_programs->hasPages()): ?>
+                                <br>
+                            <?php endif; ?>
+                            <?php echo e($training_programs->links('pagination::bootstrap-5')); ?>
 
+                    </div>
             </div>
-        </div>
     </main>
 
 <?php $__env->stopSection(); ?>

@@ -147,7 +147,11 @@
                         </div>
                     <?php else: ?>
                         <br>
-                        <div class="alert alert-info">No training programs available at the moment.</div>
+
+                        <div class="alert alert-info">No training programs available at the moment. <?php if(request()->query('search')): ?>
+                                Try searching for something else.
+                            <?php endif; ?>
+                        </div>
                     <?php endif; ?>
                     <?php if($training_programs->hasPages()): ?>
                         <br>

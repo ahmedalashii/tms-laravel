@@ -139,7 +139,11 @@
                         </div>
                     @else
                         <br>
-                        <div class="alert alert-info">No training programs available at the moment.</div>
+
+                        <div class="alert alert-info">No training programs available at the moment. @if (request()->query('search'))
+                                Try searching for something else.
+                            @endif
+                        </div>
                     @endif
                     @if ($training_programs->hasPages())
                         <br>

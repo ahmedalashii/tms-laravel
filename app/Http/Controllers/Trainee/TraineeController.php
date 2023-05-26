@@ -111,7 +111,7 @@ class TraineeController extends Controller
                 ->where('end_date', '>', date('Y-m-d'))
                 ->where('capacity', '>', 0)
                 ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
-                    $query->where('trainee_id', $trainee->id);
+                    $query->whereIn('status', ['approved', 'pending'])->where('trainee_id', $trainee->id);
                 })->whereHas('training_program_users', function ($query) {
                     $query->where('status', 'approved')->havingRaw('count(*) < capacity');
                 })->where(function ($query) use ($search_value) {
@@ -139,9 +139,9 @@ class TraineeController extends Controller
                 ->where('end_date', '>', date('Y-m-d'))
                 ->where('capacity', '>', 0)
                 ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
-                    $query->where('trainee_id', $trainee->id);
+                    $query->whereIn('status', ['approved', 'pending'])->where('trainee_id', $trainee->id);
                 })->whereHas('training_program_users', function ($query) {
-                    $query->where('status', 'approved')->havingRaw('count(*) < capacity');
+                    $query->havingRaw('count(*) < capacity');
                 })->where(function ($query) use ($search_value) {
                     $query->where('name', 'like', '%' . $search_value . '%')
                         ->orWhere('description', 'like', '%' . $search_value . '%')
@@ -193,7 +193,6 @@ class TraineeController extends Controller
 
     public function approved_training_programs(Request $request)
     {
-
         $request->validate([
             'discipline_id' => 'nullable|exists:disciplines,id',
         ]);
