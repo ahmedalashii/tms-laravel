@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('time');
             $table->string('location');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

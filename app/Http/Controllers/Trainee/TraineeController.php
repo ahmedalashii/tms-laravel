@@ -6,11 +6,14 @@ use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
+use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TrainingAttendanceTrainee;
+use App\Notifications\AdvisorNotification;
 use App\Notifications\ManagerNotification;
+use App\Http\Requests\ScheduleMeetingRequest;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
 
@@ -149,7 +152,8 @@ class TraineeController extends Controller
         return view('trainee.available_training_programs', compact('training_programs', 'disciplines'));
     }
 
-    public function my_training_programs(Request $request)
+
+    public function all_training_requests(Request $request)
     {
         $request->validate([
             'discipline_id' => 'nullable|exists:disciplines,id',
@@ -158,8 +162,46 @@ class TraineeController extends Controller
         $discipline_id = $request->discipline;
         $search_value = $request->search;
         $price_filter = $request->price_filter;
-        $training_programs = auth_trainee()->training_programs()->where(function ($query) use ($price_filter) {
+        $training_requests = TrainingProgramUser::where('trainee_id', auth_trainee()->id)->where(function ($query) use ($price_filter) {
             // when $price_filter filled with value (either free or paid) >> do conditions 
+            $query->when($price_filter, function ($query, $price_filter) {
+                if ($price_filter == "free") {
+                    $query->where('fees_paid', 0);
+                } else {
+                    // the maximum double value 
+                    $price = 1.7976931348623157E+308;
+                    $query->where('fees_paid', '<=', $price)->where('fees_paid', '>', 0);
+                }
+            });
+        })->where(function ($query) use ($search_value) {
+            $query->whereHas('trainingProgram', function ($query) use ($search_value) {
+                $query->where('name', 'like', '%' . $search_value . '%')
+                    ->orWhere('description', 'like', '%' . $search_value . '%')
+                    ->orWhere('location', 'like', '%' . $search_value . '%');
+            });
+        })->where(function ($query) use ($discipline_id) {
+            $query->when($discipline_id, function ($query, $discipline_id) {
+                $query->whereHas('trainingProgram', function ($query) use ($discipline_id) {
+                    $query->where('discipline_id', $discipline_id);
+                });
+            });
+        })->paginate($paginate);
+        $trainee = auth_trainee();
+        $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
+        return view('trainee.all_training_requests', compact('training_requests', 'disciplines'));
+    }
+
+    public function approved_training_programs(Request $request)
+    {
+
+        $request->validate([
+            'discipline_id' => 'nullable|exists:disciplines,id',
+        ]);
+        $paginate = 3;
+        $discipline_id = $request->discipline;
+        $search_value = $request->search;
+        $price_filter = $request->price_filter;
+        $training_programs = auth_trainee()->approved_training_programs()->where(function ($query) use ($request, $price_filter) {
             $query->when($price_filter, function ($query, $price_filter) {
                 if ($price_filter == "free") {
                     $query->whereNull('fees');
@@ -180,7 +222,7 @@ class TraineeController extends Controller
         })->paginate($paginate);
         $trainee = auth_trainee();
         $disciplines = Discipline::withoutTrashed()->whereIn('id', $trainee->disciplines->pluck('id'))->get();
-        return view('trainee.my_training_programs', compact('training_programs', 'disciplines'));
+        return view('trainee.approved_training_programs', compact('training_programs', 'disciplines'));
     }
 
 
@@ -220,11 +262,13 @@ class TraineeController extends Controller
     public function training_attendance()
     {
         $training_programs = auth_trainee()->approved_training_programs()->with('training_attendances')->get();
-        $attendance_histories = auth_trainee()->attendance_histories()->get();
+        $paginate = 5;
+        $attendance_histories = auth_trainee()->attendance_histories()->paginate($paginate);
         return view('trainee.training_attendance', compact('training_programs', 'attendance_histories'));
     }
 
-    public function post_training_attendance(Request $request){
+    public function post_training_attendance(Request $request)
+    {
         $request->validate([
             'training_program_id' => 'required|exists:training_programs,id',
             'training_attendance_id' => 'required|exists:training_attendances,id',
@@ -248,8 +292,28 @@ class TraineeController extends Controller
 
     public function request_meeting()
     {
-        return view('trainee.request_meeting');
+        $trainee = auth_trainee();
+        $advisors = $trainee->advisors()->get();
+        return view('trainee.request_meeting', compact('advisors'));
     }
+
+    public function schedule_meeting(ScheduleMeetingRequest $request)
+    {
+        $trainee = auth_trainee();
+        $advisor = \App\Models\Advisor::find($request->advisor);
+        $meeting = new \App\Models\Meeting;
+        $meeting->trainee_id = $trainee->id;
+        $meeting->advisor_id = $advisor->id;
+        $meeting->date = $request->date;
+        $meeting->time = $request->time;
+        $meeting->location = $request->location;
+        $meeting->notes = $request->notes;
+        $status = $meeting->save();
+        // Notify the advisor
+        $advisor->notify(new AdvisorNotification(null, $trainee, 'A trainee has requested a meeting with you!'));
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been scheduled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
 
     public function edit()
     {

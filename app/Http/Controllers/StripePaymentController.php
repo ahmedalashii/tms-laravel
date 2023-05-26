@@ -6,10 +6,11 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
 use App\Http\Traits\EmailProcessing;
+use Illuminate\Support\Facades\Session;
+use App\Notifications\ManagerNotification;
 use App\Notifications\TraineeNotification;
 use Cartalyst\Stripe\Laravel\Facades\Stripe;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
-use App\Notifications\ManagerNotification;
 use Cartalyst\Stripe\Exception\CardErrorException;
 use Cartalyst\Stripe\Exception\MissingParameterException;
 
@@ -84,14 +85,14 @@ class StripePaymentController extends Controller
                 return redirect()->back()->with(['fail', 'Insufficient balance!', 'type' => 'error']);
             }
         } catch (Exception $e) {
-            info('asd123 ' . $e->getMessage());
-            return redirect()->back()->with(['fail', $e->getMessage(), 'type' => 'error']);
+            Session::flash('error', $e->getMessage());
+            return redirect()->back();
         } catch (CardErrorException $e) {
-            info('asd213 ' . $e->getMessage());
-            return redirect()->back()->with(['fail', $e->getMessage(), 'type' => 'error']);
+            Session::flash('error', $e->getMessage());
+            return redirect()->back();
         } catch (MissingParameterException $e) {
-            info('ads34 ' . $e->getMessage());
-            return redirect()->back()->with(['fail', $e->getMessage(), 'type' => 'error']);
+            Session::flash('error', $e->getMessage());
+            return redirect()->back();
         }
     }
 }

@@ -103,6 +103,8 @@
                             <?php endif; ?>
                         </tbody>
                     </table>
+                    <?php echo e($attendance_histories->links('pagination::bootstrap-5')); ?>
+
                 </div>
             </section>
         </div>
@@ -284,31 +286,32 @@
                     options[i].value = options_array[i].value;
                     options[i].text = options_array[i].text;
                 }
-                // Listen to the selection of the training attendance and insert a hidden input with the date splitted from the text like this : "2023-05-16 Tuesday: From 12:52 pm to 1:52 pm" >> "2023-05-16"
-                training_attendance_element.addEventListener('change', function() {
-                    // Get the form element of "form" id
-                    var form = document.getElementById('form');
-                    // Get the selected option
-                    var selected_option = training_attendance_element.options[
-                        training_attendance_element.selectedIndex];
-                    // Get the text of the selected option
-                    var selected_option_text = selected_option.text;
-                    // Split the text by spaces
-                    var splitted_text = selected_option_text.split(' ');
-                    // Get the date from the splitted text
-                    var date = splitted_text[0];
-                    // Create or update a hidden input with the name "date" and the value of the date
-                    var hidden_input = document.querySelector('input[name="date"]');
-                    if (hidden_input) {
-                        hidden_input.value = date;
-                    } else {
-                        var input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'date';
-                        input.value = date;
-                        form.appendChild(input);
-                    }
-                });
+            });
+            // Listen to the selection of the training attendance and insert a hidden input with the date splitted from the text like this : "2023-05-16 Tuesday: From 12:52 pm to 1:52 pm" >> "2023-05-16"
+            training_attendance_element.addEventListener('change', function() {
+                // Get the form element of "form" id
+                var form = document.getElementById('form');
+                // Get the selected option
+                var selected_option = training_attendance_element.options[
+                    training_attendance_element.selectedIndex];
+                // Get the text of the selected option
+                var selected_option_text = selected_option.text;
+                // Split the text by spaces
+                var splitted_text = selected_option_text.split(' ');
+                // Get the date from the splitted text
+                var date = splitted_text[0];
+                // Create or update a hidden input with the name "date" and the value of the date
+                var hidden_input = document.querySelector('input[name="date"]');
+                if (hidden_input) {
+                    console.log("hidden input exists and the value is updated to " + date);
+                    hidden_input.value = date;
+                } else {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'date';
+                    input.value = date;
+                    form.appendChild(input);
+                }
             });
         }
     </script>

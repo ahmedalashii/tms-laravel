@@ -19,13 +19,12 @@
                     <h5>Training Program: <span class="text-danger"><?php echo e($trainingProgram->name); ?></span></h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-12 mt-2">
-                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="alert alert-danger"><?php echo e($message); ?></div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php if(Session::has('error')): ?>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <?php echo e(Session::get('error')); ?>
+
                         </div>
-                    </div>
+                    <?php endif; ?>
                     <form class="form-horizontal" method="POST" id="payment-form" role="form"
                         action="<?php echo e(route('trainee.stripe-payment', $trainingProgram->id)); ?>">
                         <?php echo csrf_field(); ?>

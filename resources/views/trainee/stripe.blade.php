@@ -19,13 +19,11 @@
                     <h5>Training Program: <span class="text-danger">{{ $trainingProgram->name }}</span></h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-12 mt-2">
-                            @foreach ($errors->all() as $message)
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @endforeach
+                    @if (Session::has('error'))
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            {{ Session::get('error') }}
                         </div>
-                    </div>
+                    @endif
                     <form class="form-horizontal" method="POST" id="payment-form" role="form"
                         action="{{ route('trainee.stripe-payment', $trainingProgram->id) }}">
                         @csrf

@@ -3,8 +3,8 @@
 <?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">My Training Programs</h1>
-            <form method="GET" action="<?php echo e(route('trainee.all-training-requests')); ?>">
+            <h1 class="mt-4 mb-4">My Approved Training Programs</h1>
+            <form method="GET" action="<?php echo e(route('trainee.approved-training-programs')); ?>">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="price_filter">Filter based on price</label>
@@ -72,8 +72,17 @@
                                         <p class="card-text"><?php echo e($trainingProgram->description); ?></p>
                                         <p class="card-text">
                                             <strong>Submission Date: </strong>
-                                            <?php echo e($trainingProgram->submission_date); ?>
+                                            <?php echo e(Carbon\Carbon::parse($trainingProgram->created_at)->format('d M Y h:i A')); ?>
 
+                                        </p>
+                                        <p class="card-text"><strong>Status: </strong>
+                                            <?php if($trainingProgram->trainee_status == 'pending'): ?>
+                                                <span class="text-warning">Pending</span>
+                                            <?php elseif($trainingProgram->trainee_status == 'approved'): ?>
+                                                <span class="text-success">Approved</span>
+                                            <?php else: ?>
+                                                <span class="text-danger">Rejected</span>
+                                            <?php endif; ?>
                                         </p>
                                         <p class="card-text"><strong>Start Date: </strong>
                                             <?php echo e($trainingProgram->start_date); ?>
@@ -95,18 +104,11 @@
                                         </p>
                                         <p class="card-text"><strong>Capacity: </strong>
                                             <?php echo e($trainingProgram->users_length); ?> /
-                                            <?php echo e($trainingProgram->capacity); ?> trainees registered for this program so
+                                            <?php echo e($trainingProgram->capacity); ?> trainees registered for this
+                                            program so
                                             far.
                                         </p>
-                                        <p class="card-text"><strong>Status: </strong>
-                                            <?php if($trainingProgram->trainee_status == 'pending'): ?>
-                                                <span class="text-warning">Pending</span>
-                                            <?php elseif($trainingProgram->trainee_status == 'approved'): ?>
-                                                <span class="text-success">Approved</span>
-                                            <?php else: ?>
-                                                <span class="text-danger">Rejected</span>
-                                            <?php endif; ?>
-                                        </p>
+
                                         <p class="card-text"><strong>Discipline: </strong>
                                             <?php echo e($trainingProgram->discipline->name); ?> </p>
                                         <p class="card-text">
@@ -144,9 +146,12 @@
                                             <?php if($trainingProgram->fees <= 0): ?>
                                                 <b class="text-success">Free</b>
                                             <?php else: ?>
-                                                <b class="text-danger"><?php echo e($trainingProgram->fees); ?> USD</b>
+                                                <b class="text-danger"><?php echo e($trainingProgram->fees); ?>
+
+                                                    USD</b>
                                             <?php endif; ?>
                                         </p>
+                                     
                                     </div>
                                 </div>
                             </div>
@@ -167,4 +172,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/my_training_programs.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/approved_training_programs.blade.php ENDPATH**/ ?>

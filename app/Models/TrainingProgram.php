@@ -46,16 +46,19 @@ class TrainingProgram extends Model
         return $this->files()->where('name', 'like', $this->thumbnail_file_name . '%')->first()?->url;
     }
 
-
     public function training_program_users()
     {
         return $this->hasMany(TrainingProgramUser::class);
     }
 
+    public function current_trainee_history()
+    {
+        return $this->training_program_users()->where('trainee_id', auth_trainee()->id)->first();
+    }
+
     public function getTraineeStatusAttribute(){
         return $this->training_program_users()->where('trainee_id', auth_trainee()->id)->first()?->status;
     }
-
 
     public function training_attendances()
     {
@@ -64,6 +67,6 @@ class TrainingProgram extends Model
 
     public function getUsersLengthAttribute()
     {
-        return $this->training_program_users()->count();
+        return $this->training_program_users()->where('status', 'approved')->count();
     }
 }

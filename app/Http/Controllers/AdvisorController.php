@@ -24,6 +24,13 @@ class AdvisorController extends Controller
         return view('advisor.edit', compact('disciplines'));
     }
 
+    public function read_notifications(Request $request)
+    {
+        $advisor = auth_advisor();
+        $notifications = $advisor->notifications();
+        $notifications->update(['read_at' => now()]);
+        return response()->json(['success' => true]);
+    }
 
     public function update(Advisor $advisor)
     {

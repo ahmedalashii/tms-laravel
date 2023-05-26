@@ -77,6 +77,11 @@
                                                     $filesize = $file->size;
                                                     $factor = floor((strlen($filesize) - 1) / 3);
                                                     $size = sprintf("%.{$decimals}f", $filesize / pow(1024, $factor)) . @$sz[$factor] . 'B';
+                                                    // if the $size has two BB
+                                                    if(substr_count($size, 'B') > 1){
+                                                        // remove the last B
+                                                        $size = substr($size, 0, -1);
+                                                    }
                                                 ?>
                                                 <small class="text-muted"> <?php echo e($size); ?></small>
                                             </div>

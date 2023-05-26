@@ -3,7 +3,7 @@
 <?php $__env->startSection('MainContent'); ?>
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">My Training Programs</h1>
+            <h1 class="mt-4 mb-4">My Training Requests</h1>
             <form method="GET" action="<?php echo e(route('trainee.all-training-requests')); ?>">
                 <div class="row">
                     <div class="col-md-6">
@@ -59,62 +59,64 @@
                 </div>
             </form>
             <div class="mb-3">
-                <?php if($training_programs->isNotEmpty()): ?>
+                <?php if($training_requests->isNotEmpty()): ?>
                     <div class="row">
-                        <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainingProgram): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $training_requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainingRequest): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
-                                        src="<?php echo e($trainingProgram->thumbnail ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
-                                        alt="<?php echo e($trainingProgram->name); ?>'s image">
+                                        src="<?php echo e($trainingRequest->trainingProgram->thumbnail ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
+                                        alt="<?php echo e($trainingRequest->trainingProgram->name); ?>'s image">
                                     <div class="card-body">
-                                        <h5 class="card-title"><?php echo e($trainingProgram->name); ?></h5>
-                                        <p class="card-text"><?php echo e($trainingProgram->description); ?></p>
+                                        <h5 class="card-title"><?php echo e($trainingRequest->trainingProgram->name); ?></h5>
+                                        <p class="card-text"><?php echo e($trainingRequest->trainingProgram->description); ?></p>
                                         <p class="card-text">
                                             <strong>Submission Date: </strong>
-                                            <?php echo e($trainingProgram->submission_date); ?>
+                                            <?php echo e(Carbon\Carbon::parse($trainingRequest->created_at)->format('d M Y h:i A')); ?>
 
-                                        </p>
-                                        <p class="card-text"><strong>Start Date: </strong>
-                                            <?php echo e($trainingProgram->start_date); ?>
-
-                                        </p>
-                                        <p class="card-text"><strong>End Date: </strong>
-                                            <?php echo e($trainingProgram->end_date); ?>
-
-                                        </p>
-                                        <p class="card-text"><strong>Duration: </strong>
-                                            <?php echo e($trainingProgram->duration); ?>
-
-                                            <?php echo e($trainingProgram->duration_unit); ?>
-
-                                        </p>
-                                        <p class="card-text"><strong>Location: </strong>
-                                            <?php echo e($trainingProgram->location); ?>
-
-                                        </p>
-                                        <p class="card-text"><strong>Capacity: </strong>
-                                            <?php echo e($trainingProgram->users_length); ?> /
-                                            <?php echo e($trainingProgram->capacity); ?> trainees registered for this program so
-                                            far.
                                         </p>
                                         <p class="card-text"><strong>Status: </strong>
-                                            <?php if($trainingProgram->trainee_status == 'pending'): ?>
+                                            <?php if($trainingRequest->status == 'pending'): ?>
                                                 <span class="text-warning">Pending</span>
-                                            <?php elseif($trainingProgram->trainee_status == 'approved'): ?>
+                                            <?php elseif($trainingRequest->status == 'approved'): ?>
                                                 <span class="text-success">Approved</span>
                                             <?php else: ?>
                                                 <span class="text-danger">Rejected</span>
                                             <?php endif; ?>
                                         </p>
+                                        <p class="card-text"><strong>Start Date: </strong>
+                                            <?php echo e($trainingRequest->trainingProgram->start_date); ?>
+
+                                        </p>
+                                        <p class="card-text"><strong>End Date: </strong>
+                                            <?php echo e($trainingRequest->trainingProgram->end_date); ?>
+
+                                        </p>
+                                        <p class="card-text"><strong>Duration: </strong>
+                                            <?php echo e($trainingRequest->trainingProgram->duration); ?>
+
+                                            <?php echo e($trainingRequest->trainingProgram->duration_unit); ?>
+
+                                        </p>
+                                        <p class="card-text"><strong>Location: </strong>
+                                            <?php echo e($trainingRequest->location); ?>
+
+                                        </p>
+                                        <p class="card-text"><strong>Capacity: </strong>
+                                            <?php echo e($trainingRequest->trainingProgram->users_length); ?> /
+                                            <?php echo e($trainingRequest->trainingProgram->capacity); ?> trainees registered for this
+                                            program so
+                                            far.
+                                        </p>
+
                                         <p class="card-text"><strong>Discipline: </strong>
-                                            <?php echo e($trainingProgram->discipline->name); ?> </p>
+                                            <?php echo e($trainingRequest->trainingProgram->discipline->name); ?> </p>
                                         <p class="card-text">
                                             <strong>Advisor: </strong>
-                                            <?php if($trainingProgram->advisor): ?>
-                                                <img src="<?php echo e($trainingProgram->advisor?->avatar ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
+                                            <?php if($trainingRequest->advisor): ?>
+                                                <img src="<?php echo e($trainingRequest->advisor?->avatar ?? 'https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png'); ?>"
                                                     alt="advisor" class="rounded-circle" width="30px" height="30px">
-                                                <?php echo e($trainingProgram->advisor->displayName); ?>
+                                                <?php echo e($trainingRequest->advisor->displayName); ?>
 
                                             <?php else: ?>
                                                 <span class="text-danger">No advisor assigned yet.</span>
@@ -122,7 +124,7 @@
                                         </p>
                                         <p class="card-text">
                                             <strong>Training Attendances Dates: </strong>
-                                            <?php $__currentLoopData = $trainingProgram->training_attendances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_attendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php $__currentLoopData = $trainingRequest->trainingProgram->training_attendances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_attendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <ul>
                                                     <li>
                                                         <?php echo e($training_attendances->attendance_day); ?>
@@ -141,10 +143,22 @@
                                         </p>
                                         <p>
                                             <strong>Fees: </strong>
-                                            <?php if($trainingProgram->fees <= 0): ?>
+                                            <?php if($trainingRequest->trainingProgram->fees <= 0): ?>
                                                 <b class="text-success">Free</b>
                                             <?php else: ?>
-                                                <b class="text-danger"><?php echo e($trainingProgram->fees); ?> USD</b>
+                                                <b class="text-danger"><?php echo e($trainingRequest->trainingProgram->fees); ?>
+
+                                                    USD</b>
+                                            <?php endif; ?>
+                                        </p>
+                                        <p>
+                                            <strong>Fees Paid: </strong>
+                                            <?php if($trainingRequest->fees_paid <= 0 && $trainingRequest->trainingProgram->fees <= 0): ?>
+                                                <b class="text-success">It's Free</b>
+                                            <?php elseif($trainingRequest->fees_paid <= 0 && $trainingRequest->trainingProgram->fees > 0): ?>
+                                                <b class="text-danger">Not Paid</b>
+                                            <?php elseif($trainingRequest->fees_paid > 0 && $trainingRequest->trainingProgram->fees > 0): ?>
+                                                <b class="text-success"><?php echo e($trainingRequest->fees_paid); ?> USD</b>
                                             <?php endif; ?>
                                         </p>
                                     </div>
@@ -156,10 +170,10 @@
                     <br>
                     <div class="alert alert-info">You have not registered for any training program yet.</div>
                 <?php endif; ?>
-                <?php if($training_programs->hasPages()): ?>
+                <?php if($training_requests->hasPages()): ?>
                     <br>
                 <?php endif; ?>
-                <?php echo e($training_programs->links('pagination::bootstrap-5')); ?>
+                <?php echo e($training_requests->links('pagination::bootstrap-5')); ?>
 
             </div>
         </div>
@@ -167,4 +181,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/my_training_programs.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/all_training_requests.blade.php ENDPATH**/ ?>

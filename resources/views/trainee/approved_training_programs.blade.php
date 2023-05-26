@@ -3,8 +3,8 @@
 @section('MainContent')
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">My Training Programs</h1>
-            <form method="GET" action="{{ route('trainee.my-training-programs') }}">
+            <h1 class="mt-4 mb-4">My Approved Training Programs</h1>
+            <form method="GET" action="{{ route('trainee.approved-training-programs') }}">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="price_filter">Filter based on price</label>
@@ -69,6 +69,19 @@
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $trainingProgram->name }}</h5>
                                         <p class="card-text">{{ $trainingProgram->description }}</p>
+                                        <p class="card-text">
+                                            <strong>Submission Date: </strong>
+                                            {{ Carbon\Carbon::parse($trainingProgram->created_at)->format('d M Y h:i A') }}
+                                        </p>
+                                        <p class="card-text"><strong>Status: </strong>
+                                            @if ($trainingProgram->trainee_status == 'pending')
+                                                <span class="text-warning">Pending</span>
+                                            @elseif($trainingProgram->trainee_status == 'approved')
+                                                <span class="text-success">Approved</span>
+                                            @else
+                                                <span class="text-danger">Rejected</span>
+                                            @endif
+                                        </p>
                                         <p class="card-text"><strong>Start Date: </strong>
                                             {{ $trainingProgram->start_date }}
                                         </p>
@@ -84,18 +97,11 @@
                                         </p>
                                         <p class="card-text"><strong>Capacity: </strong>
                                             {{ $trainingProgram->users_length }} /
-                                            {{ $trainingProgram->capacity }} trainees registered for this program so
+                                            {{ $trainingProgram->capacity }} trainees registered for this
+                                            program so
                                             far.
                                         </p>
-                                        <p class="card-text"><strong>Status: </strong>
-                                            @if ($trainingProgram->trainee_status == 'pending')
-                                                <span class="text-warning">Pending</span>
-                                            @elseif($trainingProgram->trainee_status == 'approved')
-                                                <span class="text-success">Approved</span>
-                                            @else
-                                                <span class="text-danger">Rejected</span>
-                                            @endif
-                                        </p>
+
                                         <p class="card-text"><strong>Discipline: </strong>
                                             {{ $trainingProgram->discipline->name }} </p>
                                         <p class="card-text">
@@ -129,9 +135,11 @@
                                             @if ($trainingProgram->fees <= 0)
                                                 <b class="text-success">Free</b>
                                             @else
-                                                <b class="text-danger">{{ $trainingProgram->fees }} USD</b>
+                                                <b class="text-danger">{{ $trainingProgram->fees }}
+                                                    USD</b>
                                             @endif
                                         </p>
+                                     
                                     </div>
                                 </div>
                             </div>

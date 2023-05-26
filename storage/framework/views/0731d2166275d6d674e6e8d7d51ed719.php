@@ -5,9 +5,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>TrainMaster - Trainee</title>
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>TrainMaster - Advisor</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+    <link href="<?php echo e(asset('css/styles.css')); ?>" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
         /* notifications */
@@ -91,8 +93,14 @@
 </head>
 
 <body class="sb-nav-fixed">
+    <?php
+        $advisor = auth_advisor();
+        $advisor_db = \App\Models\Advisor::where('firebase_uid', $advisor->localId)->first();
+    ?>
+
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand ps-3" href="{{ route('trainee') }}">TrainMaster</a>
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="<?php echo e(route('advisor')); ?>">Train Master</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
@@ -104,17 +112,14 @@
                     data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('trainee.logout') }}"
-                            onclick="event.preventDefault();
-                                 document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
-                        </a>
-                        <form id="logout-form" action="{{ route('trainee.logout') }}" method="POST" class="d-none">
-                            @csrf
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('advisor.logout')); ?>"
+                            onclick="event.preventDefault(); document.getElementById('form').submit()">Logout</a>
+                        <form method="POST" action="<?php echo e(route('advisor.logout')); ?>" id="form">
+                            <?php echo csrf_field(); ?>
                         </form>
                     </li>
                     <li>
-                        <a class="dropdown-item nav-link text-dark" href="{{ route('trainee.edit') }}">
+                        <a class="dropdown-item nav-link text-dark" href="<?php echo e(route('advisor.edit')); ?>">
                             Edit Profile
                         </a>
                     </li>
@@ -130,56 +135,43 @@
             </div>
         </div>
     </nav>
-
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="{{ route('trainee') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt text-success"></i></div>
                             Dashboard
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.edit') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-edit text-success"></i></div>
-                            Edit My Profile
-                        </a>
                         <hr class="sidebar-divider">
-                        <a class="nav-link" href="{{ route('trainee.upload') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-upload text-success"></i></div>
-                            Upload
+                        <a class="nav-link" href="<?php echo e(route('advisor.trainees-requests')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
+                            Training Requests
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.available-training-programs') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
-                            Apply For Training Program
-                        </a>
-                        <a class="nav-link" href="{{ route('trainee.all-training-requests') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
-                            My Training Requests
-                        </a>
-                        <a class="nav-link" href="{{ route('trainee.approved-training-programs') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
-                            My Approved Training Programs
-                        </a>
-
-                        <a class="nav-link" href="{{ route('trainee.training-attendance') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>
-                            Training Attendance
-                        </a>
-                        <a class="nav-link" href="{{ route('trainee.request-meeting') }}">
+                        <a class="nav-link" href="<?php echo e(route('advisor.meetings-schedule')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
-                            Request Meeting
+                            Meetings Schedule
+                        </a>
+                        <a class="nav-link" href="<?php echo e(route('advisor.notifications')); ?>">
+                            <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
+                            Emails
+                        </a>
+                        <a class="nav-link" href="<?php echo e(route('advisor.trainees')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-solid fa-user  text-success"></i></div>
+                            Trainee Profile
                         </a>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as: <span class="text-warning">Trainee</span></div>
-                    {{ auth_trainee()->displayName }}
+                    <div class="small">Logged in as: <span class="text-warning">Advisor</span></div>
+                    <?php echo e(auth_advisor()->displayName); ?>
+
                 </div>
             </nav>
         </div>
         <div id="layoutSidenav_content">
-            @yield('MainContent')
+            <?php echo $__env->yieldContent('MainContent'); ?>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -194,7 +186,7 @@
         </div>
     </div>
     </div>
-    @include('includes.js.allJS')
+    <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
@@ -204,8 +196,8 @@
             const notifications = document.getElementById("notifications");
             const notifications_count = document.getElementById("notifications_count");
             let notifications_list = [];
-            let unreadNotifications = @json(auth_trainee()->notifications).filter(el => el.read_at == null);
-            @json(auth_trainee()->notifications).map(el => notifications_list.push(el.data.message));
+            let unreadNotifications = <?php echo json_encode(auth_advisor()->notifications, 15, 512) ?>.filter(el => el.read_at == null);
+            <?php echo json_encode(auth_advisor()->notifications, 15, 512) ?>.map(el => notifications_list.push(el.data.message));
 
             let closeTimeOutId = null;
 
@@ -244,8 +236,8 @@
                     unreadNotifications));
 
                 notifications_bell.addEventListener('click', (e) => {
-                    // make all notifications of trainee as read when the bell is clicked
-                    axios.post("{{ route('trainee.notifications.read') }}").then(res => {
+                    // make all notifications of advisor as read when the bell is clicked
+                    axios.post("<?php echo e(route('advisor.notifications.read')); ?>").then(res => {
                         console.log(res.data)
                     }).catch(err => {
                         console.log(err.response.data)
@@ -273,14 +265,14 @@
                 authEndpoint: '/broadcasting/auth',
                 auth: {
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                     }
                 }
             });
             // get the auth user id
-            var authId = {{ auth_trainee()->id }};
+            var authId = <?php echo e(auth_advisor()->id); ?>;
             // get the channel
-            var channel = pusher.subscribe('private-App.Models.Trainee.' + authId);
+            var channel = pusher.subscribe('private-App.Models.Advisor.' + authId);
             // bind the event
             channel.bind("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", function(data) {
                 var data = JSON.stringify(data);
@@ -303,3 +295,4 @@
 </body>
 
 </html>
+<?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/layouts/advisorLayout.blade.php ENDPATH**/ ?>

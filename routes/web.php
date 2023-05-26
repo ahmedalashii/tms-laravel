@@ -55,11 +55,13 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
         Route::post('/upload', [TraineeController::class, 'upload_file'])->name('upload');
-        Route::get('/my-training-programs', [TraineeController::class, 'my_training_programs'])->name('my-training-programs');
+        Route::get('/all-training-requests', [TraineeController::class, 'all_training_requests'])->name('all-training-requests');
+        Route::get('/approved-training-programs', [TraineeController::class, 'approved_training_programs'])->name('approved-training-programs');
         Route::get('/available-training-programs', [TraineeController::class, 'available_training_programs'])->name('available-training-programs');
         Route::post('/apply-training-program', [TraineeController::class, 'apply_training_program'])->name('apply-training-program');
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
         Route::get('/request-meeting', [TraineeController::class, 'request_meeting'])->name('request-meeting');
+        Route::post('/schedule-meeting', [TraineeController::class, 'schedule_meeting'])->name('schedule-meeting');
     });
 });
 
@@ -80,6 +82,7 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
 
     Route::middleware(['fireauth:advisor'])->group(function () {
         Route::get('/edit-info', [AdvisorController::class, 'edit'])->name('edit');
+        Route::post('notifications/read', [AdvisorController::class, 'read_notifications'])->name('notifications.read');
         Route::post('/edit-info/{advisor}', [AdvisorController::class, 'update'])->name('update');
         Route::get('/trainees-requests', [AdvisorController::class, 'trainees_requests'])->name('trainees-requests');
         Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
