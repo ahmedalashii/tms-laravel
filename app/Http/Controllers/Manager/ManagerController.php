@@ -82,7 +82,6 @@ class ManagerController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Training Criterion Added Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-
     public function reject_training_request($id)
     {
         $training_request = TrainingProgramUser::find($id);
@@ -343,6 +342,14 @@ class ManagerController extends Controller
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
         $trainingProgram->capacity = $data['capacity'];
+
+        // Each training program user in the training program must be updated if it doesn't have an advisor
+        $trainingProgramUsers = $trainingProgram->training_program_users()->whereNull('advisor_id')->get();
+        foreach ($trainingProgramUsers as $trainingProgramUser) {
+            $trainingProgramUser->advisor_id = $data['advisor_id'];
+            $trainingProgramUser->save();
+        }
+
         if (request()->hasFile('thumbnail')) {
             // Upload Thumbnail
             $thumbnailImage = request()->file('thumbnail');

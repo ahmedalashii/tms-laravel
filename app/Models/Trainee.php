@@ -97,7 +97,6 @@ class Trainee extends Authenticatable
         return $this->hasMany(TrainingAttendanceTrainee::class, 'trainee_id');
     }
 
-    // Get the advisors through the the training programs that the trainee has joined in and their status is approved
     public function advisors()
     {
         return $this->belongsToMany(Advisor::class, 'training_program_users', 'trainee_id', 'advisor_id')->wherePivot('status', 'approved')->select('advisors.id', 'advisors.displayName');
