@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
         $manager->save();
         $this->call(DisciplineSeeder::class);
         $this->call(TrainingProgramSeeder::class);
+        $this->call(TrainingAttendanceSeeder::class);
         $this->call(TrainingCriterionSeeder::class);
     }
 }
