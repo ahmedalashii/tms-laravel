@@ -308,6 +308,9 @@ class TraineeController extends Controller
         $meeting->location = $request->location;
         $meeting->notes = $request->notes;
         $status = $meeting->save();
+        // Send an email to the advisor
+        $mailable = new \App\Mail\AdvisorMeetingRequestMail($trainee, $advisor, $meeting);
+        $this->sendEmail($advisor->email, $mailable);
         // Notify the advisor
         $advisor->notify(new AdvisorNotification(null, $trainee, 'A trainee has requested a meeting with you!'));
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been scheduled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
