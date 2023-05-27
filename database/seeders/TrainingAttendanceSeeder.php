@@ -17,10 +17,10 @@ class TrainingAttendanceSeeder extends Seeder
         // For each training program, create 3 to 5 training attendances
         \App\Models\TrainingProgram::all()->each(function (\App\Models\TrainingProgram $trainingProgram) use ($faker) {
             for ($i = 0; $i < 3; $i++) {
-                $start_time = $faker->time('H:i:s');
+                $start_time = $faker->time('H:i');
                 // take $start_time hour of the day and add 1 hour to it
                 // this will be the end time of the training attendance
-                $end_time = date('H:i:s', strtotime($start_time) + 3600);
+                $end_time = date('H:i', strtotime($start_time) + 3600);
                 $day = $faker->dayOfWeek();
                 $exists = \App\Models\TrainingAttendance::where('attendance_day', $day)
                     ->where('training_program_id', $trainingProgram->id)
