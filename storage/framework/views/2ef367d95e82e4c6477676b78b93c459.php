@@ -8,31 +8,21 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-clock me-1"></i>
-                        Upcoming Events
+                        Newly Added Training Programs
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled">
-                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h5 class="mb-0">Data Structures Training Session</h5>
-                                    <small>May 17th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h5 class="mb-0">Meeting with Advisor</h5>
-                                    <small>May 20th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-0">Algorithms Midterm Exam</h5>
-                                    <small>May 25th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
+                            <?php $__currentLoopData = $recent_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $recent_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="mb-0"><?php echo e($recent_program->name); ?></h5>
+                                        <small><?php echo e($recent_program->description); ?></small>
+                                        <small class="text-muted">Added on
+                                            <?php echo e($recent_program->created_at->format('d M Y')); ?></small>
+                                    </div>
+                                    <a href="<?php echo e(route('trainee.available-training-programs')); ?>" class="btn btn-sm btn-success">View Details</a>
+                                </li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
                     </div>
                 </div>

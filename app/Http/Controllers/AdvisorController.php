@@ -14,7 +14,8 @@ class AdvisorController extends Controller
 
     public function index()
     {
-        return view('advisor.index');
+        $recent_trainees = auth_advisor()->recent_enrolled_trainees()->take(5)->get();
+        return view('advisor.index', compact('recent_trainees'));
     }
 
 
@@ -30,6 +31,13 @@ class AdvisorController extends Controller
         $notifications = $advisor->notifications();
         $notifications->update(['read_at' => now()]);
         return response()->json(['success' => true]);
+    }
+
+
+    public function trainees_list(){
+        $advisor = auth_advisor();
+        $trainees = $advisor->trainees()->get();
+        return view('advisor.trainees_list', compact('trainees'));
     }
 
     public function update(Advisor $advisor)

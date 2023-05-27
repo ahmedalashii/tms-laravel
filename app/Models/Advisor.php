@@ -54,6 +54,14 @@ class Advisor extends Authenticatable
     }
 
 
+    public function trainees(){ // This is the trainees that this advisor is responsible for through the training programs that the advisor is responsible for and the trainees are registered in
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id');
+    }
+
+
+    public function recent_enrolled_trainees(){
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'enrolled')->latest();
+    }
 
     public function getAvatarFileAttribute()
     {

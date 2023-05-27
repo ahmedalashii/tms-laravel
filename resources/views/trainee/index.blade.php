@@ -10,31 +10,21 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-clock me-1"></i>
-                        Upcoming Events
+                        Newly Added Training Programs
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled">
-                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h5 class="mb-0">Data Structures Training Session</h5>
-                                    <small>May 17th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h5 class="mb-0">Meeting with Advisor</h5>
-                                    <small>May 20th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-0">Algorithms Midterm Exam</h5>
-                                    <small>May 25th</small>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-success">View Details</a>
-                            </li>
+                            @foreach ($recent_programs as $recent_program)
+                                <li class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="mb-0">{{ $recent_program->name }}</h5>
+                                        <small>{{ $recent_program->description }}</small>
+                                        <small class="text-muted">Added on
+                                            {{ $recent_program->created_at->format('d M Y') }}</small>
+                                    </div>
+                                    <a href="{{ route('trainee.available-training-programs') }}" class="btn btn-sm btn-success">View Details</a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
                 </div>

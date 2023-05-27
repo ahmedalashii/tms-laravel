@@ -15,6 +15,7 @@ use App\Mail\ManagerActivationMail;
 use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
+use App\Mail\NewTrainingProgramMail;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\AdvisorAuthorizationMail;
 use App\Mail\TraineeAuthorizationMail;
@@ -281,6 +282,18 @@ class ManagerController extends Controller
         $trainingProgram->location = $data['location'];
         $trainingProgram->capacity = $data['capacity'];
 
+        // Notify the trainees that have the same discipline as the training program that a new training program has been created
+        $trainees = Trainee::whereHas('disciplines', function ($query) use ($data) {
+            $query->where('discipline_id', $data['discipline_id']);
+        })->get();
+
+        $manager = auth_manager();
+        $mailable = new NewTrainingProgramMail($manager, $trainingProgram);
+        foreach ($trainees as $trainee) {
+            $this->sendEmail($trainee->email, $mailable);
+            $message = 'A new training program ' . $trainingProgram->name . ' has been created in your discipline ' . $trainingProgram->discipline->name . '.';
+            $trainee->notify(new TraineeNotification($manager, null, $message));
+        }
 
         // Upload Thumbnail
         $thumbnailImage = $request->file('thumbnail');

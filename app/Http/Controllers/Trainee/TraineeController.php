@@ -27,7 +27,10 @@ class TraineeController extends Controller
 
         $trainee = auth_trainee();
         $notifications = $trainee->notifications()->latest()->take(5)->get();
-        return view('trainee.index', compact('notifications'));
+        $recent_programs = TrainingProgram::withoutTrashed()->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
+            $query->whereIn('status', ['approved', 'pending'])->where('trainee_id', $trainee->id);
+        })->latest()->take(5)->get();
+        return view('trainee.index', compact('notifications', 'recent_programs'));
     }
 
     public function upload()
@@ -112,7 +115,8 @@ class TraineeController extends Controller
                 ->where('capacity', '>', 0)
                 ->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
                     $query->whereIn('status', ['approved', 'pending'])->where('trainee_id', $trainee->id);
-                })->whereHas('training_program_users', function ($query) {
+                })
+                ->whereHas('training_program_users', function ($query) {
                     $query->where('status', 'approved')->havingRaw('count(*) < capacity');
                 })->where(function ($query) use ($search_value) {
                     $query->where('name', 'like', '%' . $search_value . '%')

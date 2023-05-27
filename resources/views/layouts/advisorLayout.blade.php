@@ -144,7 +144,15 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt text-success"></i></div>
                             Dashboard
                         </a>
+                        <a class="nav-link" href="{{ route('advisor.edit') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-edit text-success"></i></div>
+                            Edit My Profile
+                        </a>
                         <hr class="sidebar-divider">
+                        <a class="nav-link" href="{{ route('advisor.trainees-list') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Trainees List
+                        </a>
                         <a class="nav-link" href="{{ route('advisor.trainees-requests') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
                             Training Requests
