@@ -186,14 +186,14 @@
                 <div class="form-group mb-2">
                     <label for="start-time">Start Time <b style="color: #d50100">*</b></label>
                     <input type="time" class="form-control" id="start-time" name="start_time"
-                        @if ($trainingProgram->training_attendances->isNotEmpty()) value="{{ $trainingProgram->training_attendances[0]->start_time }}" @endif
+                        @if ($trainingProgram->training_attendances->isNotEmpty()) value="{{ date('H:i', strtotime($trainingProgram->training_attendances[0]->start_time)) }}" @endif
                         required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="end-time">End Time <b style="color: #d50100">*</b></label>
                     <input type="time" class="form-control" id="end-time" name="end_time"
-                        @if ($trainingProgram->training_attendances->isNotEmpty()) value="{{ $trainingProgram->training_attendances[0]->end_time }}" @endif
+                        @if ($trainingProgram->training_attendances->isNotEmpty()) value="{{ date('H:i', strtotime($trainingProgram->training_attendances[0]->end_time)) }}" @endif
                         required>
                 </div>
 

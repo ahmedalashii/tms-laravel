@@ -188,14 +188,14 @@
                 <div class="form-group mb-2">
                     <label for="start-time">Start Time <b style="color: #d50100">*</b></label>
                     <input type="time" class="form-control" id="start-time" name="start_time"
-                        <?php if($trainingProgram->training_attendances->isNotEmpty()): ?> value="<?php echo e($trainingProgram->training_attendances[0]->start_time); ?>" <?php endif; ?>
+                        <?php if($trainingProgram->training_attendances->isNotEmpty()): ?> value="<?php echo e(date('H:i', strtotime($trainingProgram->training_attendances[0]->start_time))); ?>" <?php endif; ?>
                         required>
                 </div>
 
                 <div class="form-group mb-2">
                     <label for="end-time">End Time <b style="color: #d50100">*</b></label>
                     <input type="time" class="form-control" id="end-time" name="end_time"
-                        <?php if($trainingProgram->training_attendances->isNotEmpty()): ?> value="<?php echo e($trainingProgram->training_attendances[0]->end_time); ?>" <?php endif; ?>
+                        <?php if($trainingProgram->training_attendances->isNotEmpty()): ?> value="<?php echo e(date('H:i', strtotime($trainingProgram->training_attendances[0]->end_time))); ?>" <?php endif; ?>
                         required>
                 </div>
 
