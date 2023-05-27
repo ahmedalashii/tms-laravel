@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Manager;
 
+use Carbon\Carbon;
 use App\Models\Advisor;
 use App\Models\Manager;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
+use Illuminate\Validation\Rule;
 use App\Mail\EmailVerificationMail;
 use App\Mail\ManagerActivationMail;
 use App\Models\TrainingProgramUser;
@@ -256,6 +258,15 @@ class ManagerController extends Controller
             'duration_unit' => 'required|in:days,weeks,months,years',
             'location' => 'required|string|max:255',
             'capacity' => 'required|numeric|min:5|max:100',
+            'attendance_days' => 'required|array|min:1|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                Rule::when($request->start_time == $request->end_time, function ($request) {
+                    return Carbon::now()->addHours(1)->addMinutes(59)->format('H:i') < $request->start_time;
+                }),
+            ],
         ]);
         $trainingProgram = new TrainingProgram;
         $trainingProgram->name = $data['name'];
@@ -269,6 +280,8 @@ class ManagerController extends Controller
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
         $trainingProgram->capacity = $data['capacity'];
+
+
         // Upload Thumbnail
         $thumbnailImage = $request->file('thumbnail');
         // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
@@ -277,6 +290,15 @@ class ManagerController extends Controller
         $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
         $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
         $status = $trainingProgram->save();
+
+        foreach ($data['attendance_days'] as $attendance_day) {
+            $training_attendance = new \App\Models\TrainingAttendance;
+            $training_attendance->attendance_day = $attendance_day;
+            $training_attendance->start_time = $data['start_time'];
+            $training_attendance->end_time = $data['end_time'];
+            $training_attendance->training_program_id = $trainingProgram->id;
+            $training_attendance->save();
+        }
 
         // Create a file record in the database
         $file = new \App\Models\File;
@@ -329,6 +351,15 @@ class ManagerController extends Controller
             'duration_unit' => 'required|in:days,weeks,months,years',
             'location' => 'required|string|max:255',
             'capacity' => 'required|numeric|min:5|max:100|gte:users_length',
+            'attendance_days' => 'required|array|min:1|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                Rule::when($request->start_time == $request->end_time, function ($request) {
+                    return Carbon::now()->addHours(1)->addMinutes(59)->format('H:i') < $request->start_time;
+                }),
+            ],
         ]);
 
         $trainingProgram->name = $data['name'];
@@ -341,7 +372,7 @@ class ManagerController extends Controller
         $trainingProgram->duration_unit = $data['duration_unit'];
         $trainingProgram->location = $data['location'];
         $trainingProgram->capacity = $data['capacity'];
-        
+
         if ($trainingProgram->advisor && $trainingProgram->advisor->id != $data['advisor_id']) {
             // notify the old advisor that he is not the advisor for the training program anymore
             $old_advisor = $trainingProgram->advisor;
@@ -399,6 +430,20 @@ class ManagerController extends Controller
             $file->save();
         }
         $status = $trainingProgram->save();
+
+        // Update the training attendances
+        $training_attendances = $trainingProgram->training_attendances()->get();
+        foreach ($training_attendances as $training_attendance) {
+            $training_attendance->delete();
+        }
+        foreach ($data['attendance_days'] as $attendance_day) {
+            $training_attendance = new \App\Models\TrainingAttendance;
+            $training_attendance->attendance_day = $attendance_day;
+            $training_attendance->start_time = $data['start_time'];
+            $training_attendance->end_time = $data['end_time'];
+            $training_attendance->training_program_id = $trainingProgram->id;
+            $training_attendance->save();
+        }
         return redirect()->route('manager.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 

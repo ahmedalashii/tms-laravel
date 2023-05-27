@@ -115,7 +115,7 @@
                                             @endif
                                         </p>
                                         <p class="card-text">
-                                            <strong>Training Attendances Dates: </strong>
+                                            <strong>Training Attendances Days: </strong>
                                             @foreach ($trainingRequest->trainingProgram->training_attendances as $training_attendances)
                                                 <ul>
                                                     <li>

@@ -71,7 +71,7 @@ class StripePaymentController extends Controller
                     'status' => 'pending',
                     'fees_paid' => $trainingProgram->fees,
                 ];
-                $mailable = new TraineeTrainingProgramEnrollmentMail($trainee, $trainingProgram);
+                $mailable = new TraineeTrainingProgramEnrollmentMail($trainee, $trainingProgram, $trainingProgram->fees);
                 $this->sendEmail($trainee->email, $mailable);
                 $message = "$trainee->displayName has requested to enroll in $trainingProgram->name training program";
                 // send notification to all managers

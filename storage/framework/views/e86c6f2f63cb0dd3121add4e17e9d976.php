@@ -161,6 +161,34 @@
                 </div>
 
                 <div class="form-group mb-2">
+                    <label for="days">Select one or attendance days <b style="color: #d50100">*</b></label>
+                    <strong class="text-danger">*</strong>
+                    </label>
+                    <div class="form-group">
+                        <?php
+                            $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        ?>
+                        <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="form-check">
+                                <input type="checkbox" name="attendance_days[]" value="<?php echo e($day); ?>"
+                                    class="form-check-input" id="day-<?php echo e($day); ?>">
+                                <label class="form-check-label" for="day-<?php echo e($day); ?>"><?php echo e($day); ?></label>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="start-time">Start Time <b style="color: #d50100">*</b></label>
+                    <input type="time" class="form-control" id="start-time" name="start_time" required>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="end-time">End Time <b style="color: #d50100">*</b></label>
+                    <input type="time" class="form-control" id="end-time" name="end_time" required>
+                </div>
+
+                <div class="form-group mb-2">
                     <label for="advisor">Advisor </label>
                     <div class="row">
                         <div class="col-md-12">

@@ -110,7 +110,7 @@
                                             </p>
 
                                             <p class="card-text">
-                                                <strong>Training Attendances Dates: </strong>
+                                                <strong>Training Attendances Days: </strong>
                                                 <?php $__currentLoopData = $trainingProgram->training_attendances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_attendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <ul>
                                                         <li>

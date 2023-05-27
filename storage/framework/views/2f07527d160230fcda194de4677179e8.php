@@ -10,6 +10,9 @@
 # Hello Trainee <?php echo e($trainee->displayName); ?> 🙏🏼,
 You sent a request to enroll in the <?php echo e($trainingProgram->name); ?> training program. Your request is getting processed and you will be notified once it is approved/rejected.<br>
 Please keep patience and wait for the approval.<br>
+<?php if($payment): ?>
+Your payment of $<?php echo e($payment); ?> is received successfully. We are trying to approve your request as soon as possible.<br>
+<?php endif; ?>
 Thanks,<br>
 <?php echo e(config('app.name')); ?>
 

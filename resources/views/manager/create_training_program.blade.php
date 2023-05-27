@@ -158,6 +158,34 @@
                 </div>
 
                 <div class="form-group mb-2">
+                    <label for="days">Select one or attendance days <b style="color: #d50100">*</b></label>
+                    <strong class="text-danger">*</strong>
+                    </label>
+                    <div class="form-group">
+                        @php
+                            $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        @endphp
+                        @foreach ($days as $day)
+                            <div class="form-check">
+                                <input type="checkbox" name="attendance_days[]" value="{{ $day }}"
+                                    class="form-check-input" id="day-{{ $day }}">
+                                <label class="form-check-label" for="day-{{ $day }}">{{ $day }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="start-time">Start Time <b style="color: #d50100">*</b></label>
+                    <input type="time" class="form-control" id="start-time" name="start_time" required>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="end-time">End Time <b style="color: #d50100">*</b></label>
+                    <input type="time" class="form-control" id="end-time" name="end_time" required>
+                </div>
+
+                <div class="form-group mb-2">
                     <label for="advisor">Advisor </label>
                     <div class="row">
                         <div class="col-md-12">

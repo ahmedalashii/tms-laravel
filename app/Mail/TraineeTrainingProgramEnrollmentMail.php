@@ -14,13 +14,15 @@ class TraineeTrainingProgramEnrollmentMail extends Mailable
 
     public $trainee;
     public $trainingProgram;
+    public ?float $payment = null;
     /**
      * Create a new message instance.
      */
-    public function __construct($trainee, $trainingProgram)
+    public function __construct($trainee, $trainingProgram, ?float $payment = null)
     {
         $this->trainee = $trainee;
         $this->trainingProgram = $trainingProgram;
+        $this->payment = $payment;
     }
 
     /**
@@ -44,6 +46,7 @@ class TraineeTrainingProgramEnrollmentMail extends Mailable
             with: [
                 'trainee' => $this->trainee,
                 "trainingProgram" => $this->trainingProgram,
+                "payment" => $this->payment,
             ],
         );
     }
