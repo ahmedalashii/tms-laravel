@@ -20,8 +20,8 @@
                         @if ($trainee ?? false)
                             <div class="form-group mb-2">
                                 <label for="to">To (Trainee Email) <b class="text-danger">*</b></label>
-                                <input type="email" class="form-control" id="to" name="email" value="{{ $trainee->email ?? "" }}"
-                                    readonly>
+                                <input type="email" class="form-control" id="to" name="email"
+                                    value="{{ $trainee->email ?? '' }}" readonly>
                             </div>
                         @else
                             <div class="form-group mb-2">
@@ -37,7 +37,8 @@
                         @endif
                         <div class="form-group">
                             <label for="subject">Subject <b class="text-danger">*</b></label>
-                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <input type="text" class="form-control" id="subject" name="subject" required
+                                @if($subject ?? false) value="Re:[{{ $subject ?? '' }}]" @endif>
                         </div>
                         <div class="form-group mt-2">
                             <label for="message">Message Content <b class="text-danger">*</b></label>

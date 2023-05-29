@@ -58,7 +58,7 @@ class TraineeController extends Controller
     }
 
 
-    public function send_email_form(?Advisor $advisor = null)
+    public function send_email_form(?Advisor $advisor = null, ?string $subject = null)
     {
         $trainee = auth_trainee();
         if (!$advisor) {
@@ -69,7 +69,7 @@ class TraineeController extends Controller
         if (!$advisor) {
             return redirect()->back()->with(['fail' => 'You are not allowed to access this advisor!', 'type' => 'error']);
         }
-        return view('trainee.send_email', compact('advisor'));
+        return view('trainee.send_email', compact('advisor', 'subject'));
     }
 
     public function send_email(Request $request)

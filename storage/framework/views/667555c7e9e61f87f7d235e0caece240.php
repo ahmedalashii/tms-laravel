@@ -48,7 +48,7 @@
                                             <td><?php echo e(Carbon\Carbon::parse($email->created_at)->format('d/m/Y h:i A')); ?></td>
                                             <td>
                                                 <a
-                                                    href="<?php echo e(route('trainee.send-email-form', ['advisor' => $email->advisor->id])); ?>">
+                                                    href="<?php echo e(route('trainee.send-email-form', ['advisor' => $email->advisor->id, 'subject' => $email->subject])); ?>">
                                                     <button class="btn btn-success me-3 mt-2" type="button">Reply</button>
                                                 </a>
                                             </td>

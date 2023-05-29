@@ -173,6 +173,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Request Meeting
                         </a>
+                        <a class="nav-link" href="{{ route('trainee.send-email-form') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Send a new email
+                        </a>
                         <a class="nav-link" href="{{ route('trainee.received-emails') }}">
                             <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
                             Received Emails
@@ -181,11 +185,6 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             Sent Emails
                         </a>
-                        <a class="nav-link" href="{{ route('trainee.send-email-form') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
-                            Send a new email
-                        </a>
-
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">

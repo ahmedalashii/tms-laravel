@@ -8,7 +8,7 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-user me-1"></i>
-                        Sent Emails to Trainees
+                        Sent Emails to Trainee
                     </div>
                     <div class="d-grid gap-0 d-md-flex justify-content-md-end">
                         <a href="<?php echo e(route('advisor.send-email-form')); ?>"> <button class="btn btn-success me-3 mt-2"
@@ -28,7 +28,7 @@
                             <tbody>
                                 <?php if($sent_emails->isEmpty()): ?>
                                     <tr>
-                                        <td colspan="4" class="text-center">No emails found.</td>
+                                        <td colspan="4" class="text-center">No sent emails found.</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php $__currentLoopData = $sent_emails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $email): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -48,6 +48,11 @@
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                        <?php if($sent_emails->hasPages()): ?>
+                            <br>
+                        <?php endif; ?>
+                        <?php echo e($sent_emails->links('pagination::bootstrap-5')); ?>
+
                     </div>
                 </div>
             </section>

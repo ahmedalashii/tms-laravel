@@ -37,7 +37,8 @@
                         @endif
                         <div class="form-group">
                             <label for="subject">Subject <b class="text-danger">*</b></label>
-                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <input type="text" class="form-control" id="subject" name="subject" required
+                                @if ($subject ?? false) value="Re:[{{ $subject ?? '' }}]" @endif>
                         </div>
                         <div class="form-group mt-2">
                             <label for="message">Message Content <b class="text-danger">*</b></label>

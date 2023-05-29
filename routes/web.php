@@ -64,7 +64,7 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
         Route::get('/request-meeting', [TraineeController::class, 'request_meeting'])->name('request-meeting');
         Route::post('/schedule-meeting', [TraineeController::class, 'schedule_meeting'])->name('schedule-meeting');
-        Route::get('/send_email_form/{advisor?}', [TraineeController::class, 'send_email_form'])->name('send-email-form');
+        Route::get('/send_email_form/{advisor?}/{subject?}', [TraineeController::class, 'send_email_form'])->name('send-email-form');
         Route::post('/send_email', [TraineeController::class, 'send_email'])->name('send-email');
         Route::get('/received-emails', [TraineeController::class, 'received_emails'])->name('received-emails');
         Route::get('/sent-emails', [TraineeController::class, 'sent_emails'])->name('sent-emails');
@@ -95,7 +95,7 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
         Route::get('/assigned-training-programs', [AdvisorController::class, 'assigned_training_programs'])->name('assigned-training-programs');
         Route::get('/trainees-list', [AdvisorController::class, 'trainees_list'])->name('trainees-list');
         Route::get('/trainee-details/{trainee}', [AdvisorController::class, 'trainee_details'])->name('trainee-details');
-        Route::get('/send_email_form/{trainee?}', [AdvisorController::class, 'send_email_form'])->name('send-email-form');
+        Route::get('/send_email_form/{trainee?}/{subject?}', [AdvisorController::class, 'send_email_form'])->name('send-email-form');
         Route::post('/send_email', [AdvisorController::class, 'send_email'])->name('send-email');
         Route::post('/igonre_email/{email}', [AdvisorController::class, 'ignore_email'])->name('ignore-email');
         Route::get('/sent-emails', [AdvisorController::class, 'sent_emails'])->name('sent-emails');

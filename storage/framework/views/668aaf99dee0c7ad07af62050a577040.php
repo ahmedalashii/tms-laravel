@@ -37,7 +37,8 @@
                         <?php endif; ?>
                         <div class="form-group">
                             <label for="subject">Subject <b class="text-danger">*</b></label>
-                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <input type="text" class="form-control" id="subject" name="subject" required
+                                <?php if($subject ?? false): ?> value="Re:[<?php echo e($subject ?? ''); ?>]" <?php endif; ?>>
                         </div>
                         <div class="form-group mt-2">
                             <label for="message">Message Content <b class="text-danger">*</b></label>
