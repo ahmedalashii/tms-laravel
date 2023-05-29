@@ -53,11 +53,13 @@ class Advisor extends Authenticatable
         return $this->hasMany(File::class);
     }
 
-
-    public function trainees(){ // This is the trainees that this advisor is responsible for through the training programs that the advisor is responsible for and the trainees are registered in
-        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id');
+    public function sent_emails(){
+        return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id');
     }
 
+    public function trainees(){ // This is the trainees that this advisor is responsible for through the training programs that the advisor is responsible for and the trainees are registered in
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->distinct();
+    }
 
     public function recent_enrolled_trainees(){
         return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'enrolled')->latest();
@@ -73,7 +75,6 @@ class Advisor extends Authenticatable
         return $this->files()->where('name', 'like',  $this->firebase_uid . '_advisor_avatar_image%')->first()?->url;
     }
 
-
     public function getCvFileAttribute()
     {
         return $this->files()->where('name', 'like', $this->firebase_uid . '_advisor_cv%')->first();
@@ -83,7 +84,6 @@ class Advisor extends Authenticatable
     {
         return $this->files()->where('name', 'like', $this->firebase_uid . '_advisor_cv%')->first()?->url;
     }
-
 
     public function getEmailVerifiedAttribute()
     {

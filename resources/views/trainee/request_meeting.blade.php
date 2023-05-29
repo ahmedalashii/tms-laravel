@@ -19,8 +19,10 @@
                         <form action="{{ route('trainee.schedule-meeting') }}" method="POST">
                             @csrf
                             @if ($advisors->isEmpty())
-                                    <div class="alert alert-danger"><b style="color: black;">Note: </b> No advisors found to schedule a meeting with. This is
-                                        because there are no approved training programs that has an advisor assigned to it.</div>
+                                <div class="alert alert-danger"><b style="color: black;">Note: </b> No advisors found to
+                                    schedule a meeting with. This is
+                                    because there are no approved training programs that has an advisor assigned to it.
+                                </div>
                             @endif
                             <div class="mb-3">
                                 <label for="advisor" class="form-label">Advisor <b class="text-danger">*</b></label>
@@ -32,11 +34,11 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="date" class="form-label">Date <b class="text-danger">*</b></label>
+                                <label for="date" class="form-label">Preferred Date <b class="text-danger">*</b></label>
                                 <input type="date" class="form-control" name="date">
                             </div>
                             <div class="mb-3">
-                                <label for="time" class="form-label">Time <b class="text-danger">*</b></label>
+                                <label for="time" class="form-label">Preferred Time <b class="text-danger">*</b></label>
                                 <input type="time" class="form-control" name="time">
                             </div>
                             <div class="mb-3">

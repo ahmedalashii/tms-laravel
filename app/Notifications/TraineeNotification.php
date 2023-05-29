@@ -19,7 +19,7 @@ class TraineeNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(?Manager $manager = null, ?Advisor $advisor, ?string $message= null)
+    public function __construct(?Manager $manager = null, ?Advisor $advisor = null, ?string $message= null)
     {
         $this->manager = $manager;
         $this->advisor = $advisor;

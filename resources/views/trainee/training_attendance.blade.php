@@ -16,45 +16,53 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @endforeach
                     </div>
-                    <form action="{{ route('trainee.training_attendance') }}" method="POST" id="form">
-                        @csrf
-                        <div class="form-group mt-2">
-                            <label for="training_program">Select Training Program <b style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="training_program"
-                                name="training_program_id">
-                                @foreach ($training_programs as $training_program)
-                                    <option value="{{ $training_program->id }}">
-                                        {{ $training_program->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                    @if ($training_programs->isEmpty())
+                        <div class="alert alert-danger"><b style="color: black;">Note: </b> No training programs found to
+                            fill in the attendance form. This is
+                            because there are no approved training programs that the manager gives you access to.
                         </div>
+                    @else
+                        <form action="{{ route('trainee.training_attendance') }}" method="POST" id="form">
+                            @csrf
+                            <div class="form-group mt-2">
+                                <label for="training_program">Select Training Program <b style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="training_program"
+                                    name="training_program_id">
+                                    @foreach ($training_programs as $training_program)
+                                        <option value="{{ $training_program->id }}">
+                                            {{ $training_program->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label for="training_attendance">Select Attendance Date (For the last 10 days) <b
-                                    style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="training_attendance"
-                                name="training_attendance_id">
-                            </select>
-                        </div>
+                            <div class="form-group mt-2">
+                                <label for="training_attendance">Select Attendance Date (For the last 10 days) <b
+                                        style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="training_attendance"
+                                    name="training_attendance_id">
+                                </select>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label for="attendance_status">Select Attendance Status <b style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="attendance_status"
-                                name="attendance_status">
-                                <option value="present">Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="late">Late</option>
-                                <option value="excused">Excused</option>
-                            </select>
-                        </div>
+                            <div class="form-group mt-2">
+                                <label for="attendance_status">Select Attendance Status <b style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="attendance_status"
+                                    name="attendance_status">
+                                    <option value="present">Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="late">Late</option>
+                                    <option value="excused">Excused</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label for="any_other_relevant_information">Any other relevant information</label>
-                            <textarea class="form-control" id="any_other_relevant_information" name="notes"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success mt-2">Submit Attendance</button>
-                    </form>
+                            <div class="form-group mt-2">
+                                <label for="any_other_relevant_information">Any other relevant information</label>
+                                <textarea class="form-control" id="any_other_relevant_information" name="notes"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-2">Submit Attendance</button>
+                        </form>
+                    @endif
+
                 </div>
             </section>
 

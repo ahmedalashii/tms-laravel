@@ -86,6 +86,9 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
         Route::post('/edit-info/{advisor}', [AdvisorController::class, 'update'])->name('update');
         Route::get('/trainees-requests', [AdvisorController::class, 'trainees_requests'])->name('trainees-requests');
         Route::get('/trainees-list', [AdvisorController::class, 'trainees_list'])->name('trainees-list');
+        Route::get('/trainee-details/{trainee}', [AdvisorController::class, 'trainee_details'])->name('trainee-details');
+        Route::get('/send_email/{trainee}', [AdvisorController::class, 'send_email_form'])->name('send-email');
+        Route::post('/send_email/{trainee}', [AdvisorController::class, 'send_email'])->name('send-email');
         
         Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
         Route::get('/notifications', [AdvisorController::class, 'notifications'])->name('notifications');

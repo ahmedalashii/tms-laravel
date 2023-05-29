@@ -67,7 +67,7 @@ class TraineeLoginController extends Controller
             $firebaseUser = $auth->getUser($firebaseId);
             if ($firebaseUser->emailVerified == false) {
                 Session::flash('error', 'Your email is not verified. We have sent you a new verification email.');
-                $verification_url = app('firebase.auth')->getEmailVerificationLink($email);
+                $verification_url = app('firebase.auth')->wgetEmailVerificationLink($email);
                 $firebaseUser = app('firebase.auth')->getUserByEmail($email);
                 $mailable = new EmailVerificationMail($firebaseUser, $verification_url);
                 $this->sendEmail($email, $mailable);

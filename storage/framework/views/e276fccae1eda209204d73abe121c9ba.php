@@ -14,46 +14,54 @@
                             <div class="alert alert-danger"><?php echo e($message); ?></div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    <form action="<?php echo e(route('trainee.training_attendance')); ?>" method="POST" id="form">
-                        <?php echo csrf_field(); ?>
-                        <div class="form-group mt-2">
-                            <label for="training_program">Select Training Program <b style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="training_program"
-                                name="training_program_id">
-                                <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($training_program->id); ?>">
-                                        <?php echo e($training_program->name); ?>
-
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
+                    <?php if($training_programs->isEmpty()): ?>
+                        <div class="alert alert-danger"><b style="color: black;">Note: </b> No training programs found to
+                            fill in the attendance form. This is
+                            because there are no approved training programs that the manager gives you access to.
                         </div>
+                    <?php else: ?>
+                        <form action="<?php echo e(route('trainee.training_attendance')); ?>" method="POST" id="form">
+                            <?php echo csrf_field(); ?>
+                            <div class="form-group mt-2">
+                                <label for="training_program">Select Training Program <b style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="training_program"
+                                    name="training_program_id">
+                                    <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($training_program->id); ?>">
+                                            <?php echo e($training_program->name); ?>
 
-                        <div class="form-group mt-2">
-                            <label for="training_attendance">Select Attendance Date (For the last 10 days) <b
-                                    style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="training_attendance"
-                                name="training_attendance_id">
-                            </select>
-                        </div>
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label for="attendance_status">Select Attendance Status <b style="color: red">*</b></label>
-                            <select class="form-select" aria-label=".form-select-lg example" id="attendance_status"
-                                name="attendance_status">
-                                <option value="present">Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="late">Late</option>
-                                <option value="excused">Excused</option>
-                            </select>
-                        </div>
+                            <div class="form-group mt-2">
+                                <label for="training_attendance">Select Attendance Date (For the last 10 days) <b
+                                        style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="training_attendance"
+                                    name="training_attendance_id">
+                                </select>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label for="any_other_relevant_information">Any other relevant information</label>
-                            <textarea class="form-control" id="any_other_relevant_information" name="notes"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success mt-2">Submit Attendance</button>
-                    </form>
+                            <div class="form-group mt-2">
+                                <label for="attendance_status">Select Attendance Status <b style="color: red">*</b></label>
+                                <select class="form-select" aria-label=".form-select-lg example" id="attendance_status"
+                                    name="attendance_status">
+                                    <option value="present">Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="late">Late</option>
+                                    <option value="excused">Excused</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="any_other_relevant_information">Any other relevant information</label>
+                                <textarea class="form-control" id="any_other_relevant_information" name="notes"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-2">Submit Attendance</button>
+                        </form>
+                    <?php endif; ?>
+
                 </div>
             </section>
 
