@@ -26,7 +26,8 @@
                                             <small class="text-muted">Training Program:
                                                 <?php echo e($recent_enrollment->trainingProgram->name); ?></small>
                                         </div>
-                                        <a href="<?php echo e(route('advisor.trainee-details',$recent_enrollment->trainee->id)); ?>" class="btn btn-sm btn-success">View Details</a>
+                                        <a href="<?php echo e(route('advisor.trainee-details', $recent_enrollment->trainee->id)); ?>"
+                                            class="btn btn-sm btn-success">View Details</a>
                                     </li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
@@ -62,6 +63,17 @@
                     </div>
                 </div>
 
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Sent Emails</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link"
+                                href="<?php echo e(route('advisor.sent-emails')); ?>">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>

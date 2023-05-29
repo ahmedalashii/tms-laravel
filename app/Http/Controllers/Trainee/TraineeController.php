@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Trainee;
 
+use App\Models\Advisor;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
+use App\Mail\TraineeToAdvisorMail;
+use App\Models\AdvisorTraineeEmail;
 use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
-use Illuminate\Support\Facades\Auth;
 use App\Models\TrainingAttendanceTrainee;
 use App\Notifications\AdvisorNotification;
 use App\Notifications\ManagerNotification;
@@ -41,7 +43,85 @@ class TraineeController extends Controller
         return view('trainee.upload', compact('files', 'training_programs'));
     }
 
+    public function advisors_list(Request $request)
+    {
+        $trainee = auth_trainee();
+        $paginate = 3;
+        $search_value = $request->search;
+        $advisors = $trainee->advisors()->where(function ($query) use ($search_value) {
+            $query->where('displayName', 'like', '%' . $search_value . '%')
+                ->orWhere('email', 'like', '%' . $search_value . '%')
+                ->orWhere('phone', 'like', '%' . $search_value . '%')
+                ->orWhere('address', 'like', '%' . $search_value . '%');
+        })->paginate($paginate);
+        return view('trainee.advisors_list', compact('advisors'));
+    }
 
+
+    public function send_email_form(?Advisor $advisor = null)
+    {
+        $trainee = auth_trainee();
+        if (!$advisor) {
+            $advisors = $trainee->advisors()->get();
+            return view('trainee.send_email', compact('advisors'));
+        }
+        $advisor = $trainee->advisors()->find($advisor->id);
+        if (!$advisor) {
+            return redirect()->back()->with(['fail' => 'You are not allowed to access this advisor!', 'type' => 'error']);
+        }
+        return view('trainee.send_email', compact('advisor'));
+    }
+
+    public function send_email(Request $request)
+    {
+
+        $data = $request->validate([
+            'email' => 'required|email|exists:advisors',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:255',
+        ]);
+        $advisor = Advisor::where('email', $data['email'])->first();
+        if (!$advisor) {
+            return redirect()->back()->with(['fail' => 'Advisor not found!', 'type' => 'error']);
+        }
+        $trainee = auth_trainee();
+        $advisor = $trainee->advisors()->find($advisor->id);
+        if (!$advisor) {
+            return redirect()->back()->with(['fail' => 'You are not allowed to access this advisor!', 'type' => 'error']);
+        }
+        $mailable = new TraineeToAdvisorMail($advisor, $trainee, $data['subject'], $data['message']);
+        $this->sendEmail($advisor->email, $mailable);
+        $advisor->notify(new AdvisorNotification(null, $trainee, 'You have a new email from your trainee ' . $trainee->displayName . '. Please check your received emails!'));
+        // Store the email in the database
+        $trainee->sent_emails()->create([
+            'trainee_id' => $trainee->id,
+            'advisor_id' => $advisor->id,
+            'sender' => 'trainee',
+            'subject' => $data['subject'],
+            'message' => $data['message'],
+        ]);
+        return redirect()->back()->with(['success' => 'Email sent successfully 😎!', 'type' => 'success']);
+    }
+
+    public function ignore_email(AdvisorTraineeEmail $email)
+    {
+        $status = $email->delete();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Email has been ignored successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function received_emails()
+    {
+        $paginate = 3;
+        $received_emails = auth_trainee()->received_emails()->paginate($paginate);
+        return view('trainee.received_emails', compact('received_emails'));
+    }
+
+    public function sent_emails()
+    {
+        $paginate = 3;
+        $sent_emails = auth_trainee()->sent_emails()->paginate($paginate);
+        return view('trainee.sent_emails', compact('sent_emails'));
+    }
 
     public function upload_file(Request $request)
     {
@@ -322,11 +402,20 @@ class TraineeController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been scheduled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-
     public function edit()
     {
         $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
         return view('trainee.edit', compact('disciplines'));
+    }
+
+    public function advisor_details(Advisor $advisor)
+    {
+        $trainee = auth_trainee();
+        $advisor = $trainee->advisors()->where('advisor_id', $advisor->id)->first()->load('disciplines');
+        if (!$advisor) {
+            return redirect()->back()->with(['fail' => 'You are not allowed to access this advisor!', 'type' => 'error']);
+        }
+        return view('trainee.advisor_details', compact('advisor'));
     }
 
     public function update(Trainee $trainee)

@@ -7,30 +7,30 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-reply me-1"></i>
-                        Send Email to Trainee
+                        Send Email to Advisor
                     </div>
 
-                    <form action="<?php echo e(route('advisor.send-email')); ?>" class="card-body" id="send-email-form" method="POST">
+                    <form action="<?php echo e(route('trainee.send-email')); ?>" class="card-body" id="send-email-form" method="POST">
                         <?php echo csrf_field(); ?>
                         <div class="col-12 mt-2">
                             <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="alert alert-danger"><?php echo e($message); ?></div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                        <?php if($trainee ?? false): ?>
+                        <?php if($advisor ?? false): ?>
                             <div class="form-group mb-2">
-                                <label for="to">To (Trainee Email) <b class="text-danger">*</b></label>
-                                <input type="email" class="form-control" id="to" name="email" value="<?php echo e($trainee->email ?? ""); ?>"
-                                    readonly>
+                                <label for="to">To (Advisor Email) <b class="text-danger">*</b></label>
+                                <input type="email" class="form-control" id="to" name="email"
+                                    value="<?php echo e($advisor->email ?? ''); ?>" readonly>
                             </div>
                         <?php else: ?>
                             <div class="form-group mb-2">
-                                <label for="to">To (Trainee Email) <b class="text-danger">*</b></label>
+                                <label for="to">To (Advisor Email) <b class="text-danger">*</b></label>
                                 <select class="form-control" name="email" id="to" required>
-                                    <option value="">Select a trainee</option>
-                                    <?php $__currentLoopData = $trainees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainee): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($trainee->email); ?>"><?php echo e($trainee->displayName); ?>:
-                                            <?php echo e($trainee->email); ?></option>
+                                    <option value="">Select an advisor</option>
+                                    <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($advisor->email); ?>"><?php echo e($advisor->displayName); ?>:
+                                            <?php echo e($advisor->email); ?></option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
@@ -53,4 +53,4 @@
     </main>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.advisorLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/advisor/send_email.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/send_email.blade.php ENDPATH**/ ?>

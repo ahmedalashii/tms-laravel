@@ -1,21 +1,21 @@
-@extends('layouts.advisorLayout')
+@extends('layouts.traineeLayout')
 
 @section('MainContent')
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">My Trainees</h1>
+            <h1 class="mt-4 mb-4">My Advisors</h1>
             <section class="mt-3 mb-3">
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-user me-1"></i>
-                        Trainee Information
+                        Advisor Information
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-bordered">
-                            <form action="{{ route('advisor.trainees-list') }}" method="GET">
+                            <form action="{{ route('trainee.advisors-list') }}" method="GET">
                                 <div class="row">
                                     <div class="col-md-11">
-                                        <input type="search" class="form-control" placeholder="Search for trainees"
+                                        <input type="search" class="form-control" placeholder="Search for advisors"
                                             aria-label="Search" name="search" value="{{ request()->query('search') }}">
                                     </div>
                                     <div class="col-md-1">
@@ -36,28 +36,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($trainees->isEmpty())
+                                @if ($advisors->isEmpty())
                                     <tr>
-                                        <td colspan="7" class="text-center">No trainees found.</td>
+                                        <td colspan="7" class="text-center">No advisors found.</td>
                                     </tr>
                                 @else
-                                    @foreach ($trainees as $trainee)
+                                    @foreach ($advisors as $advisor)
                                         <tr>
                                             <td>
-                                                <img src="{{ $trainee->avatar }}" class="rounded-circle me-1" width="37px"
-                                                    height="40px" alt="{{ $trainee->displayName }}'s avatar" />
-                                                {{ $trainee->displayName }}
+                                                <img src="{{ $advisor->avatar }}" class="rounded-circle me-1" width="37px"
+                                                    height="40px" alt="{{ $advisor->displayName }}'s avatar" />
+                                                {{ $advisor->displayName }}
                                             </td>
-                                            <td>{{ $trainee->email }}</td>
-                                            <td>{{ $trainee->phone }}</td>
-                                            <td>{{ $trainee->address }}</td>
-                                            <td>{{ Str::ucfirst($trainee->gender) }}</td>
-                                            <td><a href="{{ $trainee->cv }}">Download
+                                            <td>{{ $advisor->email }}</td>
+                                            <td>{{ $advisor->phone }}</td>
+                                            <td>{{ $advisor->address }}</td>
+                                            <td>{{ Str::ucfirst($advisor->gender) }}</td>
+                                            <td><a href="{{ $advisor->cv }}">See
                                                     CV</a></td>
                                             <td>
-                                                <a href="{{ route('advisor.trainee-details', $trainee->id) }}"
+                                                <a href="{{ route('trainee.advisor-details', $advisor->id) }}"
                                                     class="btn btn-sm btn-success">View Details</a>
-                                                <form action="{{ route('advisor.send-email-form', $trainee->id) }}"
+                                                <form action="{{ route('trainee.send-email-form', $advisor->id) }}"
                                                     method="GET" class="d-inline">
                                                     @csrf
                                                     <a href="$"
@@ -65,17 +65,16 @@
                                                         onclick="event.preventDefault(); this.closest('form').submit();">Send
                                                         Email</a>
                                                 </form>
-
                                             </td>
                                         </tr>
                                     @endforeach
                                 @endif
                             </tbody>
                         </table>
-                        @if ($trainees->hasPages())
+                        @if ($advisors->hasPages())
                             <br>
                         @endif
-                        {{ $trainees->links('pagination::bootstrap-5') }}
+                        {{ $advisors->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </section>

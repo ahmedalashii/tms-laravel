@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('advisor_id')->constrained('advisors')->cascadeOnDelete();
             $table->foreignId('trainee_id')->constrained('trainees')->cascadeOnDelete();
+            $table->enum('sender', ['advisor', 'trainee']);
             $table->string('subject');
             $table->string('message');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

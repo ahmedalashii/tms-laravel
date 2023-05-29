@@ -161,7 +161,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap text-success"></i></div>
                             My Approved Training Programs
                         </a>
-
+                        <a class="nav-link" href="{{ route('trainee.advisors-list') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            My Advisors
+                        </a>
                         <a class="nav-link" href="{{ route('trainee.training-attendance') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-calendar-check text-success"></i></div>
                             Training Attendance
@@ -170,6 +173,19 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Request Meeting
                         </a>
+                        <a class="nav-link" href="{{ route('trainee.received-emails') }}">
+                            <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
+                            Received Emails
+                        </a>
+                        <a class="nav-link" href="{{ route('trainee.sent-emails') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Sent Emails
+                        </a>
+                        <a class="nav-link" href="{{ route('trainee.send-email-form') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Send a new email
+                        </a>
+
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">

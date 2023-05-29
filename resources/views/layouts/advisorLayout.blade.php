@@ -151,11 +151,23 @@
                         <hr class="sidebar-divider">
                         <a class="nav-link" href="{{ route('advisor.trainees-list') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
-                            Trainees List
+                            My Trainees
                         </a>
                         <a class="nav-link" href="{{ route('advisor.assigned-training-programs') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             My Assigned Training Programs
+                        </a>
+                        <a class="nav-link" href="{{ route('advisor.received-emails') }}">
+                            <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
+                            Received Emails
+                        </a>
+                        <a class="nav-link" href="{{ route('advisor.sent-emails') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Sent Emails
+                        </a>
+                        <a class="nav-link" href="{{ route('advisor.send-email-form') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            Send a new email
                         </a>
                         <a class="nav-link" href="{{ route('advisor.trainees-requests') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
@@ -164,14 +176,6 @@
                         <a class="nav-link" href="{{ route('advisor.meetings-schedule') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Meetings Schedule
-                        </a>
-                        <a class="nav-link" href="{{ route('advisor.notifications') }}">
-                            <div class="sb-nav-link-icon"><i class="far fa-solid fa-user text-success"></i></div>
-                            Emails
-                        </a>
-                        <a class="nav-link" href="{{ route('advisor.trainees') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-solid fa-user  text-success"></i></div>
-                            Trainee Profile
                         </a>
                     </div>
                 </div>

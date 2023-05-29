@@ -43,21 +43,24 @@ class Trainee extends Authenticatable
         return $this->localId;
     }
 
-    
+
     public function files()
     {
         return $this->hasMany(File::class);
     }
 
-    public function training_programs(){
+    public function training_programs()
+    {
         return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'trainee_id', 'training_program_id');
     }
 
-    public function approved_training_programs(){
+    public function approved_training_programs()
+    {
         return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'trainee_id', 'training_program_id')->wherePivot('status', 'approved');
     }
 
-    public function training_requests(){
+    public function training_requests()
+    {
         return $this->hasMany(TrainingProgramUser::class, 'trainee_id');
     }
 
@@ -82,10 +85,19 @@ class Trainee extends Authenticatable
         return $this->files()->where('name', 'like', $this->firebase_uid . '_trainee_cv%')->first()?->url;
     }
 
+    public function sent_emails()
+    {
+        return $this->hasMany(AdvisorTraineeEmail::class, 'trainee_id')->where('sender', 'trainee')->latest();
+    }
 
     public function getEmailVerifiedAttribute()
     {
         return app("firebase.auth")->getUser($this->firebase_uid)->emailVerified;
+    }
+
+    public function received_emails()
+    {
+        return $this->hasMany(AdvisorTraineeEmail::class, 'trainee_id')->withTrashed()->where('sender', 'advisor')->latest();
     }
 
     public function disciplines()
@@ -93,13 +105,14 @@ class Trainee extends Authenticatable
         return $this->belongsToMany(Discipline::class, 'trainee_disciplines', 'trainee_id', 'discipline_id');
     }
 
-    public function attendance_histories(){
+    public function attendance_histories()
+    {
         return $this->hasMany(TrainingAttendanceTrainee::class, 'trainee_id');
     }
 
     public function advisors()
     {
-        return $this->belongsToMany(Advisor::class, 'training_program_users', 'trainee_id', 'advisor_id')->wherePivot('status', 'approved')->select('advisors.id', 'advisors.displayName');
+        return $this->belongsToMany(Advisor::class, 'training_program_users', 'trainee_id', 'advisor_id')->wherePivot('status', 'approved')->distinct();
     }
 
     public function hasDiscipline($id)

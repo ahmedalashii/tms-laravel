@@ -53,6 +53,8 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::post('notifications/read', [TraineeController::class, 'read_notifications'])->name('notifications.read');
         Route::get('/edit-info', [TraineeController::class, 'edit'])->name('edit');
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
+        Route::get('/advisor-details/{advisor}', [TraineeController::class, 'advisor_details'])->name('advisor-details');
+        Route::get('/advisors-list', [TraineeController::class, 'advisors_list'])->name('advisors-list');
         Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
         Route::post('/upload', [TraineeController::class, 'upload_file'])->name('upload');
         Route::get('/all-training-requests', [TraineeController::class, 'all_training_requests'])->name('all-training-requests');
@@ -62,6 +64,11 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
         Route::get('/request-meeting', [TraineeController::class, 'request_meeting'])->name('request-meeting');
         Route::post('/schedule-meeting', [TraineeController::class, 'schedule_meeting'])->name('schedule-meeting');
+        Route::get('/send_email_form/{advisor?}', [TraineeController::class, 'send_email_form'])->name('send-email-form');
+        Route::post('/send_email', [TraineeController::class, 'send_email'])->name('send-email');
+        Route::get('/received-emails', [TraineeController::class, 'received_emails'])->name('received-emails');
+        Route::get('/sent-emails', [TraineeController::class, 'sent_emails'])->name('sent-emails');
+        Route::post('/igonre_email/{email}', [TraineeController::class, 'ignore_email'])->name('ignore-email');
     });
 });
 
@@ -88,12 +95,12 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
         Route::get('/assigned-training-programs', [AdvisorController::class, 'assigned_training_programs'])->name('assigned-training-programs');
         Route::get('/trainees-list', [AdvisorController::class, 'trainees_list'])->name('trainees-list');
         Route::get('/trainee-details/{trainee}', [AdvisorController::class, 'trainee_details'])->name('trainee-details');
-        Route::get('/send_email/{trainee}', [AdvisorController::class, 'send_email_form'])->name('send-email');
-        Route::post('/send_email/{trainee}', [AdvisorController::class, 'send_email'])->name('send-email');
-        
+        Route::get('/send_email_form/{trainee?}', [AdvisorController::class, 'send_email_form'])->name('send-email-form');
+        Route::post('/send_email', [AdvisorController::class, 'send_email'])->name('send-email');
+        Route::post('/igonre_email/{email}', [AdvisorController::class, 'ignore_email'])->name('ignore-email');
+        Route::get('/sent-emails', [AdvisorController::class, 'sent_emails'])->name('sent-emails');
+        Route::get('/received-emails', [AdvisorController::class, 'received_emails'])->name('received-emails');
         Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
-        Route::get('/notifications', [AdvisorController::class, 'notifications'])->name('notifications');
-        Route::get('/trainees', [AdvisorController::class, 'trainees'])->name('trainees');
     });
 });
 

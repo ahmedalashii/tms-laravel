@@ -22,7 +22,8 @@
                                         <small class="text-muted">Added on
                                             {{ $recent_program->created_at->format('d M Y') }}</small>
                                     </div>
-                                    <a href="{{ route('trainee.available-training-programs') }}" class="btn btn-sm btn-success">View Details</a>
+                                    <a href="{{ route('trainee.available-training-programs') }}"
+                                        class="btn btn-sm btn-success">View Details</a>
                                 </li>
                             @endforeach
                         </ul>
@@ -85,6 +86,17 @@
                         <div class="card-body">Request a Meeting</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{{ route('trainee.request-meeting') }}">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Advisors List</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="{{ route('trainee.advisors-list') }}">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>

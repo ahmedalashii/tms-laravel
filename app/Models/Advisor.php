@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Advisor extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -53,23 +53,34 @@ class Advisor extends Authenticatable
         return $this->hasMany(File::class);
     }
 
-    public function assigned_training_programs(){
+    public function assigned_training_programs()
+    {
         return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'advisor_id', 'training_program_id');
     }
 
-    public function sent_emails(){
-        return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id');
+    public function sent_emails()
+    {
+        return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id')->where('sender', 'advisor')->latest();
     }
 
-    public function trainees(){ // This is the trainees that this advisor is responsible for through the training programs that the advisor is responsible for and the trainees are registered in
-        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->distinct();
+
+    public function received_emails()
+    {
+        return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id')->where('sender', 'trainee')->latest();
     }
 
-    public function recent_enrolled_trainees(){
+    public function trainees()
+    { // This is the trainees that this advisor is responsible for through the training programs that the advisor is responsible for and the trainees are registered in
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'approved')->distinct();
+    }
+
+    public function recent_enrolled_trainees()
+    {
         return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'approved')->latest();
     }
 
-    public function recent_enrollments(){
+    public function recent_enrollments()
+    {
         // recent training program users
         return $this->hasMany(TrainingProgramUser::class, 'advisor_id')->where('status', 'approved')->latest();
     }

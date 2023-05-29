@@ -1,4 +1,4 @@
-@extends('layouts.advisorLayout')
+@extends('layouts.traineeLayout')
 
 @section('MainContent')
     <main>
@@ -7,30 +7,30 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-reply me-1"></i>
-                        Send Email to Trainee
+                        Send Email to Advisor
                     </div>
 
-                    <form action="{{ route('advisor.send-email') }}" class="card-body" id="send-email-form" method="POST">
+                    <form action="{{ route('trainee.send-email') }}" class="card-body" id="send-email-form" method="POST">
                         @csrf
                         <div class="col-12 mt-2">
                             @foreach ($errors->all() as $message)
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @endforeach
                         </div>
-                        @if ($trainee ?? false)
+                        @if ($advisor ?? false)
                             <div class="form-group mb-2">
-                                <label for="to">To (Trainee Email) <b class="text-danger">*</b></label>
-                                <input type="email" class="form-control" id="to" name="email" value="{{ $trainee->email ?? "" }}"
-                                    readonly>
+                                <label for="to">To (Advisor Email) <b class="text-danger">*</b></label>
+                                <input type="email" class="form-control" id="to" name="email"
+                                    value="{{ $advisor->email ?? '' }}" readonly>
                             </div>
                         @else
                             <div class="form-group mb-2">
-                                <label for="to">To (Trainee Email) <b class="text-danger">*</b></label>
+                                <label for="to">To (Advisor Email) <b class="text-danger">*</b></label>
                                 <select class="form-control" name="email" id="to" required>
-                                    <option value="">Select a trainee</option>
-                                    @foreach ($trainees as $trainee)
-                                        <option value="{{ $trainee->email }}">{{ $trainee->displayName }}:
-                                            {{ $trainee->email }}</option>
+                                    <option value="">Select an advisor</option>
+                                    @foreach ($advisors as $advisor)
+                                        <option value="{{ $advisor->email }}">{{ $advisor->displayName }}:
+                                            {{ $advisor->email }}</option>
                                     @endforeach
                                 </select>
                             </div>
