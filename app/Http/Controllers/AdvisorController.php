@@ -18,8 +18,8 @@ class AdvisorController extends Controller
 
     public function index()
     {
-        $recent_trainees = auth_advisor()->recent_enrolled_trainees()->take(5)->get();
-        return view('advisor.index', compact('recent_trainees'));
+        $recent_enrollments = auth_advisor()->recent_enrollments()->take(5)->get();
+        return view('advisor.index', compact('recent_enrollments'));
     }
 
 
@@ -72,6 +72,40 @@ class AdvisorController extends Controller
         return redirect()->back()->with(['success' => 'Email sent successfully 😎!', 'type' => 'success']);
     }
 
+
+
+    public function assigned_training_programs(Request $request)
+    {
+        $request->validate([
+            'discipline_id' => 'nullable|exists:disciplines,id',
+        ]);
+        $paginate = 3;
+        $discipline_id = $request->discipline;
+        $search_value = $request->search;
+        $price_filter = $request->price_filter;
+        $training_programs = auth_advisor()->assigned_training_programs()->where(function ($query) use ($request, $price_filter) {
+            $query->when($price_filter, function ($query, $price_filter) {
+                if ($price_filter == "free") {
+                    $query->whereNull('fees');
+                } else {
+                    // the maximum double value 
+                    $price = 1.7976931348623157E+308;
+                    $query->where('fees', '<=', $price);
+                }
+            });
+        })->where(function ($query) use ($search_value) {
+            $query->where('name', 'like', '%' . $search_value . '%')
+                ->orWhere('description', 'like', '%' . $search_value . '%')
+                ->orWhere('location', 'like', '%' . $search_value . '%');
+        })->where(function ($query) use ($discipline_id) {
+            $query->when($discipline_id, function ($query, $discipline_id) {
+                $query->where('discipline_id', $discipline_id);
+            });
+        })->paginate($paginate);
+        $advisor = auth_advisor();
+        $disciplines = Discipline::withoutTrashed()->whereIn('id', $advisor->disciplines->pluck('id'))->get();
+        return view('advisor.assigned_training_programs', compact('training_programs', 'disciplines'));
+    }
 
     public function trainee_details(Trainee $trainee)
     {

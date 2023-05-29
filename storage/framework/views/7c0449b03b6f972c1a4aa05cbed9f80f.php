@@ -54,10 +54,11 @@
                             </h5>
                             <h5 class="card-title">Files Uploaded:</h5>
                             <?php if($trainee->files->isNotEmpty()): ?>
-                            
-                                <ol class="list-group list-group-flush" style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
+                                <ol class="list-group list-group-flush"
+                                    style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
                                     <?php $__currentLoopData = $trainee->files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <li class="list-group-item list-decimal" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
+                                        <li class="list-group-item list-decimal"
+                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
                                             <a href="<?php echo e($file->url); ?>" target="_blank"><?php echo e($file->description); ?></a>
                                         </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -77,6 +78,31 @@
                                         <li><?php echo e($discipline->name); ?></li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Enrolled Programs</h5>
+                            <?php
+                                // Enrolled Programs Related to this Advisor
+                                $enrolledPrograms = $trainee->training_programs->where('advisor_id', auth_advisor()->id);
+                            ?>
+                            <?php if($enrolledPrograms->isNotEmpty()): ?>
+                                <ol class="list-group list-group-flush"
+                                    style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
+                                    <?php $__currentLoopData = $enrolledPrograms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $enrolledProgram): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li class="list-group-item list-decimal"
+                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
+                                           <?php echo e($enrolledProgram->name); ?>
+
+                                        </li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </ol>
                             <?php endif; ?>
                         </div>
                     </div>

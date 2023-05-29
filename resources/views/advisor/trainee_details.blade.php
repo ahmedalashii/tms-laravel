@@ -83,6 +83,30 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Enrolled Programs</h5>
+                            @php
+                                // Enrolled Programs Related to this Advisor
+                                $enrolledPrograms = $trainee->training_programs->where('advisor_id', auth_advisor()->id);
+                            @endphp
+                            @if ($enrolledPrograms->isNotEmpty())
+                                <ol class="list-group list-group-flush"
+                                    style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
+                                    @foreach ($enrolledPrograms as $enrolledProgram)
+                                        <li class="list-group-item list-decimal"
+                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
+                                           {{ $enrolledProgram->name }}
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 @endsection

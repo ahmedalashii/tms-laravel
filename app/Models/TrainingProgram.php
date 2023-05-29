@@ -32,6 +32,10 @@ class TrainingProgram extends Model
     }
 
 
+    public function trainees(){
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'training_program_id', 'trainee_id')->wherePivot('status', 'approved');
+    }
+
     public function advisor(){
         return $this->belongsTo(Advisor::class)->withTrashed();
     }

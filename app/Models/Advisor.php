@@ -53,6 +53,10 @@ class Advisor extends Authenticatable
         return $this->hasMany(File::class);
     }
 
+    public function assigned_training_programs(){
+        return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'advisor_id', 'training_program_id');
+    }
+
     public function sent_emails(){
         return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id');
     }
@@ -62,7 +66,12 @@ class Advisor extends Authenticatable
     }
 
     public function recent_enrolled_trainees(){
-        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'enrolled')->latest();
+        return $this->belongsToMany(Trainee::class, 'training_program_users', 'advisor_id', 'trainee_id')->wherePivot('status', 'approved')->latest();
+    }
+
+    public function recent_enrollments(){
+        // recent training program users
+        return $this->hasMany(TrainingProgramUser::class, 'advisor_id')->where('status', 'approved')->latest();
     }
 
     public function getAvatarFileAttribute()

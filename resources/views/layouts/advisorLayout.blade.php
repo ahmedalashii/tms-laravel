@@ -153,6 +153,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             Trainees List
                         </a>
+                        <a class="nav-link" href="{{ route('advisor.assigned-training-programs') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
+                            My Assigned Training Programs
+                        </a>
                         <a class="nav-link" href="{{ route('advisor.trainees-requests') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
                             Training Requests

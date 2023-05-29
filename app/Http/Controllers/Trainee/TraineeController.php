@@ -41,6 +41,8 @@ class TraineeController extends Controller
         return view('trainee.upload', compact('files', 'training_programs'));
     }
 
+
+
     public function upload_file(Request $request)
     {
         $trainee_programs = auth_trainee()->approved_training_programs()->get();
