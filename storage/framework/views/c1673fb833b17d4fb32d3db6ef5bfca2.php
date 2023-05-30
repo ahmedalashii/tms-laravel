@@ -155,12 +155,11 @@
                             Add New Discipline
                         </a>
                         
-
                         <a class="nav-link" href="<?php echo e(route('manager.training-programs')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Training Programs
                         </a>
-
+                        
                         <a class="nav-link" href="<?php echo e(route('manager.create-training-program')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Add New Training Program

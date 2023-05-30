@@ -157,6 +157,17 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             My Assigned Training Programs
                         </a>
+
+                        <a class="nav-link" href="<?php echo e(route('advisor.tasks')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Training Program Tasks
+                        </a>
+
+                        <a class="nav-link" href="<?php echo e(route('advisor.create-task')); ?>">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
+                            Add New Task
+                        </a>
+
                         <a class="nav-link" href="<?php echo e(route('advisor.send-email-form')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             Send a new email

@@ -55,7 +55,7 @@ class Advisor extends Authenticatable
 
     public function assigned_training_programs()
     {
-        return $this->belongsToMany(TrainingProgram::class, 'training_program_users', 'advisor_id', 'training_program_id');
+        return $this->hasMany(TrainingProgram::class, 'advisor_id');
     }
 
     public function sent_emails()

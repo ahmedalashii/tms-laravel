@@ -31,13 +31,17 @@ class TrainingProgram extends Model
         return $this->belongsTo(Discipline::class)->withTrashed();
     }
 
-
     public function trainees(){
         return $this->belongsToMany(Trainee::class, 'training_program_users', 'training_program_id', 'trainee_id')->wherePivot('status', 'approved');
     }
 
     public function advisor(){
         return $this->belongsTo(Advisor::class)->withTrashed();
+    }
+
+
+    public function tasks(){
+        return $this->hasMany(TrainingProgramTask::class, 'training_program_id');
     }
 
     public function files()

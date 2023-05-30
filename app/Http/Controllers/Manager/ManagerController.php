@@ -12,6 +12,7 @@ use App\Models\TrainingProgram;
 use Illuminate\Validation\Rule;
 use App\Mail\EmailVerificationMail;
 use App\Mail\ManagerActivationMail;
+use App\Models\TrainingProgramTask;
 use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
@@ -326,15 +327,16 @@ class ManagerController extends Controller
         return redirect()->route('manager.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Training Program Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-
     public function edit_training_program(TrainingProgram $trainingProgram)
     {
         $disciplines = \App\Models\Discipline::withoutTrashed()->select('id', 'name')->get();
         $duration_units = ['days' => 'Days', 'weeks' => 'Weeks', 'months' => 'Months', 'years' => 'Years'];
-        $advisors = Advisor::withoutTrashed()->select('id', 'displayName')->get();
+        // advisors that have the discipline of the training program
+        $advisors = Advisor::withoutTrashed()->whereHas('disciplines', function ($query) use ($trainingProgram) {
+            $query->where('discipline_id', $trainingProgram->discipline_id);
+        })->select('id', 'displayName')->get();
         return view('manager.edit_training_program', compact('trainingProgram', 'disciplines', 'duration_units', 'advisors'));
     }
-
 
     public function update_training_program(Request $request, TrainingProgram $trainingProgram)
     {

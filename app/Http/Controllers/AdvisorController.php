@@ -6,12 +6,14 @@ use App\Models\Advisor;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
+use App\Models\TrainingProgram;
 use App\Mail\AdvisorToTraineeMail;
+use App\Models\AdvisorTraineeEmail;
+use App\Models\TrainingProgramTask;
 use App\Http\Traits\EmailProcessing;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\TraineeNotification;
 use App\Http\Traits\FirebaseStorageFileProcessing;
-use App\Models\AdvisorTraineeEmail;
 
 class AdvisorController extends Controller
 {
@@ -113,29 +115,160 @@ class AdvisorController extends Controller
         $discipline_id = $request->discipline;
         $search_value = $request->search;
         $price_filter = $request->price_filter;
-        $training_programs = auth_advisor()->assigned_training_programs()->where(function ($query) use ($request, $price_filter) {
-            $query->when($price_filter, function ($query, $price_filter) {
-                if ($price_filter == "free") {
-                    $query->whereNull('fees');
-                } else {
-                    // the maximum double value 
-                    $price = 1.7976931348623157E+308;
-                    $query->where('fees', '<=', $price);
-                }
-            });
-        })->where(function ($query) use ($search_value) {
-            $query->where('name', 'like', '%' . $search_value . '%')
-                ->orWhere('description', 'like', '%' . $search_value . '%')
-                ->orWhere('location', 'like', '%' . $search_value . '%');
-        })->where(function ($query) use ($discipline_id) {
-            $query->when($discipline_id, function ($query, $discipline_id) {
-                $query->where('discipline_id', $discipline_id);
-            });
-        })->paginate($paginate);
+        $training_programs = auth_advisor()->assigned_training_programs()
+            ->where(function ($query) use ($request, $price_filter) {
+                $query->when($price_filter, function ($query, $price_filter) {
+                    if ($price_filter == "free") {
+                        $query->whereNull('fees');
+                    } else {
+                        // the maximum double value 
+                        $price = 1.7976931348623157E+308;
+                        $query->where('fees', '<=', $price);
+                    }
+                });
+            })->where(function ($query) use ($search_value) {
+                $query->where('name', 'like', '%' . $search_value . '%')
+                    ->orWhere('description', 'like', '%' . $search_value . '%')
+                    ->orWhere('location', 'like', '%' . $search_value . '%');
+            })->where(function ($query) use ($discipline_id) {
+                $query->when($discipline_id, function ($query, $discipline_id) {
+                    $query->where('discipline_id', $discipline_id);
+                });
+            })->paginate($paginate);
         $advisor = auth_advisor();
         $disciplines = Discipline::withoutTrashed()->whereIn('id', $advisor->disciplines->pluck('id'))->get();
         return view('advisor.assigned_training_programs', compact('training_programs', 'disciplines'));
     }
+
+
+    public function tasks()
+    {
+        $paginate = 5;
+        $training_program_id = request()->query('training_program');
+        $search_value = request()->query('search');
+        $tasks = TrainingProgramTask::withTrashed()->where(function ($query) use ($search_value) {
+            $query->where('name', 'LIKE', '%' . $search_value . '%')
+                ->orWhere('description', 'LIKE', '%' . $search_value . '%');
+        })->when($training_program_id, function ($query, $training_program_id) {
+            $query->where('training_program_id', $training_program_id);
+        })->paginate($paginate);
+        $training_programs = TrainingProgram::select('id', 'name')->get();
+        return view('advisor.tasks', compact('tasks', 'training_programs'));
+    }
+
+    public function create_task()
+    {
+        $advisor = auth_advisor();
+        $training_programs = $advisor->assigned_training_programs()->select('training_programs.id', 'training_programs.name')->get();
+        return view('advisor.create_task', compact('training_programs'));
+    }
+
+    public function edit_task(TrainingProgramTask $task)
+    {
+        $advisor = auth_advisor();
+        $training_programs = $advisor->assigned_training_programs()->select('training_programs.id', 'training_programs.name')->get();
+        return view('advisor.edit_task', compact('task', 'training_programs'));
+    }
+
+    public function deactivate_task(TrainingProgramTask $task)
+    {
+        $destroy = $task->delete();
+        return redirect()->back()->with([$destroy ? 'success' : 'fail' => $destroy ?  'Task Deactivated Successfully' : 'Something is wrong!', 'type' => $destroy ? 'success' : 'error']);
+    }
+
+    public function activate_task($id)
+    {
+        $status = TrainingProgramTask::onlyTrashed()->find($id)->restore();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Task Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function update_task(TrainingProgramTask $task, Request $request)
+    {
+        $request->validate([
+            'training_program_id' => 'required|exists:training_programs,id',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'end_date' => 'required|date|after:today',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
+        ]);
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $task->name = $request->name;
+        $task->description = $request->description;
+        $task->end_date = $request->end_date;
+        $task->training_program_id = $request->training_program_id;
+        $status = $task->save();
+
+        // Upload File
+        if ($request->file('file')) {
+            // Delete the old file
+            $old_file = $task->file;
+            if ($old_file) {
+                $this->deleteFirebaseStorageFile($old_file->firebase_file_path);
+                $old_file->delete();
+            }
+
+            $task_file = $request->file('file');
+            // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
+            $file_name = $request->name . '_' . time() . '.' . $task_file->getClientOriginalExtension();
+            $task_id = $training_program->id . '_' . $task->id;
+            $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/' . $file_name;
+            $this->uploadFirebaseStorageFile($task_file, $file_path);
+            // Create a file record in the database
+            $file = new \App\Models\File;
+            $file->name = $file_name;
+            $file->firebase_file_path = $file_path;
+            $file->extension = $task_file->getClientOriginalExtension();
+            $file->training_program_id = $training_program->id;
+            $file->task_id = $task->id;
+            $file->description = 'Task File for ' . $task->name;
+            $size = $task_file->getSize();
+            $file->size = $size ? $size : 0;
+            $file->save();
+        }
+        return redirect()->route('advisor.tasks')->with([$status ? 'success' : 'fail' => $status ? 'Task Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function store_task(Request $request)
+    {
+        // Each task is related to a training program
+        // Each task has a name, description, deadline, and file
+        $request->validate([
+            'training_program_id' => 'required|exists:training_programs,id',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'end_date' => 'required|date|after:today',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
+        ]);
+
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $task = new \App\Models\TrainingProgramTask;
+        $task->name = $request->name;
+        $task->description = $request->description;
+        $task->end_date = $request->end_date;
+        $task->training_program_id = $request->training_program_id;
+        $status = $task->save();
+
+        // Upload File
+        $task_file = $request->file('file');
+        // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
+        $file_name = $request->name . '_' . time() . '.' . $task_file->getClientOriginalExtension();
+        $task_id = $training_program->id . '_' . $task->id;
+        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/' . $file_name;
+        $this->uploadFirebaseStorageFile($task_file, $file_path);
+        // Create a file record in the database
+        $file = new \App\Models\File;
+        $file->name = $file_name;
+        $file->firebase_file_path = $file_path;
+        $file->extension = $task_file->getClientOriginalExtension();
+        $file->training_program_id = $training_program->id;
+        $file->task_id = $task->id;
+        $file->description = 'Task File for ' . $task->name;
+        $size = $task_file->getSize();
+        $file->size = $size ? $size : 0;
+        $file->save();
+        return redirect()->route('advisor.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Task Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
 
     public function trainee_details(Trainee $trainee)
     {

@@ -87,7 +87,7 @@
                 <div class="col-md-6">
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title">Enrolled Programs</h5>
+                            <h5 class="card-title">Enrolled Training Programs</h5>
                             <?php
                                 // Enrolled Programs Related to this Advisor
                                 $enrolledPrograms = $trainee->training_programs->where('advisor_id', auth_advisor()->id);

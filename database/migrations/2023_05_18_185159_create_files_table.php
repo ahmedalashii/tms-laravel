@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('size');
             $table->string('firebase_file_path');
             $table->string('extension');
+            $table->unsignedBigInteger('task_id')->nullable();
+            $table->foreign('task_id')->references('id')->on('training_program_tasks')->onDelete('cascade');
             $table->unsignedBigInteger('trainee_id')->nullable();
             $table->foreign('trainee_id')->references('id')->on('trainees')->onDelete('cascade');
             $table->unsignedBigInteger('manager_id')->nullable();

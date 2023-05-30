@@ -61,6 +61,13 @@
                 @if ($training_programs->isNotEmpty())
                     <div class="row">
                         @foreach ($training_programs as $trainingProgram)
+                            @php
+                                $trainingProgram
+                                    ->load('tasks')
+                                    ->latest()
+                                    ->take(5)
+                                    ->get();
+                            @endphp
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
@@ -133,6 +140,26 @@
                                                             <a href="{{ route('advisor.trainee-details', $trainee->id) }}">
                                                                 {{ $trainee->displayName }}
                                                             </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        </p>
+                                        <p>
+                                            <strong>Last 5 Tasks: </strong>
+                                            @if ($trainingProgram->tasks->isEmpty())
+                                                <b class="text-danger">No tasks created for this program
+                                                    yet.</b>
+                                            @else
+                                                <ul>
+                                                    @foreach ($trainingProgram->tasks as $task)
+                                                        <li>
+                                                            {{-- name, description, end_date --}}
+                                                            <strong>Name: </strong> {{ $task->name }} <br>
+                                                            <strong>Description: </strong> {{ $task->description }} <br>
+                                                            <strong>End Date: </strong> {{ $task->end_date }} <br>
+                                                            <strong>File: </strong> <a href="{{ $task->file_url }}">View
+                                                                File</a>
                                                         </li>
                                                     @endforeach
                                                 </ul>

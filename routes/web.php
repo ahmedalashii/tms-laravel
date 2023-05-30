@@ -101,6 +101,13 @@ Route::group(['prefix' => 'advisor/', 'as' => 'advisor.'], function () {
         Route::get('/sent-emails', [AdvisorController::class, 'sent_emails'])->name('sent-emails');
         Route::get('/received-emails', [AdvisorController::class, 'received_emails'])->name('received-emails');
         Route::get('/meetings-schedule', [AdvisorController::class, 'meetings_schedule'])->name('meetings-schedule');
+        Route::get('/tasks', [AdvisorController::class, 'tasks'])->name('tasks');
+        Route::get('/tasks/create', [AdvisorController::class, 'create_task'])->name('create-task');
+        Route::post('/tasks/create', [AdvisorController::class, 'store_task'])->name('create-task');
+        Route::get('/tasks/edit/{task}', [AdvisorController::class, 'edit_task'])->name('edit-task');
+        Route::post('/tasks/edit/{task}', [AdvisorController::class, 'update_task'])->name('update-task');
+        Route::post('/tasks/deactivate/{task}', [AdvisorController::class, 'deactivate_task'])->name('deactivate-task');
+        Route::post('/tasks/activate/{id}', [AdvisorController::class, 'activate_task'])->name('activate-task');
     });
 });
 

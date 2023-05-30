@@ -154,13 +154,12 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Add New Discipline
                         </a>
-                        {{-- Training Programs --}}
-
+                        
                         <a class="nav-link" href="{{ route('manager.training-programs') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Training Programs
                         </a>
-
+                        
                         <a class="nav-link" href="{{ route('manager.create-training-program') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-book text-success"></i></div>
                             Add New Training Program

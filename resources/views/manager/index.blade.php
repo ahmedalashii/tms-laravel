@@ -139,7 +139,6 @@
                 </div>
             </div>
             <div class="row">
-
                 <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Trainees</div>

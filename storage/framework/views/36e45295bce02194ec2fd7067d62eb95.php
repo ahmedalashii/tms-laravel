@@ -140,7 +140,6 @@
                 </div>
             </div>
             <div class="row">
-
                 <div class="<?php if($manager_db?->role == 'super_manager'): ?> col-xl-4 <?php else: ?> col-xl-6 <?php endif; ?> col-md-6">
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Trainees</div>

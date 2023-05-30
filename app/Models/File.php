@@ -17,6 +17,8 @@ class File extends Model
         'firebase_file_path',
         'extension',
         'trainee_id',
+        'training_program_id',
+        'task_id',
         'manager_id',
         'advisor_id',
     ];

@@ -62,6 +62,13 @@
                 <?php if($training_programs->isNotEmpty()): ?>
                     <div class="row">
                         <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainingProgram): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
+                                $trainingProgram
+                                    ->load('tasks')
+                                    ->latest()
+                                    ->take(5)
+                                    ->get();
+                            ?>
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
@@ -144,6 +151,26 @@
                                                                 <?php echo e($trainee->displayName); ?>
 
                                                             </a>
+                                                        </li>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </ul>
+                                            <?php endif; ?>
+                                        </p>
+                                        <p>
+                                            <strong>Last 5 Tasks: </strong>
+                                            <?php if($trainingProgram->tasks->isEmpty()): ?>
+                                                <b class="text-danger">No tasks created for this program
+                                                    yet.</b>
+                                            <?php else: ?>
+                                                <ul>
+                                                    <?php $__currentLoopData = $trainingProgram->tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <li>
+                                                            
+                                                            <strong>Name: </strong> <?php echo e($task->name); ?> <br>
+                                                            <strong>Description: </strong> <?php echo e($task->description); ?> <br>
+                                                            <strong>End Date: </strong> <?php echo e($task->end_date); ?> <br>
+                                                            <strong>File: </strong> <a href="<?php echo e($task->file_url); ?>">View
+                                                                File</a>
                                                         </li>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </ul>
