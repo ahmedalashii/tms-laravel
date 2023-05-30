@@ -15,6 +15,7 @@ class TrainingProgramTask extends Model
         'name',
         'description',
         'end_date',
+        'file_name',
     ];
 
     protected $dates = [
@@ -31,13 +32,24 @@ class TrainingProgramTask extends Model
         return $this->trainingProgram->trainees();
     }
 
+    public function files()
+    {
+        // This relation includes all files of the training program >> submissons and task files
+        return $this->hasMany(File::class, 'task_id')->where('training_program_id', $this->training_program_id);
+    }
+
+    public function getSubmittedFileUrlAttribute()
+    {
+        return $this->files()->where('trainee_id', auth_trainee()->id)->first()->url ?? null;
+    }
+
     public function file()
     {
-        return $this->hasOne(File::class, 'task_id');
+        return $this->files()->where('name',  $this->file_name)->first();
     }
 
     public function getFileUrlAttribute()
     {
-        return $this->file()->first()->url ?? null;
+        return $this->files()->where('name', $this->file_name)->first()->url ?? null;
     }
 }

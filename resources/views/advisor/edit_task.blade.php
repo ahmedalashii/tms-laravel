@@ -70,7 +70,12 @@
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <div>
-                            <label for="file" class="form-label">Replace with a new file representing the task
+                            <label for="file" class="form-label">
+                                @if ($task->file_url)
+                                    Replace with a new file representing the task (optional)
+                                @else
+                                    File representing the task (optional)
+                                @endif
                             </label>
                             <input class="form-control form-control-lg" id="file" type="file" name="file"
                                 accept="*/*">

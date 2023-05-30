@@ -56,11 +56,10 @@
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <div>
-                                <label for="file" class="form-label">File representing the task
-                                    <strong class="text-danger">*</strong>
+                                <label for="file" class="form-label">File representing the task (optional)
                                 </label>
                                 <input class="form-control form-control-lg" id="file" type="file" name="file"
-                                    accept="*/*" required>
+                                    accept="*/*">
                             </div>
                         </div>
                     </div>

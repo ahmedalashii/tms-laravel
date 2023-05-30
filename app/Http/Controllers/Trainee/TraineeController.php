@@ -50,6 +50,56 @@ class TraineeController extends Controller
         return view('trainee.upload', compact('files', 'training_programs', 'task'));
     }
 
+    public function upload_file(Request $request)
+    {
+        $trainee_programs = auth_trainee()->approved_training_programs()->get();
+        if ($request->training_program_id && !in_array($request->training_program_id, $trainee_programs->pluck('id')->toArray())) {
+            return redirect()->back()->with(['fail' => 'You are not enrolled in this training program!', 'type' => 'error']);
+        }
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'description' => 'required|string|max:255',
+            'training_program_id' => 'required|exists:training_programs,id',
+            'task_id' => 'required|exists:training_program_tasks,id|in:' . implode(',', TrainingProgramTask::where('training_program_id', $request->training_program_id)->pluck('id')->toArray()),
+        ]);
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $trainee = auth_trainee();
+
+        // if there's a previous submission for this task, delete it
+        $previous_submission = $trainee->files()->where('task_id', $request->task_id)->get();
+        if ($previous_submission) {
+            foreach ($previous_submission as $file) {
+                $this->deleteFirebaseStorageFile($file->firebase_file_path);
+                $file->delete();
+            }
+        }
+
+        $file = $request->file('file');
+        $task_id = $training_program->id . '_' . $request->task_id;
+        $trainee_id = $trainee->displayName . '_' . $trainee->id;
+        $file_name =  $training_program->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/Submissions/' . $trainee_id . '/' . $file_name;
+        $this->uploadFirebaseStorageFile($file, $file_path);
+
+        $task = TrainingProgramTask::find($request->task_id);
+
+        $file_db = new \App\Models\File;
+        $file_db->name = $file_name;
+        $file_db->firebase_file_path = $file_path;
+        $file_db->extension = $file->getClientOriginalExtension();
+        $file_db->trainee_id = $trainee->id;
+        if ($training_program->advisor_id) {
+            $file_db->advisor_id = $training_program->advisor_id;
+        }
+        $file_db->training_program_id = $request->training_program_id;
+        $file_db->task_id = $request->task_id;
+        $file_db->description = "Trainee $trainee->displayName has uploaded a file related to $task->name task, his file description: $request->description";
+        $size = $file->getSize();
+        $file_db->size = $size ? $size : 0;
+        $status = $file_db->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'File Related to ' . $training_program->name . ' training program has been uploaded successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
     public function advisors_list(Request $request)
     {
         $trainee = auth_trainee();
@@ -130,40 +180,7 @@ class TraineeController extends Controller
         return view('trainee.sent_emails', compact('sent_emails'));
     }
 
-    public function upload_file(Request $request)
-    {
-        $trainee_programs = auth_trainee()->approved_training_programs()->get();
-        if ($request->training_program_id && !in_array($request->training_program_id, $trainee_programs->pluck('id')->toArray())) {
-            return redirect()->back()->with(['fail' => 'You are not enrolled in this training program!', 'type' => 'error']);
-        }
-        $request->validate([
-            'file' => 'required|file|max:10240',
-            'description' => 'required|string|max:255',
-            'training_program_id' => 'nullable|exists:training_programs,id',
-            'task_id' => 'nullable|exists:training_program_tasks,id|in:' . implode(',', TrainingProgramTask::where('training_program_id', $request->training_program_id)->pluck('id')->toArray()),
-        ]);
-        $training_program = TrainingProgram::find($request->training_program_id);
-        $trainee = auth_trainee();
-        $file = $request->file('file');
-        $task_id = $training_program->id . '_' . $request->task_id;
-        $trainee_id = $trainee->displayName . '_' . $trainee->id;
-        $file_name =  $training_program->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
-        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/Trainees/' . $trainee_id . '/' . $file_name;
-        $this->uploadFirebaseStorageFile($file, $file_path);
 
-        $file_db = new \App\Models\File;
-        $file_db->name = $file_name;
-        $file_db->firebase_file_path = $file_path;
-        $file_db->extension = $file->getClientOriginalExtension();
-        $file_db->trainee_id = $trainee->id;
-        $file_db->training_program_id = $request->training_program_id;
-        $file_db->task_id = $request->task_id;
-        $file_db->description = $request->description;
-        $size = $file->getSize();
-        $file_db->size = $size ? $size : 0;
-        $status = $file_db->save();
-        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'File Related to ' . $training_program->name . ' training program has been uploaded successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
-    }
 
     public function read_notifications(Request $request)
     {

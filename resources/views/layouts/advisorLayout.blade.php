@@ -242,7 +242,7 @@
             }
 
             const appendNotification = (notification_text, notifications_list, notifications,
-                unreadNotifications) => {
+                unreadNotifications, is_first = false) => {
                 // don't update the notifications count if the notification is already read
                 updateNotificationsCount(unreadNotifications.length);
 
@@ -254,7 +254,11 @@
                 notificationText.innerText = notification_text;
 
                 notificationItem.appendChild(notificationText);
-                notifications.appendChild(notificationItem);
+                if (is_first == false) {
+                    notifications.appendChild(notificationItem);
+                } else {
+                    notifications.prepend(notificationItem);
+                }
             }
 
             if (notifications_bell && notifications && notifications_count) {
@@ -307,7 +311,7 @@
                 // append the message to the notifications list at the beginning
                 notifications_list.unshift(message);
                 unreadNotifications.unshift(message);
-                appendNotification(message, notifications_list, notifications, unreadNotifications);
+                appendNotification(message, notifications_list, notifications, unreadNotifications, true);
                 Swal.fire({
                     title: message,
                     toast: true,

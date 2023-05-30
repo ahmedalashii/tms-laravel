@@ -61,6 +61,13 @@
                 @if ($training_programs->isNotEmpty())
                     <div class="row">
                         @foreach ($training_programs as $trainingProgram)
+                            @php
+                                $trainingProgram
+                                    ->load('tasks')
+                                    ->latest()
+                                    ->take(10)
+                                    ->get();
+                            @endphp
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
@@ -137,6 +144,42 @@
                                             @else
                                                 <b class="text-danger">{{ $trainingProgram->fees }}
                                                     USD</b>
+                                            @endif
+                                        </p>
+
+                                        <p>
+                                            <strong>Last 10 Tasks: </strong>
+                                            @if ($trainingProgram->tasks->isEmpty())
+                                                <b class="text-danger">No tasks created for this program
+                                                    yet.</b>
+                                            @else
+                                                <ul>
+                                                    @foreach ($trainingProgram->tasks as $task)
+                                                        <li>
+                                                            <strong>Name: </strong> {{ $task->name }}
+                                                            @if ($task->submittedFileUrl)
+                                                                <a href="{{ route('trainee.upload', $task->id) }}">
+                                                                    Edit Submission
+                                                                </a>
+                                                                <br>
+                                                                <strong>Submission: </strong>
+                                                                <a href="{{ $task->submittedFileUrl ?? '#' }}"
+                                                                    target="_blank">View
+                                                                    Submission</a>
+                                                            @else
+                                                                <a href="{{ route('trainee.upload', $task->id) }}">
+                                                                    Add Submission
+                                                                </a>
+                                                            @endif
+                                                            <br>
+                                                            <strong>Description: </strong> {{ $task->description }} <br>
+                                                            <strong>End Date: </strong> {{ $task->end_date }} <br>
+                                                            <strong>File: </strong> <a href="{{ $task->file_url }}"
+                                                                target="_blank">View
+                                                                File</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
                                             @endif
                                         </p>
 

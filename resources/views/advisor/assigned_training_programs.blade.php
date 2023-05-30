@@ -65,7 +65,7 @@
                                 $trainingProgram
                                     ->load('tasks')
                                     ->latest()
-                                    ->take(5)
+                                    ->take(10)
                                     ->get();
                             @endphp
                             <div class="col-md-4">
@@ -146,7 +146,7 @@
                                             @endif
                                         </p>
                                         <p>
-                                            <strong>Last 5 Tasks: </strong>
+                                            <strong>Last 10 Tasks: </strong>
                                             @if ($trainingProgram->tasks->isEmpty())
                                                 <b class="text-danger">No tasks created for this program
                                                     yet.</b>
@@ -154,11 +154,16 @@
                                                 <ul>
                                                     @foreach ($trainingProgram->tasks as $task)
                                                         <li>
-                                                            {{-- name, description, end_date --}}
-                                                            <strong>Name: </strong> {{ $task->name }} <br>
+                                                            <strong>Name: </strong> {{ $task->name }}
+
+                                                            <a href="{{ route('advisor.edit-task', $task->id) }}">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <br>
                                                             <strong>Description: </strong> {{ $task->description }} <br>
                                                             <strong>End Date: </strong> {{ $task->end_date }} <br>
-                                                            <strong>File: </strong> <a href="{{ $task->file_url }}">View
+                                                            <strong>File: </strong> <a href="{{ $task->file_url }}"
+                                                                target="_blank">View
                                                                 File</a>
                                                         </li>
                                                     @endforeach

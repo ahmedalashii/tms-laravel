@@ -66,7 +66,7 @@
                                 $trainingProgram
                                     ->load('tasks')
                                     ->latest()
-                                    ->take(5)
+                                    ->take(10)
                                     ->get();
                             ?>
                             <div class="col-md-4">
@@ -157,7 +157,7 @@
                                             <?php endif; ?>
                                         </p>
                                         <p>
-                                            <strong>Last 5 Tasks: </strong>
+                                            <strong>Last 10 Tasks: </strong>
                                             <?php if($trainingProgram->tasks->isEmpty()): ?>
                                                 <b class="text-danger">No tasks created for this program
                                                     yet.</b>
@@ -165,11 +165,17 @@
                                                 <ul>
                                                     <?php $__currentLoopData = $trainingProgram->tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <li>
-                                                            
-                                                            <strong>Name: </strong> <?php echo e($task->name); ?> <br>
+                                                            <strong>Name: </strong> <?php echo e($task->name); ?>
+
+
+                                                            <a href="<?php echo e(route('advisor.edit-task', $task->id)); ?>">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <br>
                                                             <strong>Description: </strong> <?php echo e($task->description); ?> <br>
                                                             <strong>End Date: </strong> <?php echo e($task->end_date); ?> <br>
-                                                            <strong>File: </strong> <a href="<?php echo e($task->file_url); ?>">View
+                                                            <strong>File: </strong> <a href="<?php echo e($task->file_url); ?>"
+                                                                target="_blank">View
                                                                 File</a>
                                                         </li>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

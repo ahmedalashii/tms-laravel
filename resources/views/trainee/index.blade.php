@@ -24,8 +24,8 @@
                                             <h5 class="mb-0">{{ $task->name }}</h5>
                                             @if ($task->file_url)
                                                 <small><strong>File: </strong>
-                                                    <a
-                                                        href="{{ $task->file_url }}" target="_blank">{{ $task->name }}.{{ $task->file->extension }}</a>
+                                                    <a href="{{ $task->file_url }}"
+                                                        target="_blank">{{ $task->name }}.{{ $task->file()->extension }}</a>
                                                 </small><br>
                                             @endif
                                             <small><strong>Training Program: </strong>
@@ -39,7 +39,13 @@
                                             </small>
                                         </div>
                                         <a href="{{ route('trainee.upload', $task->id) }}" class="btn btn-sm btn-success"
-                                            style="width:95px;">Submit</a>
+                                            style="width:95px;">
+                                            @if ($task->submittedFileUrl)
+                                                Edit Submission
+                                            @else
+                                                Add Submission
+                                            @endif
+                                        </a>
                                     </li>
                                     {{-- if last task then hr --}}
                                     @if (!$loop->last)
@@ -80,7 +86,7 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Upload Files Related to Training</div>
+                        <div class="card-body">Training Program Task Submission</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{{ route('trainee.upload') }}">View
                                 Details</a>

@@ -62,6 +62,13 @@
                 <?php if($training_programs->isNotEmpty()): ?>
                     <div class="row">
                         <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trainingProgram): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
+                                $trainingProgram
+                                    ->load('tasks')
+                                    ->latest()
+                                    ->take(10)
+                                    ->get();
+                            ?>
                             <div class="col-md-4">
                                 <div class="card mt-2" style="height: 500px; overflow-y: scroll;">
                                     <img class="card-img-top"
@@ -149,6 +156,43 @@
                                                 <b class="text-danger"><?php echo e($trainingProgram->fees); ?>
 
                                                     USD</b>
+                                            <?php endif; ?>
+                                        </p>
+
+                                        <p>
+                                            <strong>Last 10 Tasks: </strong>
+                                            <?php if($trainingProgram->tasks->isEmpty()): ?>
+                                                <b class="text-danger">No tasks created for this program
+                                                    yet.</b>
+                                            <?php else: ?>
+                                                <ul>
+                                                    <?php $__currentLoopData = $trainingProgram->tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <li>
+                                                            <strong>Name: </strong> <?php echo e($task->name); ?>
+
+                                                            <?php if($task->submittedFileUrl): ?>
+                                                                <a href="<?php echo e(route('trainee.upload', $task->id)); ?>">
+                                                                    Edit Submission
+                                                                </a>
+                                                                <br>
+                                                                <strong>Submission: </strong>
+                                                                <a href="<?php echo e($task->submittedFileUrl ?? '#'); ?>"
+                                                                    target="_blank">View
+                                                                    Submission</a>
+                                                            <?php else: ?>
+                                                                <a href="<?php echo e(route('trainee.upload', $task->id)); ?>">
+                                                                    Add Submission
+                                                                </a>
+                                                            <?php endif; ?>
+                                                            <br>
+                                                            <strong>Description: </strong> <?php echo e($task->description); ?> <br>
+                                                            <strong>End Date: </strong> <?php echo e($task->end_date); ?> <br>
+                                                            <strong>File: </strong> <a href="<?php echo e($task->file_url); ?>"
+                                                                target="_blank">View
+                                                                File</a>
+                                                        </li>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </ul>
                                             <?php endif; ?>
                                         </p>
 

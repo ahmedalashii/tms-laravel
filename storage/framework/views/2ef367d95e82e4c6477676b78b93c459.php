@@ -22,8 +22,8 @@
                                             <h5 class="mb-0"><?php echo e($task->name); ?></h5>
                                             <?php if($task->file_url): ?>
                                                 <small><strong>File: </strong>
-                                                    <a
-                                                        href="<?php echo e($task->file_url); ?>" target="_blank"><?php echo e($task->name); ?>.<?php echo e($task->file->extension); ?></a>
+                                                    <a href="<?php echo e($task->file_url); ?>"
+                                                        target="_blank"><?php echo e($task->name); ?>.<?php echo e($task->file()->extension); ?></a>
                                                 </small><br>
                                             <?php endif; ?>
                                             <small><strong>Training Program: </strong>
@@ -39,7 +39,13 @@
                                             </small>
                                         </div>
                                         <a href="<?php echo e(route('trainee.upload', $task->id)); ?>" class="btn btn-sm btn-success"
-                                            style="width:95px;">Submit</a>
+                                            style="width:95px;">
+                                            <?php if($task->submittedFileUrl): ?>
+                                                Edit Submission
+                                            <?php else: ?>
+                                                Add Submission
+                                            <?php endif; ?>
+                                        </a>
                                     </li>
                                     
                                     <?php if(!$loop->last): ?>
@@ -80,7 +86,7 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Upload Files Related to Training</div>
+                        <div class="card-body">Training Program Task Submission</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="<?php echo e(route('trainee.upload')); ?>">View
                                 Details</a>

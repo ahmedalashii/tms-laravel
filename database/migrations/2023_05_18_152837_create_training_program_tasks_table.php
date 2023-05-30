@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('training_program_id')->constrained()->cascadeOnDelete();
             $table->string('name');
+            $table->string("file_name")->nullable();
             $table->text('description')->nullable();
             $table->date('end_date');
             $table->timestamps();

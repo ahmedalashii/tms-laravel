@@ -31,16 +31,19 @@ class TrainingProgram extends Model
         return $this->belongsTo(Discipline::class)->withTrashed();
     }
 
-    public function trainees(){
+    public function trainees()
+    {
         return $this->belongsToMany(Trainee::class, 'training_program_users', 'training_program_id', 'trainee_id')->wherePivot('status', 'approved');
     }
 
-    public function advisor(){
+    public function advisor()
+    {
         return $this->belongsTo(Advisor::class)->withTrashed();
     }
 
 
-    public function tasks(){
+    public function tasks()
+    {
         return $this->hasMany(TrainingProgramTask::class, 'training_program_id');
     }
 
@@ -64,7 +67,8 @@ class TrainingProgram extends Model
         return $this->training_program_users()->where('trainee_id', auth_trainee()->id)->first();
     }
 
-    public function getTraineeStatusAttribute(){
+    public function getTraineeStatusAttribute()
+    {
         return $this->training_program_users()->where('trainee_id', auth_trainee()->id)->first()?->status;
     }
 
