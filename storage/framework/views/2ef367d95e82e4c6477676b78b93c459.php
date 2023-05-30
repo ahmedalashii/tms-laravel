@@ -8,6 +8,54 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-clock me-1"></i>
+                        Timeline of Tasks in the last 30 days
+                    </div>
+                    <div class="card-body">
+                        <?php if($tasks->isEmpty()): ?>
+                            <p class="bg-secondary text-white p-2">There are no tasks available. Once a task is added, it
+                                will appear here.</p>
+                        <?php else: ?>
+                            <ul class="list-unstyled">
+                                <?php $__currentLoopData = $tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <h5 class="mb-0"><?php echo e($task->name); ?></h5>
+                                            <?php if($task->file_url): ?>
+                                                <small><strong>File: </strong>
+                                                    <a
+                                                        href="<?php echo e($task->file_url); ?>" target="_blank"><?php echo e($task->name); ?>.<?php echo e($task->file->extension); ?></a>
+                                                </small><br>
+                                            <?php endif; ?>
+                                            <small><strong>Training Program: </strong>
+                                                <?php echo e($task->trainingProgram->name); ?>
+
+                                            </small><br>
+                                            <small><?php echo e($task->description); ?></small>
+                                            <small
+                                                <?php if(Carbon\Carbon::parse($task->end_date)->diffInDays(Carbon\Carbon::now()) <= 4): ?> style="color: red;" <?php else: ?>
+                                                class="text-muted" <?php endif; ?>>
+                                                Deadline: <?php echo e(Carbon\Carbon::parse($task->end_date)->format('d M Y')); ?>
+
+                                            </small>
+                                        </div>
+                                        <a href="<?php echo e(route('trainee.upload', $task->id)); ?>" class="btn btn-sm btn-success"
+                                            style="width:95px;">Submit</a>
+                                    </li>
+                                    
+                                    <?php if(!$loop->last): ?>
+                                        <hr>
+                                    <?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </ul>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-3 mb-3">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-clock me-1"></i>
                         Newly Added Training Programs
                     </div>
                     <div class="card-body">
@@ -34,7 +82,8 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Upload Files Related to Training</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="<?php echo e(route('trainee.upload')); ?>">View Details</a>
+                            <a class="small text-white stretched-link" href="<?php echo e(route('trainee.upload')); ?>">View
+                                Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>

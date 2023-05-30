@@ -163,12 +163,48 @@ class AdvisorController extends Controller
         return view('advisor.create_task', compact('training_programs'));
     }
 
-    public function edit_task(TrainingProgramTask $task)
+
+    public function store_task(Request $request)
     {
-        $advisor = auth_advisor();
-        $training_programs = $advisor->assigned_training_programs()->select('training_programs.id', 'training_programs.name')->get();
-        return view('advisor.edit_task', compact('task', 'training_programs'));
+        // Each task is related to a training program
+        // Each task has a name, description, deadline, and file
+        $request->validate([
+            'training_program_id' => 'required|exists:training_programs,id',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'end_date' => 'required|date|after:today',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar,jpeg,png,jpg,gif,svg|max:10240',
+        ]);
+
+        $training_program = TrainingProgram::find($request->training_program_id);
+        $task = new \App\Models\TrainingProgramTask;
+        $task->name = $request->name;
+        $task->description = $request->description;
+        $task->end_date = $request->end_date;
+        $task->training_program_id = $request->training_program_id;
+        $status = $task->save();
+
+        // Upload File
+        $task_file = $request->file('file');
+        // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
+        $file_name = $request->name . '_' . time() . '.' . $task_file->getClientOriginalExtension();
+        $task_id = $training_program->id . '_' . $task->id;
+        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/' . $file_name;
+        $this->uploadFirebaseStorageFile($task_file, $file_path);
+        // Create a file record in the database
+        $file = new \App\Models\File;
+        $file->name = $file_name;
+        $file->firebase_file_path = $file_path;
+        $file->extension = $task_file->getClientOriginalExtension();
+        $file->training_program_id = $training_program->id;
+        $file->task_id = $task->id;
+        $file->description = 'Task File for ' . $task->name;
+        $size = $task_file->getSize();
+        $file->size = $size ? $size : 0;
+        $file->save();
+        return redirect()->route('advisor.tasks')->with([$status ? 'success' : 'fail' => $status ? 'Task Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
+
 
     public function deactivate_task(TrainingProgramTask $task)
     {
@@ -182,6 +218,14 @@ class AdvisorController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Task Activated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
+
+    public function edit_task(TrainingProgramTask $task)
+    {
+        $advisor = auth_advisor();
+        $training_programs = $advisor->assigned_training_programs()->select('training_programs.id', 'training_programs.name')->get();
+        return view('advisor.edit_task', compact('task', 'training_programs'));
+    }
+
     public function update_task(TrainingProgramTask $task, Request $request)
     {
         $request->validate([
@@ -189,7 +233,7 @@ class AdvisorController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'end_date' => 'required|date|after:today',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar,jpeg,png,jpg,gif,svg|max:10240',
         ]);
         $training_program = TrainingProgram::find($request->training_program_id);
         $task->name = $request->name;
@@ -228,46 +272,7 @@ class AdvisorController extends Controller
         return redirect()->route('advisor.tasks')->with([$status ? 'success' : 'fail' => $status ? 'Task Updated Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-    public function store_task(Request $request)
-    {
-        // Each task is related to a training program
-        // Each task has a name, description, deadline, and file
-        $request->validate([
-            'training_program_id' => 'required|exists:training_programs,id',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'end_date' => 'required|date|after:today',
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
-        ]);
 
-        $training_program = TrainingProgram::find($request->training_program_id);
-        $task = new \App\Models\TrainingProgramTask;
-        $task->name = $request->name;
-        $task->description = $request->description;
-        $task->end_date = $request->end_date;
-        $task->training_program_id = $request->training_program_id;
-        $status = $task->save();
-
-        // Upload File
-        $task_file = $request->file('file');
-        // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
-        $file_name = $request->name . '_' . time() . '.' . $task_file->getClientOriginalExtension();
-        $task_id = $training_program->id . '_' . $task->id;
-        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/' . $file_name;
-        $this->uploadFirebaseStorageFile($task_file, $file_path);
-        // Create a file record in the database
-        $file = new \App\Models\File;
-        $file->name = $file_name;
-        $file->firebase_file_path = $file_path;
-        $file->extension = $task_file->getClientOriginalExtension();
-        $file->training_program_id = $training_program->id;
-        $file->task_id = $task->id;
-        $file->description = 'Task File for ' . $task->name;
-        $size = $task_file->getSize();
-        $file->size = $size ? $size : 0;
-        $file->save();
-        return redirect()->route('advisor.training-programs')->with([$status ? 'success' : 'fail' => $status ? 'Task Created Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
-    }
 
 
     public function trainee_details(Trainee $trainee)

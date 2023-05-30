@@ -55,8 +55,8 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::post('/edit-info/{trainee}', [TraineeController::class, 'update'])->name('update');
         Route::get('/advisor-details/{advisor}', [TraineeController::class, 'advisor_details'])->name('advisor-details');
         Route::get('/advisors-list', [TraineeController::class, 'advisors_list'])->name('advisors-list');
-        Route::get('/upload', [TraineeController::class, 'upload'])->name('upload');
-        Route::post('/upload', [TraineeController::class, 'upload_file'])->name('upload');
+        Route::get('/upload/{task?}', [TraineeController::class, 'upload'])->name('upload');
+        Route::post('/upload/{task?}', [TraineeController::class, 'upload_file'])->name('upload');
         Route::get('/all-training-requests', [TraineeController::class, 'all_training_requests'])->name('all-training-requests');
         Route::get('/approved-training-programs', [TraineeController::class, 'approved_training_programs'])->name('approved-training-programs');
         Route::get('/available-training-programs', [TraineeController::class, 'available_training_programs'])->name('available-training-programs');

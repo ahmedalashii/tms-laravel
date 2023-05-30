@@ -22,15 +22,24 @@
                                     related to?</label>
                                 <select class="form-select mb-3" aria-label=".form-select-lg example" id="training_program"
                                     name="training_program_id" required>
-                                    <option selected value="">Select Training Program</option>
                                     <?php $__currentLoopData = $training_programs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_program): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($training_program->id); ?>">
+                                        <option value="<?php echo e($training_program->id); ?>"
+                                            <?php if($task && $task->trainingProgram->id == $training_program->id): ?> selected <?php endif; ?>>
                                             <?php echo e($training_program->name); ?>
 
                                         </option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="task" class="form-label">Choose the task that this file is
+                                    related to</label>
+                                <select class="form-select mb-3" aria-label=".form-select-lg example" id="task"
+                                    name="task_id" required>
+                                </select>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">File Description</label>
                                 <input class="form-control" type="text" name="description" id="description"
@@ -40,8 +49,7 @@
                         <?php else: ?>
                             <div class="alert alert-danger">
                                 <strong>Warning!</strong> You can't upload any files because you haven't joined any training
-                                programs
-                                yet.
+                                programs yet.
                             </div>
                         <?php endif; ?>
                     </div>
@@ -78,7 +86,7 @@
                                                     $factor = floor((strlen($filesize) - 1) / 3);
                                                     $size = sprintf("%.{$decimals}f", $filesize / pow(1024, $factor)) . @$sz[$factor] . 'B';
                                                     // if the $size has two BB
-                                                    if(substr_count($size, 'B') > 1){
+                                                    if (substr_count($size, 'B') > 1) {
                                                         // remove the last B
                                                         $size = substr($size, 0, -1);
                                                     }
@@ -103,6 +111,65 @@
             </section>
         </div>
     </main>
+    <script>
+        var training_programs = <?php echo json_encode($training_programs, 15, 512) ?>;
+        window.onload = function() {
+            var training_program = document.getElementById('training_program');
+            var task_element = document.getElementById('task');
+
+            if (training_programs.length > 0) {
+                var selected_training_program = training_program.value;
+                console.log("selected_training_program: " + selected_training_program);
+                var tasks = training_programs.find(training_program => training_program.id ==
+                    selected_training_program).tasks;
+                if (tasks.length) {
+                    // add select task option
+                    var option = document.createElement('option');
+                    option.value = '';
+                    option.text = 'Select a task';
+                    task_element.appendChild(option);
+                    tasks.forEach(task => {
+                        var option = document.createElement('option');
+                        option.value = task.id;
+                        option.text = task.name;
+                        task_element.appendChild(option);
+                    });
+                    // if there's a task selected
+                    var task = <?php echo json_encode($task, 15, 512) ?>;
+                    if (task && task.training_program_id == selected_training_program) {
+                        task_element.value = task.id;
+                    }
+                } else {
+                    // add select task option
+                    var option = document.createElement('option');
+                    option.value = '';
+                    option.text = 'Select a task';
+                    task_element.appendChild(option);
+                }
+            }
+            training_program.addEventListener('change', function() {
+                var selected_training_program = training_program.value;
+                var tasks = training_programs.find(training_program => training_program.id ==
+                    selected_training_program).tasks;
+                task_element.innerHTML = '';
+                // add select task option
+                var option = document.createElement('option');
+                option.value = '';
+                option.text = 'Select a task';
+                task_element.appendChild(option);
+                tasks.forEach(task => {
+                    var option = document.createElement('option');
+                    option.value = task.id;
+                    option.text = task.name;
+                    task_element.appendChild(option);
+                });
+                var task = <?php echo json_encode($task, 15, 512) ?>;
+                if (task && task.training_program_id == selected_training_program) {
+                    task_element.value = task.id;
+                }
+            });
+        }
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.traineeLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/trainee/upload.blade.php ENDPATH**/ ?>

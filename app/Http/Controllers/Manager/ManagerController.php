@@ -300,10 +300,10 @@ class ManagerController extends Controller
         $thumbnailImage = $request->file('thumbnail');
         // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
         $thumbnail_file_name = $data['name'] . '_' . time() . '.' . $thumbnailImage->getClientOriginalExtension();
-        $thumbnail_file_path = 'TrainingProgram/Thumbnails/' . $thumbnail_file_name;
-        $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
         $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
         $status = $trainingProgram->save();
+        $thumbnail_file_path = 'TrainingPrograms/' . $trainingProgram->id . '/Thumbnails/' . $thumbnail_file_name;
+        $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
 
         foreach ($data['attendance_days'] as $attendance_day) {
             $training_attendance = new \App\Models\TrainingAttendance;
@@ -424,7 +424,9 @@ class ManagerController extends Controller
             $thumbnailImage = request()->file('thumbnail');
             // Using firebase storage to upload files and make a record for File in the database linked with the TrainingProgram
             $thumbnail_file_name = $data['name'] . '_' . time() . '.' . $thumbnailImage->getClientOriginalExtension();
-            $thumbnail_file_path = 'TrainingProgram/Thumbnails/' . $thumbnail_file_name;
+            $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
+            $status = $trainingProgram->save();
+            $thumbnail_file_path = 'TrainingPrograms/' . $trainingProgram->id . '/Thumbnails/' . $thumbnail_file_name;
             $this->uploadFirebaseStorageFile($thumbnailImage, $thumbnail_file_path);
             if ($trainingProgram->thumbnail_file_name) {
                 // Delete the old thumbnail file
@@ -432,7 +434,6 @@ class ManagerController extends Controller
                 $this->deleteFirebaseStorageFile($old_thumbnail_file->firebase_file_path);
                 $old_thumbnail_file->delete();
             }
-            $trainingProgram->thumbnail_file_name = $thumbnail_file_name;
             // Create a file record in the database
             $file = new \App\Models\File;
             $file->name = $thumbnail_file_name;
@@ -443,8 +444,9 @@ class ManagerController extends Controller
             $size = $thumbnailImage->getSize();
             $file->size = $size ? $size : 0;
             $file->save();
+        } else {
+            $status = $trainingProgram->save();
         }
-        $status = $trainingProgram->save();
 
         // Update the training attendances
         $training_attendances = $trainingProgram->training_attendances()->get();

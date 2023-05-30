@@ -18,6 +18,7 @@ use App\Notifications\ManagerNotification;
 use App\Http\Requests\ScheduleMeetingRequest;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
+use App\Models\TrainingProgramTask;
 
 class TraineeController extends Controller
 {
@@ -32,15 +33,21 @@ class TraineeController extends Controller
         $recent_programs = TrainingProgram::withoutTrashed()->whereDoesntHave('training_program_users', function ($query) use ($trainee) {
             $query->whereIn('status', ['approved', 'pending'])->where('trainee_id', $trainee->id);
         })->latest()->take(5)->get();
-        return view('trainee.index', compact('notifications', 'recent_programs'));
+
+        // Get all the tasks that the trainee has to do in the last 30 days
+        $tasks = $trainee->approved_training_programs()->with('tasks')->get()->pluck('tasks')->flatten()->where('end_date', '>=', date('Y-m-d'))->where('end_date', '<=', date('Y-m-d', strtotime('+30 days')))->sortBy('deadline');
+        return view('trainee.index', compact('notifications', 'recent_programs', 'tasks'));
     }
 
-    public function upload()
+    public function upload(?TrainingProgramTask $task = null)
     {
         $paginate = 3;
         $files = auth_trainee()->files()->paginate($paginate);
-        $training_programs = auth_trainee()->approved_training_programs()->get();
-        return view('trainee.upload', compact('files', 'training_programs'));
+        $training_programs = auth_trainee()->approved_training_programs()->with('tasks')->get();
+        if ($task) {
+            $task->load('trainingProgram');
+        }
+        return view('trainee.upload', compact('files', 'training_programs', 'task'));
     }
 
     public function advisors_list(Request $request)
@@ -129,17 +136,19 @@ class TraineeController extends Controller
         if ($request->training_program_id && !in_array($request->training_program_id, $trainee_programs->pluck('id')->toArray())) {
             return redirect()->back()->with(['fail' => 'You are not enrolled in this training program!', 'type' => 'error']);
         }
-
         $request->validate([
             'file' => 'required|file|max:10240',
             'description' => 'required|string|max:255',
             'training_program_id' => 'nullable|exists:training_programs,id',
+            'task_id' => 'nullable|exists:training_program_tasks,id|in:' . implode(',', TrainingProgramTask::where('training_program_id', $request->training_program_id)->pluck('id')->toArray()),
         ]);
         $training_program = TrainingProgram::find($request->training_program_id);
         $trainee = auth_trainee();
         $file = $request->file('file');
+        $task_id = $training_program->id . '_' . $request->task_id;
+        $trainee_id = $trainee->displayName . '_' . $trainee->id;
         $file_name =  $training_program->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
-        $file_path = "TrainingPrograms/$training_program->name/Trainees/$trainee->displayName/$file_name";
+        $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/Trainees/' . $trainee_id . '/' . $file_name;
         $this->uploadFirebaseStorageFile($file, $file_path);
 
         $file_db = new \App\Models\File;
@@ -148,6 +157,7 @@ class TraineeController extends Controller
         $file_db->extension = $file->getClientOriginalExtension();
         $file_db->trainee_id = $trainee->id;
         $file_db->training_program_id = $request->training_program_id;
+        $file_db->task_id = $request->task_id;
         $file_db->description = $request->description;
         $size = $file->getSize();
         $file_db->size = $size ? $size : 0;
