@@ -63,12 +63,31 @@
                     </div>
                 </div>
 
-
-
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Training Program Tasks</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="<?php echo e(route('advisor.tasks')); ?>">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Sent a new Email</div>
+                        <div class="card-body">Add New Task</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="<?php echo e(route('advisor.create-task')); ?>">View
+                                Details</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">Send a new Email</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="<?php echo e(route('advisor.send-email-form')); ?>">View
                                 Details</a>
@@ -98,9 +117,9 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Training Program Tasks</div>
+                        <div class="card-body">Meetings Scheduling</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="<?php echo e(route('advisor.tasks')); ?>">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('advisor.meetings-schedule')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>

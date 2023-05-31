@@ -29,19 +29,21 @@
                                 <select class="form-control" name="advisor">
                                     <option value="">Select an advisor</option>
                                     @foreach ($advisors as $advisor)
-                                        <option value="{{ $advisor->id }}" @if (old('advisor') == $advisor->id) selected @endif
-                                            
-                                            >{{ $advisor->displayName }}</option>
+                                        <option value="{{ $advisor->id }}"
+                                            @if (old('advisor') == $advisor->id) selected @endif>{{ $advisor->displayName }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="date" class="form-label">Preferred Date <b class="text-danger">*</b></label>
-                                <input type="date" class="form-control" name="date" min="{{ Carbon\Carbon::now()->format('Y-m-d') }}" value="{{ old('date') }}">
+                                <input type="date" class="form-control" name="date"
+                                    min="{{ Carbon\Carbon::now()->format('Y-m-d') }}" value="{{ old('date') }}">
                             </div>
                             <div class="mb-3">
                                 <label for="time" class="form-label">Preferred Time <b class="text-danger">*</b></label>
-                                <input type="time" class="form-control" name="time" min="{{ date('H:i') }}" value="{{ old('time') }}">
+                                <input type="time" class="form-control" name="time" min="{{ date('H:i') }}"
+                                    value="{{ old('time') }}">
                             </div>
                             <div class="mb-3">
                                 <label for="location" class="form-label">Location <b class="text-danger">*</b></label>
@@ -90,7 +92,21 @@
                                             <td>{{ Carbon\Carbon::parse($meeting->time)->format('h:i A') }}</td>
                                             <td>{{ $meeting->location }}</td>
                                             <td>{{ $meeting->notes }}</td>
-                                            <td>{{ Str::ucfirst($meeting->status) }}</td>
+                                            <td>
+                                                @if ($meeting->status == 'pending')
+                                                    <span
+                                                        class="badge bg-warning text-dark">{{ Str::ucfirst($meeting->status) }}</span>
+                                                @elseif($meeting->status == 'approved')
+                                                    <span
+                                                        class="badge bg-success">{{ Str::ucfirst($meeting->status) }}</span>
+                                                @elseif($meeting->status == 'rejected' || $meeting->status == 'cancelled')
+                                                    <span
+                                                        class="badge bg-danger">{{ Str::ucfirst($meeting->status) }}</span>
+                                                @else
+                                                    <span
+                                                        class="badge bg-secondary">{{ Str::ucfirst($meeting->status) }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 @if ($meeting->status == 'pending')
                                                     <form action="{{ route('trainee.cancel-meeting', $meeting->id) }}"
@@ -108,6 +124,10 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if ($meetings->hasPages())
+                                <br>
+                            @endif
+                            {{ $meetings->links('pagination::bootstrap-5') }}
                         @endif
                     </div>
                 </div>

@@ -406,7 +406,7 @@ class TraineeController extends Controller
     {
         $trainee = auth_trainee();
         $advisors = $trainee->advisors()->distinct()->get();
-        $meetings = $trainee->requested_meetings()->get();
+        $meetings = $trainee->requested_meetings()->paginate(3);
         return view('trainee.request_meeting', compact('advisors', 'meetings'));
     }
 
@@ -415,8 +415,9 @@ class TraineeController extends Controller
         $trainee = auth_trainee();
         $advisor = \App\Models\Advisor::find($request->advisor);
 
-        // Check if the advisor is already in a meeting with the trainee
-        $not_available = Meeting::where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected'])->where(function ($query) use ($request) {
+        // Check if the advisor is already in a meeting with the trainee 
+        // Only the approved meetings are checked
+        $not_available = Meeting::where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected', 'pending'])->where(function ($query) use ($request) {
             $query->where('date', $request->date)->whereBetween('time', [$request->date('time')->subHours(1), $request->date('time')->addHours(1)]);
         })->exists();
         if ($not_available) {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Advisor;
+use App\Models\Meeting;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
@@ -410,7 +412,6 @@ class AdvisorController extends Controller
         }
     }
 
-
     public function trainees_requests()
     {
         return view('advisor.trainees_requests');
@@ -418,6 +419,31 @@ class AdvisorController extends Controller
 
     public function meetings_schedule()
     {
-        return view('advisor.meetings_schedule');
+        // Get all meetings of the advisor
+        $meetings = auth_advisor()->meetings()->paginate(5);
+        return view('advisor.meetings_schedule', compact('meetings'));
+    }
+
+    public function reject_meeting(Meeting $meeting){
+        $meeting->status = 'rejected';
+        // Send notification to the trainee
+        $meeting->trainee->notify(new TraineeNotification(null, auth_advisor(), 'Your meeting request with ' . auth_advisor()->displayName . ' has been rejected!'));
+        // Send email to the trainee
+        $mailable = new AdvisorToTraineeMail(auth_advisor(), $meeting->trainee, '🫤 Your Meeting is rejected', 'Your meeting request with ' . auth_advisor()->displayName . ' at ' . $meeting->date . ' ' . Carbon::parse($meeting->time)->format('h:i A') . ' has been rejected!');
+        $this->sendEmail($meeting->trainee->email, $mailable);
+        $status = $meeting->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Meeting Rejected Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function approve_meeting(Meeting $meeting){
+        $meeting->status = 'approved';
+        // Send notification to the trainee
+        $meeting->trainee->notify(new TraineeNotification(null, auth_advisor(), 'Your meeting request with ' . auth_advisor()->displayName . ' has been approved!'));
+        // Send email to the trainee
+        $message = nl2br('Your meeting request with ' . auth_advisor()->displayName . ' at ' . $meeting->date . ' ' . Carbon::parse($meeting->time)->format('h:i A') . ' has been approved! Please be prepared to be on time at the provided meeting location ' . ($meeting->location ? ' ' . $meeting->location : '') . '.');
+        $mailable = new AdvisorToTraineeMail(auth_advisor(), $meeting->trainee, '😎 Your Meeting is approved', $message);
+        $this->sendEmail($meeting->trainee->email, $mailable);
+        $status = $meeting->save();
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Meeting Approved Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 }

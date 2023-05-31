@@ -64,6 +64,11 @@ class Advisor extends Authenticatable
     }
 
 
+    public function meetings(){
+        return $this->hasMany(Meeting::class, 'advisor_id');
+    }
+
+
     public function received_emails()
     {
         return $this->hasMany(AdvisorTraineeEmail::class, 'advisor_id')->where('sender', 'trainee')->latest();

@@ -27,19 +27,22 @@
                                 <select class="form-control" name="advisor">
                                     <option value="">Select an advisor</option>
                                     <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($advisor->id); ?>" <?php if(old('advisor') == $advisor->id): ?> selected <?php endif; ?>
-                                            
-                                            ><?php echo e($advisor->displayName); ?></option>
+                                        <option value="<?php echo e($advisor->id); ?>"
+                                            <?php if(old('advisor') == $advisor->id): ?> selected <?php endif; ?>><?php echo e($advisor->displayName); ?>
+
+                                        </option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="date" class="form-label">Preferred Date <b class="text-danger">*</b></label>
-                                <input type="date" class="form-control" name="date" min="<?php echo e(Carbon\Carbon::now()->format('Y-m-d')); ?>" value="<?php echo e(old('date')); ?>">
+                                <input type="date" class="form-control" name="date"
+                                    min="<?php echo e(Carbon\Carbon::now()->format('Y-m-d')); ?>" value="<?php echo e(old('date')); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="time" class="form-label">Preferred Time <b class="text-danger">*</b></label>
-                                <input type="time" class="form-control" name="time" min="<?php echo e(date('H:i')); ?>" value="<?php echo e(old('time')); ?>">
+                                <input type="time" class="form-control" name="time" min="<?php echo e(date('H:i')); ?>"
+                                    value="<?php echo e(old('time')); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="location" class="form-label">Location <b class="text-danger">*</b></label>
@@ -88,7 +91,21 @@
                                             <td><?php echo e(Carbon\Carbon::parse($meeting->time)->format('h:i A')); ?></td>
                                             <td><?php echo e($meeting->location); ?></td>
                                             <td><?php echo e($meeting->notes); ?></td>
-                                            <td><?php echo e(Str::ucfirst($meeting->status)); ?></td>
+                                            <td>
+                                                <?php if($meeting->status == 'pending'): ?>
+                                                    <span
+                                                        class="badge bg-warning text-dark"><?php echo e(Str::ucfirst($meeting->status)); ?></span>
+                                                <?php elseif($meeting->status == 'approved'): ?>
+                                                    <span
+                                                        class="badge bg-success"><?php echo e(Str::ucfirst($meeting->status)); ?></span>
+                                                <?php elseif($meeting->status == 'rejected' || $meeting->status == 'cancelled'): ?>
+                                                    <span
+                                                        class="badge bg-danger"><?php echo e(Str::ucfirst($meeting->status)); ?></span>
+                                                <?php else: ?>
+                                                    <span
+                                                        class="badge bg-secondary"><?php echo e(Str::ucfirst($meeting->status)); ?></span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td>
                                                 <?php if($meeting->status == 'pending'): ?>
                                                     <form action="<?php echo e(route('trainee.cancel-meeting', $meeting->id)); ?>"
@@ -106,6 +123,11 @@
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
+                            <?php if($meetings->hasPages()): ?>
+                                <br>
+                            <?php endif; ?>
+                            <?php echo e($meetings->links('pagination::bootstrap-5')); ?>
+
                         <?php endif; ?>
                     </div>
                 </div>

@@ -180,11 +180,6 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-users text-success"></i></div>
                             Sent Emails
                         </a>
-
-                        <a class="nav-link" href="<?php echo e(route('advisor.trainees-requests')); ?>">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-alt text-success"></i></div>
-                            Training Requests
-                        </a>
                         <a class="nav-link" href="<?php echo e(route('advisor.meetings-schedule')); ?>">
                             <div class="sb-nav-link-icon"><i class="fas fa-video text-success"></i></div>
                             Meetings Schedule
