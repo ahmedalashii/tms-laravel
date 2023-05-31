@@ -44,10 +44,6 @@ class ManagerController extends Controller
         $analyticsDataLast30Days = Analytics::fetchVisitorsAndPageViews(Period::days(30));
         $analyticsDataToday = Analytics::fetchVisitorsAndPageViews(Period::days(1));
         $mostVisitedPagesLast30Days = Analytics::fetchMostVisitedPages(Period::days(30));
-        info($mostVisitedPagesLast30Days);
-        info($analyticsDataToday);
-        info($analyticsDataLastSevenDays);
-        info($analyticsDataLast30Days);
         return view('manager.index', compact('training_requests', 'all_training_requests', 'analyticsDataLastSevenDays', 'analyticsDataLast30Days', 'analyticsDataToday' , 'trainees_count', 'advisors_count', 'training_programs_count', 'disciplines_count', 'mostVisitedPagesLast30Days'));
     }
 

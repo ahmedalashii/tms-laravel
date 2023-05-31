@@ -13,9 +13,15 @@
                 <canvas id="appStatisticsChart" width="100%" height="30%"></canvas>
             </div>
             <hr>
-            <div class="container">
-                <canvas id="analyticsChart" width="100%" height="30%"></canvas>
-            </div>
+            <?php if(
+                $analyticsDataLastSevenDays->isNotEmpty() ||
+                    $analyticsDataLast30Days->isNotEmpty() ||
+                    $analyticsDataToday->isNotEmpty() ||
+                    $mostVisitedPagesLast30Days->isNotEmpty()): ?>
+                <div class="container">
+                    <canvas id="analyticsChart" width="100%" height="30%"></canvas>
+                </div>
+            <?php endif; ?>
             <section class="mt-3 mb-3">
                 <div class="card mb-4">
                     <div class="card-header">
