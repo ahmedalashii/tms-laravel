@@ -9,7 +9,13 @@
 
                     😎</span>
             </h1>
-
+            <div class="container">
+                <canvas id="appStatisticsChart" width="100%" height="30%"></canvas>
+            </div>
+            <hr>
+            <div class="container">
+                <canvas id="analyticsChart" width="100%" height="30%"></canvas>
+            </div>
             <section class="mt-3 mb-3">
                 <div class="card mb-4">
                     <div class="card-header">
@@ -177,6 +183,100 @@
             </div>
         </div>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B1XS1PP0R6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-B1XS1PP0R6');
+    </script>
+    <?php
+        $training_requests_count = $all_training_requests->count();
+        $training_requests_approved_count = $all_training_requests->where('status', 'approved')->count();
+        $training_requests_rejected_count = $all_training_requests->where('status', 'rejected')->count();
+    ?>
+    <script>
+        var appStatisticsCtx = document.getElementById('appStatisticsChart').getContext('2d');
+        var appStatisticsChart = new Chart(appStatisticsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Training Requests', 'Approved Training Requests',
+                    'Rejected Training Requests', 'Total Trainees', 'Total Training Programs',
+                    'Total Disciplines',
+                ],
+                datasets: [{
+                    label: 'Training Staff',
+                    data: [<?php echo e($training_requests_count); ?>, <?php echo e($training_requests_approved_count); ?>,
+                        <?php echo e($training_requests_rejected_count); ?>, <?php echo e($trainees_count); ?>,
+                        <?php echo e($training_programs_count); ?>,
+                        <?php echo e($disciplines_count); ?>,
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }, ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+        var analyticsChart = new Chart(analyticsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Analytics Data Last Seven Days', 'Analytics Data Last 30 Days',
+                    'Analytics Data Today', 'Most Visited Pages Last 30 Days',
+                ],
+                datasets: [{
+                    label: 'Analytics Data',
+                    data: [
+                        <?php echo e($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['visitors'] : 0); ?>,
+                        <?php echo e($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['visitors'] : 0); ?>,
+                        <?php echo e($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['visitors'] : 0); ?>,
+                        <?php echo e($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0); ?>,
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }, ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/index.blade.php ENDPATH**/ ?>

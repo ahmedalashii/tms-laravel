@@ -8,11 +8,12 @@ use App\Models\Manager;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
+use Spatie\Analytics\Period;
 use App\Models\TrainingProgram;
 use Illuminate\Validation\Rule;
+use Spatie\Analytics\Facades\Analytics;
 use App\Mail\EmailVerificationMail;
 use App\Mail\ManagerActivationMail;
-use App\Models\TrainingProgramTask;
 use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
@@ -33,7 +34,21 @@ class ManagerController extends Controller
     public function index()
     {
         $training_requests = TrainingProgramUser::where('status', 'pending')->orderBy('created_at', 'desc')->take(5)->get();
-        return view('manager.index', compact('training_requests'));
+        $trainees_count = Trainee::count();
+        $advisors_count = Advisor::count();
+        $all_training_requests = TrainingProgramUser::all();
+        $training_programs_count = TrainingProgram::count();
+        $disciplines_count = Discipline::count();
+        //retrieve visitors and page view data for the current day and the last seven days
+        $analyticsDataLastSevenDays = Analytics::fetchVisitorsAndPageViews(Period::days(7));
+        $analyticsDataLast30Days = Analytics::fetchVisitorsAndPageViews(Period::days(30));
+        $analyticsDataToday = Analytics::fetchVisitorsAndPageViews(Period::days(1));
+        $mostVisitedPagesLast30Days = Analytics::fetchMostVisitedPages(Period::days(30));
+        info($mostVisitedPagesLast30Days);
+        info($analyticsDataToday);
+        info($analyticsDataLastSevenDays);
+        info($analyticsDataLast30Days);
+        return view('manager.index', compact('training_requests', 'all_training_requests', 'analyticsDataLastSevenDays', 'analyticsDataLast30Days', 'analyticsDataToday' , 'trainees_count', 'advisors_count', 'training_programs_count', 'disciplines_count', 'mostVisitedPagesLast30Days'));
     }
 
     public function training_requests()
@@ -491,9 +506,6 @@ class ManagerController extends Controller
         })->paginate($paginate);
         return view('manager.authorize_advisors', compact('advisors'));
     }
-
-
-
 
     public function trainees(Request $request)
     {

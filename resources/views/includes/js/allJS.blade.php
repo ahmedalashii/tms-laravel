@@ -27,3 +27,29 @@
         });
     @endif
 </script>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyClhGqWIu1LK9wqSF20MIwhlcAo0mmPdLs",
+      authDomain: "laraveltms-b022f.firebaseapp.com",
+      databaseURL: "https://laraveltms-b022f-default-rtdb.firebaseio.com",
+      projectId: "laraveltms-b022f",
+      storageBucket: "laraveltms-b022f.appspot.com",
+      messagingSenderId: "535725536461",
+      appId: "1:535725536461:web:e876f3f0aaec6af738e584",
+      measurementId: "G-B1XS1PP0R6"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    console.log("app", app);
+    console.log("analytics", analytics);
+</script>
