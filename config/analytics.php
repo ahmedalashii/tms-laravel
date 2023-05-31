@@ -18,7 +18,7 @@ return [
      * If you set this to zero, the responses won't be cached at all.
      */
     'cache_lifetime_in_minutes' => 60 * 24,
-
+    
     /*
      * Here you may configure the "store" that the underlying Google_Client will
      * use to store it's data.  You may also add extra parameters that will

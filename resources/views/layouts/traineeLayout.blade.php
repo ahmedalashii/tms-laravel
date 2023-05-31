@@ -209,6 +209,7 @@
         </div>
     </div>
     </div>
+  
     @include('includes.js.allJS')
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

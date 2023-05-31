@@ -32,8 +32,8 @@ return [
     ],
 
     'stripe' => [
-        'key'   => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET'),
+        'key'   => env('STRIPE_KEY') ?? "pk_test_51NAzMEI32GpgQPmomiUzy5KhsEEGUsfujjI7giLWutr3kRFo8AnZujSeyKFLuob7cyeqcC2QzbaBBRHvUnLMRo7V00p1HzYncj",
+        'secret' => env('STRIPE_SECRET') ?? "sk_test_51NAzMEI32GpgQPmoTZIi2aZTcdmmLgysecbwdtPbCNIP1Qs1FJY87ABr6vAMpX5thjRWmOpUGH80TFBYCp1xLyo2003a5dIlva",
     ],
 
     'firebase' => [

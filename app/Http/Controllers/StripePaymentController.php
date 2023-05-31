@@ -25,7 +25,6 @@ class StripePaymentController extends Controller
         $this->stripe = Stripe::setApiKey(env('STRIPE_SECRET'));
     }
 
-
     public function paymentStripe($id, Request $request)
     {
         $trainingProgram = TrainingProgram::findOrFail($id);

@@ -9,7 +9,7 @@
     <meta name="author" content="" />
     <title>TrainMaster - Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script> --}}
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
@@ -238,7 +238,7 @@
             let closeTimeOutId = null;
 
             const updateNotificationsCount = (count) => {
-             
+
                 if (count > 0) {
                     notifications_count.innerText = count > 99 ? "+99" : count;
                     notifications_count.classList.remove("d-none")

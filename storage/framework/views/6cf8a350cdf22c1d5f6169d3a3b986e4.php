@@ -211,6 +211,7 @@
         </div>
     </div>
     </div>
+  
     <?php echo $__env->make('includes.js.allJS', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
