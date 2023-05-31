@@ -417,8 +417,9 @@ class TraineeController extends Controller
 
         // Check if the advisor is already in a meeting with the trainee 
         // Only the approved meetings are checked
-        $not_available = Meeting::where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected', 'pending'])->where(function ($query) use ($request) {
-            $query->where('date', $request->date)->whereBetween('time', [$request->date('time')->subHours(1), $request->date('time')->addHours(1)]);
+        $not_available = Meeting::where('advisor_id', $advisor->id)->where('status', 'approved')->where(function ($query) use ($request) {
+            $time = $request->date . ' ' . $request->time;
+            $query->where('date', $request->date)->whereBetween('time', [date('H:i', strtotime($time . ' -60 minutes')), date('H:i', strtotime($time . ' +60 minutes'))]);
         })->exists();
         if ($not_available) {
             return redirect()->back()->with(['fail' => 'You are not allowed to schedule a meeting with this advisor at this time since he is already in a meeting! Try another time!', 'type' => 'error']);

@@ -25,7 +25,6 @@ class Meeting extends Model
         return $this->belongsTo(Advisor::class);
     }
 
-
     public function trainee()
     {
         return $this->belongsTo(Trainee::class);
