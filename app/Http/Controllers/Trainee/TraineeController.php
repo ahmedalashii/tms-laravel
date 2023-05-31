@@ -416,7 +416,7 @@ class TraineeController extends Controller
         $advisor = \App\Models\Advisor::find($request->advisor);
 
         // Check if the advisor is already in a meeting with the trainee
-        $not_available = $trainee->requested_meetings()->where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected'])->where(function ($query) use ($request) {
+        $not_available = Meeting::where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected'])->where(function ($query) use ($request) {
             $query->where('date', $request->date)->whereBetween('time', [$request->date('time')->subHours(1), $request->date('time')->addHours(1)]);
         })->exists();
         if ($not_available) {
@@ -436,7 +436,7 @@ class TraineeController extends Controller
         $mailable = new \App\Mail\AdvisorMeetingRequestMail($trainee, $advisor, $meeting);
         $this->sendEmail($advisor->email, $mailable);
         // Notify the advisor
-        $advisor->notify(new AdvisorNotification(null, $trainee, 'A trainee has requested a meeting with you!'));
+        $advisor->notify(new AdvisorNotification(null, $trainee, $trainee->displayName . ' has requested a meeting with you! Check your received emails!'));
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been scheduled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 

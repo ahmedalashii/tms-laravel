@@ -29,11 +29,17 @@ class ScheduleMeetingRequest extends FormRequest
            A Trainee can also request for a meeting with his advisor. In requesting a 
             meeting, the application must resolve any conflicts (e. g., If two trainees 
             requesting a meeting with the same advisor at the same time).
-        */  
+        */
         return [
-            'advisor' => 'required|exists:advisors,id', 
+            'advisor' => 'required|exists:advisors,id',
             'date' => 'required|date|after_or_equal:today',
-            'time' => 'required|date_format:H:i|after_or_equal:' . Carbon::now()->addHours(2)->format('H:i'),
+            'time' => [
+                'required',
+                'date_format:H:i',
+                Rule::when($request->date === date('Y-m-d'), function ($request) {
+                    return 'after_or_equal:' . Carbon::now()->addHours(2)->format('H:i');
+                }),
+            ],
             'notes' => 'nullable|string|max:255',
         ];
     }
