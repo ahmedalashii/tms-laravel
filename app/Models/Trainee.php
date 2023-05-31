@@ -43,6 +43,9 @@ class Trainee extends Authenticatable
         return $this->localId;
     }
 
+    public function requested_meetings(){
+        return $this->hasMany(Meeting::class, 'trainee_id');
+    }
 
     public function files()
     {

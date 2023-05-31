@@ -27,21 +27,23 @@
                                 <select class="form-control" name="advisor">
                                     <option value="">Select an advisor</option>
                                     <?php $__currentLoopData = $advisors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $advisor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($advisor->id); ?>"><?php echo e($advisor->displayName); ?></option>
+                                        <option value="<?php echo e($advisor->id); ?>" <?php if(old('advisor') == $advisor->id): ?> selected <?php endif; ?>
+                                            
+                                            ><?php echo e($advisor->displayName); ?></option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="date" class="form-label">Preferred Date <b class="text-danger">*</b></label>
-                                <input type="date" class="form-control" name="date">
+                                <input type="date" class="form-control" name="date" min="<?php echo e(Carbon\Carbon::now()->format('Y-m-d')); ?>" value="<?php echo e(old('date')); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="time" class="form-label">Preferred Time <b class="text-danger">*</b></label>
-                                <input type="time" class="form-control" name="time">
+                                <input type="time" class="form-control" name="time" min="<?php echo e(date('H:i')); ?>" value="<?php echo e(old('time')); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="location" class="form-label">Location <b class="text-danger">*</b></label>
-                                <input type="text" class="form-control" name="location">
+                                <input type="text" class="form-control" name="location" value="<?php echo e(old('location')); ?>">
                             </div>
 
                             <div class="mb-3">
@@ -50,6 +52,61 @@
                             </div>
                             <button type="submit" class="btn btn-success">Request meeting</button>
                         </form>
+                    </div>
+                </div>
+            </section>
+
+            
+
+            <section class="mt-3 mb-3">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-clock me-1"></i>
+                        All Requested Meetings
+                    </div>
+                    <div class="card-body">
+                        <?php if($meetings->isEmpty()): ?>
+                            <div class="alert alert-danger"><b style="color: black;">Note: </b> No meetings found.</div>
+                        <?php else: ?>
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Advisor</th>
+                                        <th>Preferred Date</th>
+                                        <th>Preferred Time</th>
+                                        <th>Location</th>
+                                        <th>Notes</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $__currentLoopData = $meetings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $meeting): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                            <td><?php echo e($meeting->advisor->displayName); ?></td>
+                                            <td><?php echo e($meeting->date); ?></td>
+                                            <td><?php echo e(Carbon\Carbon::parse($meeting->time)->format('h:i A')); ?></td>
+                                            <td><?php echo e($meeting->location); ?></td>
+                                            <td><?php echo e($meeting->notes); ?></td>
+                                            <td><?php echo e(Str::ucfirst($meeting->status)); ?></td>
+                                            <td>
+                                                <?php if($meeting->status == 'pending'): ?>
+                                                    <form action="<?php echo e(route('trainee.cancel-meeting', $meeting->id)); ?>"
+                                                        method="POST">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button type="submit" class="btn btn-sm btn-danger">Cancel
+                                                            Meeting</button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <button class="btn btn-sm btn-secondary" disabled>Cancel
+                                                        Meeting</button>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
                     </div>
                 </div>
             </section>

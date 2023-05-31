@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Trainee;
 
 use App\Models\Advisor;
+use App\Models\Meeting;
 use App\Models\Trainee;
 use App\Models\Discipline;
 use Illuminate\Http\Request;
 use App\Models\TrainingProgram;
 use App\Mail\TraineeToAdvisorMail;
 use App\Models\AdvisorTraineeEmail;
+use App\Models\TrainingProgramTask;
 use App\Models\TrainingProgramUser;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\EmailProcessing;
@@ -18,7 +20,6 @@ use App\Notifications\ManagerNotification;
 use App\Http\Requests\ScheduleMeetingRequest;
 use App\Http\Traits\FirebaseStorageFileProcessing;
 use App\Mail\TraineeTrainingProgramEnrollmentMail;
-use App\Models\TrainingProgramTask;
 
 class TraineeController extends Controller
 {
@@ -77,11 +78,10 @@ class TraineeController extends Controller
         $file = $request->file('file');
         $task_id = $training_program->id . '_' . $request->task_id;
         $trainee_id = $trainee->displayName . '_' . $trainee->id;
-        $file_name =  $training_program->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $task = TrainingProgramTask::find($request->task_id);
+        $file_name = $task->name . '_' . $trainee->displayName . '_' . time() . '.' . $file->getClientOriginalExtension();
         $file_path = 'TrainingPrograms/' . $training_program->name . '/Tasks/' . 'Task_' . $task_id . '/Submissions/' . $trainee_id . '/' . $file_name;
         $this->uploadFirebaseStorageFile($file, $file_path);
-
-        $task = TrainingProgramTask::find($request->task_id);
 
         $file_db = new \App\Models\File;
         $file_db->name = $file_name;
@@ -406,19 +406,30 @@ class TraineeController extends Controller
     {
         $trainee = auth_trainee();
         $advisors = $trainee->advisors()->distinct()->get();
-        return view('trainee.request_meeting', compact('advisors'));
+        $meetings = $trainee->requested_meetings()->get();
+        return view('trainee.request_meeting', compact('advisors', 'meetings'));
     }
 
     public function schedule_meeting(ScheduleMeetingRequest $request)
     {
         $trainee = auth_trainee();
         $advisor = \App\Models\Advisor::find($request->advisor);
+
+        // Check if the advisor is already in a meeting with the trainee
+        $not_available = $trainee->requested_meetings()->where('advisor_id', $advisor->id)->whereNotIn('status', ['cancelled', 'rejected'])->where(function ($query) use ($request) {
+            $query->where('date', $request->date)->whereBetween('time', [$request->date('time')->subHours(1), $request->date('time')->addHours(1)]);
+        })->exists();
+        if ($not_available) {
+            return redirect()->back()->with(['fail' => 'You are not allowed to schedule a meeting with this advisor at this time since he is already in a meeting! Try another time!', 'type' => 'error']);
+        }
+
         $meeting = new \App\Models\Meeting;
         $meeting->trainee_id = $trainee->id;
         $meeting->advisor_id = $advisor->id;
         $meeting->date = $request->date;
         $meeting->time = $request->time;
         $meeting->location = $request->location;
+        $meeting->status = 'pending';
         $meeting->notes = $request->notes;
         $status = $meeting->save();
         // Send an email to the advisor
@@ -427,6 +438,19 @@ class TraineeController extends Controller
         // Notify the advisor
         $advisor->notify(new AdvisorNotification(null, $trainee, 'A trainee has requested a meeting with you!'));
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been scheduled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
+    }
+
+    public function cancel_meeting(Meeting $meeting)
+    {
+        $trainee = auth_trainee();
+        $advisor = $meeting->advisor;
+        $status = $meeting->update(['status' => 'cancelled']);
+        // Send an email to the advisor
+        $mailable = new TraineeToAdvisorMail($advisor, $trainee, "Meeting Cancellation", "I'm sorry, I have to cancel our meeting on $meeting->date at $meeting->time");
+        $this->sendEmail($advisor->email, $mailable);
+        // Notify the advisor
+        $advisor->notify(new AdvisorNotification(null, $trainee, 'A trainee has canceled a meeting with you! Check your received emails!'));
+        return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Your meeting has been canceled successfully!' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
     public function edit()

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('time');
             $table->string('location');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

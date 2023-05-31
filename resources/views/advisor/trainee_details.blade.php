@@ -57,8 +57,7 @@
                                 <ol class="list-group list-group-flush"
                                     style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
                                     @foreach ($trainee->files as $file)
-                                        <li class="list-group-item list-decimal"
-                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
+                                        <li class="list-group-item list-decimal">
                                             <a href="{{ $file->url }}" target="_blank">{{ $file->description }}</a>
                                         </li>
                                     @endforeach
@@ -96,9 +95,38 @@
                                 <ol class="list-group list-group-flush"
                                     style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
                                     @foreach ($enrolledPrograms as $enrolledProgram)
-                                        <li class="list-group-item list-decimal"
-                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
-                                           {{ $enrolledProgram->name }}
+                                        <li class="list-group-item list-decimal">
+                                            {{ $enrolledProgram->name }}
+                                            @php
+                                                $submittedTasks = $enrolledProgram->tasks->load([
+                                                    'files' => function ($query) use ($trainee) {
+                                                        $query->where('trainee_id', $trainee->id);
+                                                    },
+                                                ]);
+                                                // only the submitted tasks related to this trainee
+                                                $submittedTasks = $submittedTasks->filter(function ($task) {
+                                                    return $task->files->isNotEmpty();
+                                                });
+                                            @endphp
+                                            @if ($submittedTasks->isNotEmpty())
+                                                <br>
+                                                <strong>Submitted Tasks Files:</strong>
+                                                <ul>
+                                                    @foreach ($submittedTasks as $submittedTask)
+                                                        <li>
+                                                            <span class="text-success">{{ $submittedTask->name }}</span>
+                                                            <ul>
+                                                                @foreach ($submittedTask->files as $file)
+                                                                    <li>
+                                                                        <a href="{{ $file->url }}"
+                                                                            target="_blank">{{ $file->name }}</a>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
                                         </li>
                                     @endforeach
                                 </ol>

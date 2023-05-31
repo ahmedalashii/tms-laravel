@@ -41,7 +41,6 @@ class TrainingProgram extends Model
         return $this->belongsTo(Advisor::class)->withTrashed();
     }
 
-
     public function tasks()
     {
         return $this->hasMany(TrainingProgramTask::class, 'training_program_id');

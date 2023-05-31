@@ -64,6 +64,7 @@ Route::group(['prefix' => 'trainee/', 'as' => 'trainee.'], function () {
         Route::get('/training-attendance', [TraineeController::class, 'training_attendance'])->name('training-attendance');
         Route::get('/request-meeting', [TraineeController::class, 'request_meeting'])->name('request-meeting');
         Route::post('/schedule-meeting', [TraineeController::class, 'schedule_meeting'])->name('schedule-meeting');
+        Route::post('/cancel-meeting/{meeting}', [TraineeController::class, 'cancel_meeting'])->name('cancel-meeting');
         Route::get('/send_email_form/{advisor?}/{subject?}', [TraineeController::class, 'send_email_form'])->name('send-email-form');
         Route::post('/send_email', [TraineeController::class, 'send_email'])->name('send-email');
         Route::get('/received-emails', [TraineeController::class, 'received_emails'])->name('received-emails');

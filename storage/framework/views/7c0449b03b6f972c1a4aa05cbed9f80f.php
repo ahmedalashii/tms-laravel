@@ -57,8 +57,7 @@
                                 <ol class="list-group list-group-flush"
                                     style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
                                     <?php $__currentLoopData = $trainee->files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <li class="list-group-item list-decimal"
-                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
+                                        <li class="list-group-item list-decimal">
                                             <a href="<?php echo e($file->url); ?>" target="_blank"><?php echo e($file->description); ?></a>
                                         </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -96,10 +95,39 @@
                                 <ol class="list-group list-group-flush"
                                     style="max-height: 200px; overflow-y: scroll; overflow-x: hidden;">
                                     <?php $__currentLoopData = $enrolledPrograms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $enrolledProgram): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <li class="list-group-item list-decimal"
-                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; !important; ">
-                                           <?php echo e($enrolledProgram->name); ?>
+                                        <li class="list-group-item list-decimal">
+                                            <?php echo e($enrolledProgram->name); ?>
 
+                                            <?php
+                                                $submittedTasks = $enrolledProgram->tasks->load([
+                                                    'files' => function ($query) use ($trainee) {
+                                                        $query->where('trainee_id', $trainee->id);
+                                                    },
+                                                ]);
+                                                // only the submitted tasks related to this trainee
+                                                $submittedTasks = $submittedTasks->filter(function ($task) {
+                                                    return $task->files->isNotEmpty();
+                                                });
+                                            ?>
+                                            <?php if($submittedTasks->isNotEmpty()): ?>
+                                                <br>
+                                                <strong>Submitted Tasks Files:</strong>
+                                                <ul>
+                                                    <?php $__currentLoopData = $submittedTasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submittedTask): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <li>
+                                                            <span class="text-success"><?php echo e($submittedTask->name); ?></span>
+                                                            <ul>
+                                                                <?php $__currentLoopData = $submittedTask->files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                    <li>
+                                                                        <a href="<?php echo e($file->url); ?>"
+                                                                            target="_blank"><?php echo e($file->name); ?></a>
+                                                                    </li>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                            </ul>
+                                                        </li>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </ul>
+                                            <?php endif; ?>
                                         </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ol>

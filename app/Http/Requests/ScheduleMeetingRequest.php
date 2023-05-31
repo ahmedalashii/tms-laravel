@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Carbon\Carbon;
+use App\Models\Meeting;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,23 +29,11 @@ class ScheduleMeetingRequest extends FormRequest
            A Trainee can also request for a meeting with his advisor. In requesting a 
             meeting, the application must resolve any conflicts (e. g., If two trainees 
             requesting a meeting with the same advisor at the same time).
-        */
+        */  
         return [
-            'advisor' => 'required|exists:advisors,id',
-            'date' => 'required|date|after_or_equal:today|not_in:' . $request->advisor . ',' . $request->time,
-            'time' => [
-                'required',
-                'date_format:H:i',
-                Rule::when($request->date === date('Y-m-d'), function ($request) {
-                    // The time chosen must be after 2 hours from now >> it's 2 hours from now but there's one hour difference between the server and the client
-                    if (!Carbon::parse($request->time)->isAfter(Carbon::now()->addHours(3))) {
-                        $valid_time = Carbon::now()->addHours(5)->format('H:i A');
-                        return 'after:' . $valid_time;
-                    }
-                }),
-                'not_in:' . $request->advisor . ',' . $request->date,
-            ],
-            'location' => 'required|string|max:255',
+            'advisor' => 'required|exists:advisors,id', 
+            'date' => 'required|date|after_or_equal:today',
+            'time' => 'required|date_format:H:i|after_or_equal:' . Carbon::now()->addHours(2)->format('H:i'),
             'notes' => 'nullable|string|max:255',
         ];
     }
@@ -63,8 +52,7 @@ class ScheduleMeetingRequest extends FormRequest
             'date.not_in' => 'Date is not available for this advisor at this time',
             'time.required' => 'Time is required',
             'time.date_format' => 'Time must be a valid time',
-            'time.after' => 'Time must be after 2 hours from now',
-            'time.not_in' => 'Time is not available for this advisor at this date',
+            'time.after_or_equal' => 'Time must be after 2 hours from now',
             'location.required' => 'Location is required',
             'location.string' => 'Location must be a string',
             'location.max' => 'Location must not be greater than 255 characters',

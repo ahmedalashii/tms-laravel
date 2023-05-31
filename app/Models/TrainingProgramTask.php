@@ -35,12 +35,18 @@ class TrainingProgramTask extends Model
     public function files()
     {
         // This relation includes all files of the training program >> submissons and task files
-        return $this->hasMany(File::class, 'task_id')->where('training_program_id', $this->training_program_id);
+        return $this->hasMany(File::class, 'task_id');
     }
 
     public function getSubmittedFileUrlAttribute()
     {
         return $this->files()->where('trainee_id', auth_trainee()->id)->first()->url ?? null;
+    }
+
+
+    public function getTraineeSubmittedFileUrl($trainee_id)
+    {
+        return $this->files()->where('trainee_id', $trainee_id)->first()->url ?? null;
     }
 
     public function file()
