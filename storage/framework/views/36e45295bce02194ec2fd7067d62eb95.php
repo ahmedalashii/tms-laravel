@@ -246,42 +246,54 @@
                 }
             }
         });
-        var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
-        var analyticsChart = new Chart(analyticsCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Analytics Data Last Seven Days', 'Analytics Data Last 30 Days',
-                    'Analytics Data Today', 'Most Visited Pages Last 30 Days',
-                ],
-                datasets: [{
-                    label: 'Analytics Data',
-                    data: [
-                        <?php echo e($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['visitors'] : 0); ?>,
-                        <?php echo e($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['visitors'] : 0); ?>,
-                        <?php echo e($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['visitors'] : 0); ?>,
-                        <?php echo e($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0); ?>,
+
+        var isAnalyticsDataAvailable = <?php echo json_encode(
+            $analyticsDataLastSevenDays->isNotEmpty() ||
+            $analyticsDataLast30Days->isNotEmpty() ||
+            $analyticsDataToday->isNotEmpty() ||
+            $mostVisitedPagesLast30Days->isNotEmpty()
+                ? true
+                : false, 15, 512) ?>;
+
+        if (isAnalyticsDataAvailable) {
+            var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+            var analyticsChart = new Chart(analyticsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Analytics Data Last Seven Days', 'Analytics Data Last 30 Days',
+                        'Analytics Data Today', 'Most Visited Pages Last 30 Days',
                     ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
-                }, ],
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+                    datasets: [{
+                        label: 'Analytics Data',
+                        data: [
+                            <?php echo e($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['visitors'] : 0); ?>,
+                            <?php echo e($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['visitors'] : 0); ?>,
+                            <?php echo e($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['visitors'] : 0); ?>,
+                            <?php echo e($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0); ?>,
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }, ],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
+
+        }
     </script>
 <?php $__env->stopSection(); ?>
 

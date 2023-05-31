@@ -23,8 +23,11 @@ class AdvisorController extends Controller
 
     public function index()
     {
+        $my_trainees_count = auth_advisor()->trainees()->count();
+        $my_assigned_training_programs_count = auth_advisor()->assigned_training_programs()->count();
+        $my_tasks_count = auth_advisor()->assigned_training_programs()->withCount('tasks')->get()->sum('tasks_count');
         $recent_enrollments = auth_advisor()->recent_enrollments()->take(5)->get();
-        return view('advisor.index', compact('recent_enrollments'));
+        return view('advisor.index', compact('recent_enrollments' ,'my_trainees_count', 'my_assigned_training_programs_count', 'my_tasks_count'));
     }
 
     public function edit()
