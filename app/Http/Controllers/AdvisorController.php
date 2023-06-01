@@ -27,7 +27,7 @@ class AdvisorController extends Controller
         $my_assigned_training_programs_count = auth_advisor()->assigned_training_programs()->count();
         $my_tasks_count = auth_advisor()->assigned_training_programs()->withCount('tasks')->get()->sum('tasks_count');
         $recent_enrollments = auth_advisor()->recent_enrollments()->take(5)->get();
-        return view('advisor.index', compact('recent_enrollments' ,'my_trainees_count', 'my_assigned_training_programs_count', 'my_tasks_count'));
+        return view('advisor.index', compact('recent_enrollments', 'my_trainees_count', 'my_assigned_training_programs_count', 'my_tasks_count'));
     }
 
     public function edit()
@@ -45,18 +45,18 @@ class AdvisorController extends Controller
     }
 
 
-    public function send_email_form(?Trainee $trainee = null)
+    public function send_email_form(?Trainee $trainee = null, ?string $subject = null)
     {
         $advisor = auth_advisor();
         if (!$trainee) {
             $trainees = $advisor->trainees()->get();
-            return view('advisor.send_email', compact('trainees'));
+            return view('advisor.send_email', compact('trainees', 'subject'));
         }
         $trainee = $advisor->trainees()->where('trainee_id', $trainee->id)->first();
         if (!$trainee) {
             return redirect()->back()->with(['fail' => 'You are not allowed to access this trainee!', 'type' => 'error']);
         }
-        return view('advisor.send_email', compact('trainee'));
+        return view('advisor.send_email', compact('trainee', 'subject'));
     }
 
     public function send_email(Request $request)
@@ -427,7 +427,8 @@ class AdvisorController extends Controller
         return view('advisor.meetings_schedule', compact('meetings'));
     }
 
-    public function reject_meeting(Meeting $meeting){
+    public function reject_meeting(Meeting $meeting)
+    {
         $meeting->status = 'rejected';
         // Send notification to the trainee
         $meeting->trainee->notify(new TraineeNotification(null, auth_advisor(), 'Your meeting request with ' . auth_advisor()->displayName . ' has been rejected!'));
@@ -438,7 +439,8 @@ class AdvisorController extends Controller
         return redirect()->back()->with([$status ? 'success' : 'fail' => $status ? 'Meeting Rejected Successfully' : 'Something is wrong!', 'type' => $status ? 'success' : 'error']);
     }
 
-    public function approve_meeting(Meeting $meeting){
+    public function approve_meeting(Meeting $meeting)
+    {
         $meeting->status = 'approved';
         // Send notification to the trainee
         $meeting->trainee->notify(new TraineeNotification(null, auth_advisor(), 'Your meeting request with ' . auth_advisor()->displayName . ' has been approved!'));

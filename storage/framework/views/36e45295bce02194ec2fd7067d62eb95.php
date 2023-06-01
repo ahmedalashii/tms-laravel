@@ -1,28 +1,27 @@
-@extends('layouts.managerLayout')
-
-@section('MainContent')
+<?php $__env->startSection('MainContent'); ?>
     <main>
-        @php
+        <?php
             $manager = Auth::guard('manager')->user();
             $manager_db = \App\Models\Manager::where('firebase_uid', $manager->localId)->first();
-        @endphp
+        ?>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">We're excited to have you on board, <span class="text-success">{{ $manager->displayName }}
+            <h1 class="mt-4">We're excited to have you on board, <span class="text-success"><?php echo e($manager->displayName); ?>
+
                     😎</span>
             </h1>
             <div class="container">
                 <canvas id="appStatisticsChart" width="100%" height="30%"></canvas>
             </div>
             <hr>
-            @if (
+            <?php if(
                 $analyticsDataLastSevenDays->isNotEmpty() ||
                     $analyticsDataLast30Days->isNotEmpty() ||
                     $analyticsDataToday->isNotEmpty() ||
-                    $mostVisitedPagesLast30Days->isNotEmpty())
+                    $mostVisitedPagesLast30Days->isNotEmpty()): ?>
                 <div class="container">
                     <canvas id="analyticsChart" width="100%" height="30%"></canvas>
                 </div>
-            @endif
+            <?php endif; ?>
             <section class="mt-3 mb-3">
                 <div class="card mb-4">
                     <div class="card-header">
@@ -44,39 +43,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($training_requests->isNotEmpty())
-                                    @foreach ($training_requests as $training_request)
+                                <?php if($training_requests->isNotEmpty()): ?>
+                                    <?php $__currentLoopData = $training_requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $training_request): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <tr>
                                             <td>
-                                                <img src="{{ $training_request->trainee->avatar }}"
+                                                <img src="<?php echo e($training_request->trainee->avatar); ?>"
                                                     class="rounded-circle me-1" width="37px" height="40px"
-                                                    alt="{{ $training_request->trainee->displayName }}'s avatar" />
-                                                {{ $training_request->trainee->displayName }}
+                                                    alt="<?php echo e($training_request->trainee->displayName); ?>'s avatar" />
+                                                <?php echo e($training_request->trainee->displayName); ?>
+
                                             </td>
-                                            <td>{{ $training_request->trainee->email }}</td>
-                                            <td>{{ $training_request->trainingProgram->name }}</td>
+                                            <td><?php echo e($training_request->trainee->email); ?></td>
+                                            <td><?php echo e($training_request->trainingProgram->name); ?></td>
                                             <td>
-                                                @if ($training_request->trainingProgram->fees)
-                                                    ${{ $training_request->trainingProgram->fees }}
-                                                @else
+                                                <?php if($training_request->trainingProgram->fees): ?>
+                                                    $<?php echo e($training_request->trainingProgram->fees); ?>
+
+                                                <?php else: ?>
                                                     <span class="badge bg-success">Free</span>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                @if ($training_request->fees_paid)
+                                                <?php if($training_request->fees_paid): ?>
                                                     <span class="badge bg-success">Yes: <b
-                                                            style="color: white; font-weight: 500">${{ $training_request->fees_paid }}</b></span>
-                                                @else
+                                                            style="color: white; font-weight: 500">$<?php echo e($training_request->fees_paid); ?></b></span>
+                                                <?php else: ?>
                                                     <span class="badge bg-danger">No</span>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
-                                            <td>{{ $training_request->trainingProgram->start_date }}</td>
-                                            <td>{{ $training_request->trainingProgram->end_date }}</td>
+                                            <td><?php echo e($training_request->trainingProgram->start_date); ?></td>
+                                            <td><?php echo e($training_request->trainingProgram->end_date); ?></td>
                                             <td>
                                                 <form
-                                                    action="{{ route('manager.approve-training-request', $training_request->id) }}"
+                                                    action="<?php echo e(route('manager.approve-training-request', $training_request->id)); ?>"
                                                     method="POST">
-                                                    @csrf
+                                                    <?php echo csrf_field(); ?>
                                                     <button class="btn btn-success rounded-full btn-hover" type="submit"
                                                         style="width: 100px; padding: 11px;">
                                                         Approve
@@ -84,9 +85,9 @@
                                                 </form>
                                                 <br>
                                                 <form
-                                                    action="{{ route('manager.reject-training-request', $training_request->id) }}"
+                                                    action="<?php echo e(route('manager.reject-training-request', $training_request->id)); ?>"
                                                     method="POST">
-                                                    @csrf
+                                                    <?php echo csrf_field(); ?>
                                                     <button class="btn btn-danger rounded-full btn-hover" type="submit"
                                                         style="width: 100px; padding: 11px;">
                                                         Reject
@@ -94,12 +95,12 @@
                                                 </form>
                                             </td>
                                         </tr>
-                                    @endforeach
-                                @else
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
                                     <tr>
                                         <td colspan="8" class="text-center">No training requests found.</td>
                                     </tr>
-                                @endif
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -111,7 +112,7 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Training Requests</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.training-requests') }}">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.training-requests')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
@@ -122,7 +123,7 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Disciplines</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.disciplines') }}">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.disciplines')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
@@ -132,7 +133,7 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Training Programs</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.training-programs') }}">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.training-programs')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
@@ -143,7 +144,7 @@
                         <div class="card-body">Authorize Trainees</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link"
-                                href="{{ route('manager.authorize-trainees') }}">View
+                                href="<?php echo e(route('manager.authorize-trainees')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
@@ -151,40 +152,40 @@
                 </div>
             </div>
             <div class="row">
-                <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
+                <div class="<?php if($manager_db?->role == 'super_manager'): ?> col-xl-4 <?php else: ?> col-xl-6 <?php endif; ?> col-md-6">
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Trainees</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.trainees') }}">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.trainees')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
+                <div class="<?php if($manager_db?->role == 'super_manager'): ?> col-xl-4 <?php else: ?> col-xl-6 <?php endif; ?> col-md-6">
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">Issues</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.issues') }}">View
+                            <a class="small text-white stretched-link" href="<?php echo e(route('manager.issues')); ?>">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
 
-                @if ($manager_db?->role == 'super_manager')
+                <?php if($manager_db?->role == 'super_manager'): ?>
                     <div class="col-xl-4 col-md-6">
                         <div class="card bg-success text-white mb-4">
                             <div class="card-body">Managers Authorization</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-white stretched-link" href="{{ route('manager.managers') }}">View
+                                <a class="small text-white stretched-link" href="<?php echo e(route('manager.managers')); ?>">View
                                     Details</a>
                                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                             </div>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </main>
@@ -202,11 +203,11 @@
 
         gtag('config', 'G-B1XS1PP0R6');
     </script>
-    @php
+    <?php
         $training_requests_count = $all_training_requests->count();
         $training_requests_approved_count = $all_training_requests->where('status', 'approved')->count();
         $training_requests_rejected_count = $all_training_requests->where('status', 'rejected')->count();
-    @endphp
+    ?>
     <script>
         var appStatisticsCtx = document.getElementById('appStatisticsChart').getContext('2d');
         var appStatisticsChart = new Chart(appStatisticsCtx, {
@@ -218,10 +219,10 @@
                 ],
                 datasets: [{
                     label: 'Training Staff',
-                    data: [{{ $training_requests_count }}, {{ $training_requests_approved_count }},
-                        {{ $training_requests_rejected_count }}, {{ $trainees_count }},
-                        {{ $training_programs_count }},
-                        {{ $disciplines_count }},
+                    data: [<?php echo e($training_requests_count); ?>, <?php echo e($training_requests_approved_count); ?>,
+                        <?php echo e($training_requests_rejected_count); ?>, <?php echo e($trainees_count); ?>,
+                        <?php echo e($training_programs_count); ?>,
+                        <?php echo e($disciplines_count); ?>,
                     ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -244,24 +245,24 @@
                 }
             }
         });
-        var isAnalyticsDataAvailable = @json(
+        var isAnalyticsDataAvailable = <?php echo json_encode(
             $analyticsDataLastSevenDays->isNotEmpty() ||
             $analyticsDataLast30Days->isNotEmpty() ||
             $analyticsDataToday->isNotEmpty() ||
             $mostVisitedPagesLast30Days->isNotEmpty()
                 ? true
-                : false);
+                : false, 15, 512) ?>;
         if (isAnalyticsDataAvailable) {
             var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
             var label = 'Analytics Data';
-            if (@json($analyticsDataLast30Days->isNotEmpty())) {
-                label = @json($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['pageTitle'] . ' - Views' : '');
-            } else if (@json($analyticsDataLastSevenDays->isNotEmpty())) {
-                label = @json($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['pageTitle'] . ' - Views' : '');
-            } else if (@json($analyticsDataToday->isNotEmpty())) {
-                label = @json($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['pageTitle'] . ' - Views' : '');
-            } else if (@json($mostVisitedPagesLast30Days->isNotEmpty())) {
-                label = @json($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageTitle'] . ' - Views' : '');
+            if (<?php echo json_encode($analyticsDataLast30Days->isNotEmpty(), 15, 512) ?>) {
+                label = <?php echo json_encode($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['pageTitle'] . ' - Views' : '', 15, 512) ?>;
+            } else if (<?php echo json_encode($analyticsDataLastSevenDays->isNotEmpty(), 15, 512) ?>) {
+                label = <?php echo json_encode($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['pageTitle'] . ' - Views' : '', 15, 512) ?>;
+            } else if (<?php echo json_encode($analyticsDataToday->isNotEmpty(), 15, 512) ?>) {
+                label = <?php echo json_encode($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['pageTitle'] . ' - Views' : '', 15, 512) ?>;
+            } else if (<?php echo json_encode($mostVisitedPagesLast30Days->isNotEmpty(), 15, 512) ?>) {
+                label = <?php echo json_encode($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageTitle'] . ' - Views' : '', 15, 512) ?>;
             }
 
 
@@ -277,10 +278,10 @@
                     datasets: [{
                         label: label,
                         data: [
-                            {{ $analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['screenPageViews'] : 0 }},
-                            {{ $analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['screenPageViews'] : 0 }},
-                            {{ $analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['screenPageViews'] : 0 }},
-                            {{ $mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0 }},
+                            <?php echo e($analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['screenPageViews'] : 0); ?>,
+                            <?php echo e($analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['screenPageViews'] : 0); ?>,
+                            <?php echo e($analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['screenPageViews'] : 0); ?>,
+                            <?php echo e($mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0); ?>,
                         ],
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -305,4 +306,6 @@
             });
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.managerLayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/vagrant/laravel/tms-laravel/resources/views/manager/index.blade.php ENDPATH**/ ?>
