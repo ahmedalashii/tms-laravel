@@ -115,6 +115,15 @@ class TraineeRegisterController extends Controller
             $size = $cvFile->getSize();
             $file->size = $size ? $size : 0;
             $file->save();
+
+            // Store data to firebase firestore
+            $firestore = app('firebase.firestore');
+            $trainee_firestore = $firestore->database()->collection('trainees')->document($trainee->firebase_uid)->set($trainee->toArray());
+            // disciplines of the trainee
+            $traineeDisciplines = $firestore->database()->collection('trainee_disciplines')->document($trainee->firebase_uid);
+            $traineeDisciplines->set([
+                'disciplines' => $disciplines,
+            ]);
             if ($status) {
                 $message = "New Trainee Created: " . $trainee->displayName . " with email: " . $trainee->email . ". Go to Authorize Trainees to approve or reject.";
                 // send notification to all managers
