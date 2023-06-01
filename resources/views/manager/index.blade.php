@@ -280,7 +280,7 @@
                             {{ $analyticsDataLastSevenDays->isNotEmpty() ? $analyticsDataLastSevenDays[0]['screenPageViews'] : 0 }},
                             {{ $analyticsDataLast30Days->isNotEmpty() ? $analyticsDataLast30Days[0]['screenPageViews'] : 0 }},
                             {{ $analyticsDataToday->isNotEmpty() ? $analyticsDataToday[0]['screenPageViews'] : 0 }},
-                            {{ $mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['pageViews'] : 0 }},
+                            {{ $mostVisitedPagesLast30Days->isNotEmpty() ? $mostVisitedPagesLast30Days[0]['screenPageViews'] : 0 }},
                         ],
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
