@@ -429,7 +429,7 @@ class ManagerController extends Controller
                 $trainee = $trainingProgramUser->trainee;
                 $advisor = $trainingProgramUser->advisor;
                 $manager = auth_manager();
-                $message = 'The advisor ' . $advisor->displayName . ' has been assigned to ' . $trainingProgram->name . '.';
+                $message = 'The advisor ' . $advisor?->displayName . ' has been assigned to ' . $trainingProgram->name . '.';
                 $trainee->notify(new TraineeNotification($manager, $advisor, $message));
                 $message = 'You have been assigned to ' . $trainingProgram->name . ' by ' . $manager->displayName . '.';
                 $advisor->notify(new AdvisorNotification($manager, $trainee, $message));
