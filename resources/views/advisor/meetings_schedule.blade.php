@@ -93,7 +93,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             <p class="bg-secondary text-white p-2">There are no meetings scheduled. Once a
                                                 trainee
                                                 schedules a meeting, it will appear here.</p>
