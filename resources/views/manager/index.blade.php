@@ -161,18 +161,18 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="@if ($manager_db?->role == 'super_manager') col-xl-4 @else col-xl-6 @endif col-md-6">
+                <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">Issues</div>
+                        <div class="card-body">Authorize Advisors</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="{{ route('manager.issues') }}">View
+                            <a class="small text-white stretched-link"
+                                href="{{ route('manager.authorize-advisors') }}">View
                                 Details</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
-
+      
                 @if ($manager_db?->role == 'super_manager')
                     <div class="col-xl-4 col-md-6">
                         <div class="card bg-success text-white mb-4">
