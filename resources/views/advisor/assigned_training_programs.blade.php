@@ -162,9 +162,11 @@
                                                             <br>
                                                             <strong>Description: </strong> {{ $task->description }} <br>
                                                             <strong>End Date: </strong> {{ $task->end_date }} <br>
-                                                            <strong>File: </strong> <a href="{{ $task->file_url }}"
-                                                                target="_blank">View
-                                                                File</a>
+                                                            @if ($task->file_url)
+                                                                <strong>File: </strong> <a href="{{ $task->file_url }}"
+                                                                    target="_blank">View
+                                                                    File</a>
+                                                            @endif
                                                         </li>
                                                     @endforeach
                                                 </ul>
